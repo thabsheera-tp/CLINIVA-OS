@@ -68,9 +68,9 @@ export default function Sidebar({
                     if (isMobile) onMobileClose?.()
                   }}
                   className={clsx(
-                    'flex items-center justify-between px-space-md py-space-sm rounded-xl transition-all duration-150 group touch-tap',
+                    'flex items-center justify-between px-space-md py-2.5 rounded-xl transition-all duration-150 group touch-tap relative',
                     isActive
-                      ? 'bg-secondary-fixed/50 text-on-primary-fixed-variant font-semibold shadow-[0_2px_8px_rgba(0,107,95,0.08)]'
+                      ? 'bg-primary/10 text-primary font-semibold shadow-xs border-l-4 border-primary'
                       : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'
                   )}
                 >
@@ -89,16 +89,19 @@ export default function Sidebar({
                   {item.badge != null && (
                     <span
                       className={clsx(
-                        'text-label-sm px-space-xs py-0.5 rounded-full font-bold flex-shrink-0 ml-1',
+                        'text-[11px] px-2 py-0.5 rounded-full font-bold flex-shrink-0 ml-1',
                         item.badgeVariant === 'live'
-                          ? 'inline-flex items-center gap-1 bg-primary-fixed text-on-primary-fixed'
+                          ? 'inline-flex items-center gap-1 bg-primary/15 text-primary border border-primary/20'
                           : item.badgeVariant === 'alert'
-                          ? 'bg-error-container text-on-error-container'
-                          : 'bg-surface-container text-on-surface'
+                          ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30'
+                          : 'bg-surface-container text-on-surface border border-outline-variant/30'
                       )}
                     >
                       {item.badgeVariant === 'live' && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                        <span className="relative flex h-1.5 w-1.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary" />
+                        </span>
                       )}
                       {item.badge}
                     </span>

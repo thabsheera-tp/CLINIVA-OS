@@ -146,17 +146,21 @@ export function PortalHome({ firstName }: Props) {
 
       {/* Quick Actions — with real navigation */}
       <div>
-        <h2 className="font-heading text-headline-sm text-on-surface font-semibold mb-space-sm">Quick Actions</h2>
+        <h2 className="font-heading text-headline-sm text-on-surface font-semibold mb-space-sm">Quick Actions & Care Access</h2>
         <div className="grid grid-cols-2 gap-space-sm">
           {[
-            { label: 'Family Health Locker', icon: 'family_restroom', color: 'bg-indigo-500/15 border border-indigo-500/30 text-indigo-700 dark:text-indigo-300', href: '/portal/locker' },
-            { label: 'AI Symptom Checker', icon: 'smart_toy',        color: 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300', href: '/portal/symptoms' },
-            { label: 'Book Appointment',   icon: 'calendar_add_on',  color: 'bg-primary-fixed/40', href: '/portal/queue' },
-            { label: 'My Prescriptions',   icon: 'medication',       color: 'bg-secondary-fixed/40', href: '/portal/prescriptions' },
-            { label: 'Medical Records',    icon: 'folder_shared',    color: 'bg-surface-container', href: '/portal/records' },
-            { label: 'My Profile',         icon: 'person',           color: 'bg-surface-container', href: '/portal/profile' },
+            { label: 'Family Health Vault', icon: 'family_restroom', color: 'bg-indigo-500/10 border border-indigo-500/25 text-indigo-700 dark:text-indigo-300', href: '/portal/locker' },
+            { label: 'AI Clinical Triage', icon: 'smart_toy',        color: 'bg-emerald-500/10 border border-emerald-500/25 text-emerald-700 dark:text-emerald-300', href: '/portal/symptoms' },
+            { label: 'Schedule Consult',   icon: 'calendar_add_on',  color: 'bg-primary/10 border border-primary/20 text-primary', href: '/portal/queue' },
+            { label: 'Prescription Alarms',icon: 'medication',       color: 'bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-300', href: '/portal/reminders' },
+            { label: 'Diagnostic Records', icon: 'folder_shared',    color: 'bg-surface-container border border-outline-variant/30 text-on-surface', href: '/portal/records' },
+            { label: 'Patient Profile',    icon: 'badge',            color: 'bg-surface-container border border-outline-variant/30 text-on-surface', href: '/portal/profile' },
           ].map((action) => (
-            <Link key={action.label} href={action.href} className={`${action.color} rounded-xl p-space-md flex flex-col items-start gap-space-sm hover:brightness-95 transition-all text-left`}>
+            <Link
+              key={action.label}
+              href={action.href}
+              className={`${action.color} rounded-2xl p-space-md flex flex-col items-start gap-space-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-card-hover active:scale-[0.98] text-left`}
+            >
               <span className="material-symbols-outlined text-primary text-[24px]">{action.icon}</span>
               <span className="text-label-md text-on-surface font-semibold">{action.label}</span>
             </Link>

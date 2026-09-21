@@ -9,13 +9,13 @@ const NAV_SECTIONS = [
   {
     label: 'Clinical Operations',
     items: [
-      { label: 'Dashboard',     href: '/doctor',              icon: 'space_dashboard' },
-      { label: 'Patients',      href: '/doctor/patients',     icon: 'personal_injury', badge: '1,248' },
-      { label: 'Appointments',  href: '/doctor/appointments', icon: 'calendar_today',  badge: '18 Today' },
-      { label: 'Live Queue',    href: '/doctor/queue',        icon: 'queue',           badge: 5, badgeVariant: 'live' as const },
-      { label: 'Lab Results',   href: '/doctor/lab-results',  icon: 'biotech',         badge: 3, badgeVariant: 'alert' as const },
-      { label: 'Prescriptions', href: '/doctor/prescriptions',icon: 'prescriptions' },
-      { label: 'Messages',      href: '/doctor/messages',     icon: 'chat',            badge: 4 },
+      { label: 'Clinical Cockpit',  href: '/doctor',              icon: 'space_dashboard' },
+      { label: 'Patient Registry',  href: '/doctor/patients',     icon: 'personal_injury', badge: '1,248' },
+      { label: 'Consult Schedule',  href: '/doctor/appointments', icon: 'calendar_today',  badge: '18 Today' },
+      { label: 'OPD Triage & Queue',href: '/doctor/queue',        icon: 'queue',           badge: 5, badgeVariant: 'live' as const },
+      { label: 'Diagnostics & STAT',href: '/doctor/lab-results',  icon: 'biotech',         badge: 3, badgeVariant: 'alert' as const },
+      { label: 'e-Prescriptions (e-Rx)', href: '/doctor/prescriptions', icon: 'prescriptions' },
+      { label: 'Clinical Handover', href: '/doctor/messages',     icon: 'chat',            badge: 4 },
     ],
   },
   {

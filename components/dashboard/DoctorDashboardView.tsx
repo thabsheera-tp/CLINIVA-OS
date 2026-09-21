@@ -27,8 +27,15 @@ export default function DoctorDashboardView({ userName }: Props) {
     setVitalsOpen,
   } = useClinicRealtime()
 
+  const [copiedMRN, setCopiedMRN] = useState(false)
   const [scheduleFilter, setScheduleFilter] = useState<'All' | 'Completed' | 'Upcoming' | 'Telehealth'>('All')
   const [queueViewMode, setQueueViewMode] = useState<'cockpit' | 'predictor'>('cockpit')
+
+  const handleCopyMRN = (mrn: string) => {
+    navigator.clipboard?.writeText(mrn)
+    setCopiedMRN(true)
+    setTimeout(() => setCopiedMRN(false), 2000)
+  }
 
   const waitingPatients = queue.filter((p) => p.status === 'waiting')
 
@@ -199,16 +206,17 @@ export default function DoctorDashboardView({ userName }: Props) {
             </div>
             <button
               onClick={() => setConsultOpen(true)}
-              className="btn-ghost text-label-sm py-1 px-space-md"
+              className="btn-ghost text-label-sm py-1.5 px-space-md border border-outline-variant/40 hover:border-primary flex items-center gap-1.5 touch-tap"
             >
-              Open Encounter Note →
+              <span>Open SOAP Clinical Note (e-Rx)</span>
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
             </button>
           </div>
 
           {/* Patient banner */}
           <div className="flex items-start gap-space-md p-space-md bg-surface-container-low rounded-xl border border-outline-variant/20">
-            <div className="w-14 h-14 rounded-xl bg-secondary-fixed/40 flex items-center justify-center flex-shrink-0">
-              <span className="material-symbols-outlined text-primary text-[28px]">person</span>
+            <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+              <span className="material-symbols-outlined text-[32px]">person</span>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between flex-wrap gap-2">
@@ -216,19 +224,37 @@ export default function DoctorDashboardView({ userName }: Props) {
                   <h2 className="font-heading text-headline-sm text-on-surface font-semibold">
                     {activePatient?.name ?? 'Marcus Delacroix'}
                   </h2>
-                  <p className="text-body-sm text-on-surface-variant">
-                    MRN: 00482910 • {activePatient?.age ?? '54M'} • Token #{activePatient?.token ?? 7} • Room 304
-                  </p>
+                  <div className="flex items-center gap-1.5 text-body-sm text-on-surface-variant flex-wrap mt-0.5">
+                    <span>MRN:</span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyMRN('00482910')}
+                      className="inline-flex items-center gap-1 font-mono font-bold text-on-surface bg-surface-container px-2 py-0.5 rounded hover:bg-surface-container-high transition-colors"
+                      title="Click to copy Patient MRN"
+                    >
+                      <span>00482910</span>
+                      <span className="material-symbols-outlined text-[13px] text-primary">
+                        {copiedMRN ? 'check' : 'content_copy'}
+                      </span>
+                      {copiedMRN && <span className="text-[10px] text-emerald-600 font-sans">Copied</span>}
+                    </button>
+                    <span>•</span>
+                    <span>{activePatient?.age ?? '54M'}</span>
+                    <span>•</span>
+                    <span className="font-semibold text-primary">Token #{activePatient?.token ?? 7}</span>
+                    <span>•</span>
+                    <span>Room 304</span>
+                  </div>
                 </div>
                 <StatusBadge
                   variant={activePatient?.priority === 'emergency' ? 'critical' : 'warning'}
-                  label={activePatient?.priority === 'emergency' ? 'Emergency' : 'Hypertension'}
+                  label={activePatient?.priority === 'emergency' ? 'Emergency STAT' : 'Hypertension Stage II'}
                   pulse
                 />
               </div>
-              <p className="text-body-sm text-on-surface-variant mt-1">
+              <p className="text-body-sm text-on-surface-variant mt-2">
                 <span className="font-semibold text-on-surface">Chief Complaint:</span>{' '}
-                {activePatient?.complaint ?? 'Chest tightness, shortness of breath since morning'}
+                {activePatient?.complaint ?? 'Acute chest tightness, exertional dyspnea since 06:00 AM'}
               </p>
             </div>
           </div>
@@ -236,27 +262,27 @@ export default function DoctorDashboardView({ userName }: Props) {
           {/* Vitals Telemetry Grid (Live Reactivity) */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-space-sm">
             {[
-              { label: 'Blood Pressure', value: vitals.bp, unit: 'mmHg', icon: 'favorite' },
-              { label: 'Heart Rate', value: vitals.heartRate, unit: 'bpm', icon: 'ecg_heart' },
-              { label: 'SpO₂', value: vitals.spo2, unit: '%', icon: 'air' },
-              { label: 'Temperature', value: `${vitals.temperature}°F`, unit: '°F', icon: 'thermometer' },
+              { label: 'Blood Pressure', value: vitals.bp, unit: 'mmHg', icon: 'favorite', normal: '120/80' },
+              { label: 'Heart Rate', value: vitals.heartRate, unit: 'bpm', icon: 'ecg_heart', normal: '60-100' },
+              { label: 'Oxygen SpO₂', value: vitals.spo2, unit: '%', icon: 'air', normal: '> 95%' },
+              { label: 'Temperature', value: `${vitals.temperature}°F`, unit: 'Oral', icon: 'thermometer', normal: '98.6°F' },
             ].map((v) => (
               <div
                 key={v.label}
                 onClick={() => setVitalsOpen(true)}
-                className="flex flex-col items-center justify-center p-space-sm bg-surface-container-low rounded-xl border border-outline-variant/20 gap-1 cursor-pointer hover:border-primary/40 transition-colors group"
-                title="Click to update vitals"
+                className="flex flex-col items-center justify-center p-3.5 bg-surface-container-low rounded-xl border border-outline-variant/25 gap-1 cursor-pointer hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-card-hover transition-all duration-150 group active:scale-[0.98]"
+                title="Click to update physiological vitals telemetry"
               >
-                <span className="text-label-sm text-on-surface-variant uppercase tracking-wider group-hover:text-primary transition-colors">
-                  {v.label}
-                </span>
-                <span className="font-heading text-telemetry-num text-on-surface tabular-nums font-semibold">
+                <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant group-hover:text-primary transition-colors">
+                  <span className="material-symbols-outlined text-[15px] text-primary">{v.icon}</span>
+                  <span>{v.label}</span>
+                </div>
+                <span className="font-heading text-headline-sm text-on-surface tabular-nums font-mono font-bold tracking-tight">
                   {v.value}
                 </span>
-                <div className="flex items-center gap-1">
-                  <span className="material-symbols-outlined text-primary text-[14px]">{v.icon}</span>
-                  <span className="text-label-sm text-on-surface-variant">{v.unit}</span>
-                </div>
+                <span className="text-[11px] text-on-surface-variant/70 font-medium">
+                  {v.unit} • <span className="text-outline">Ref {v.normal}</span>
+                </span>
               </div>
             ))}
           </div>
@@ -266,10 +292,10 @@ export default function DoctorDashboardView({ userName }: Props) {
         <div className="clinical-card flex flex-col">
           <div className="flex items-center justify-between p-space-md border-b border-outline-variant/20">
             <div className="flex items-center gap-space-sm">
-              <h3 className="font-heading text-headline-sm text-on-surface font-semibold">Patient Queue</h3>
+              <h3 className="font-heading text-headline-sm text-on-surface font-semibold">OPD Triage & Patient Flow</h3>
               <LiveIndicator size="sm" />
             </div>
-            <span className="text-label-sm bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded-full font-bold">
+            <span className="text-[11px] bg-primary/15 text-primary border border-primary/25 px-2.5 py-0.5 rounded-full font-bold">
               {waitingPatients.length} Waiting
             </span>
           </div>
@@ -283,10 +309,10 @@ export default function DoctorDashboardView({ userName }: Props) {
                 <div
                   key={p.id}
                   onClick={() => callNextPatient()}
-                  className="flex items-center gap-space-sm px-space-md py-space-sm hover:bg-surface-container-low transition-colors cursor-pointer group"
+                  className="flex items-center gap-space-sm px-space-md py-space-sm hover:bg-surface-container-low transition-colors cursor-pointer group active:scale-[0.99]"
                 >
-                  <div className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-label-md text-on-surface font-bold flex-shrink-0">
-                    {p.token}
+                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-[12px] text-primary font-mono font-bold flex-shrink-0 tabular-nums">
+                    #{p.token}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-label-lg text-on-surface truncate font-semibold">{p.name}</p>
@@ -295,15 +321,16 @@ export default function DoctorDashboardView({ userName }: Props) {
                     </p>
                   </div>
                   <div className="flex flex-col items-end flex-shrink-0">
-                    <span className="text-label-sm text-on-surface-variant">{p.wait}</span>
+                    <span className="text-[11px] font-mono text-on-surface-variant tabular-nums">{p.wait}</span>
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
                         callNextPatient()
                       }}
-                      className="text-primary text-label-sm font-semibold opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity touch-tap"
+                      className="text-primary text-[12px] font-semibold opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity touch-tap flex items-center gap-0.5 mt-0.5"
                     >
-                      Call Next →
+                      <span>Call Next</span>
+                      <span className="material-symbols-outlined text-[14px]">chevron_right</span>
                     </button>
                   </div>
                 </div>
@@ -314,12 +341,17 @@ export default function DoctorDashboardView({ userName }: Props) {
       </section>
       )}
 
-      {/* ── 4. Consultation Schedule ── */}
+      {/* ── 4. Daily Ambulatory Schedule ── */}
       <section className="clinical-card">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between p-space-md border-b border-outline-variant/20 gap-2">
-          <h3 className="font-heading text-headline-sm text-on-surface font-semibold">
-            Consultation Schedule
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-heading text-headline-sm text-on-surface font-semibold">
+              Daily Ambulatory Schedule
+            </h3>
+            <span className="text-[11px] px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-mono font-semibold">
+              {filteredSchedule.length} Encounters
+            </span>
+          </div>
           <div className="flex items-center gap-space-xs overflow-x-auto smooth-touch-scroll pb-1 sm:pb-0">
             {(['All', 'Completed', 'Upcoming', 'Telehealth'] as const).map((f) => (
               <button

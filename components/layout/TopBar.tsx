@@ -143,10 +143,13 @@ export default function TopBar({
             </span>
           </button>
 
-          {/* Live sync indicator */}
-          <div className="hidden xl:flex items-center gap-1.5 px-space-sm py-1 bg-surface-container rounded-full">
-            <span className="w-2 h-2 rounded-full bg-secondary-fixed-dim animate-pulse" />
-            <span className="text-label-sm text-on-surface">{liveSyncLabel}</span>
+          {/* Live sync indicator with dual-ring medical telemetry radar */}
+          <div className="hidden xl:flex items-center gap-2 px-3 py-1 bg-surface-container-low border border-outline-variant/30 rounded-full">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+            <span className="text-[12px] font-semibold text-on-surface">{liveSyncLabel}</span>
           </div>
 
           {/* Theme Toggle (Dark / Light Mode) */}
