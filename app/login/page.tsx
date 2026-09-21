@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClientSideClient } from '@/lib/supabase/client'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 type RoleCategory = 'all' | 'clinical' | 'operations' | 'admin'
 
@@ -245,10 +246,7 @@ export default function LoginPage() {
     setLaunchingRole(card.role)
     document.cookie = `cliniva_demo_role=${card.role}; path=/; max-age=86400`
     const dest = ROLE_ROUTES[card.role] ?? '/doctor'
-    setTimeout(() => {
-      router.push(dest)
-      router.refresh()
-    }, 150)
+    window.location.href = dest
   }
 
   const openAuthModalForRole = (card: RoleCardItem) => {
@@ -269,8 +267,7 @@ export default function LoginPage() {
       if (!error && data?.session) {
         const userRole = data.session.user.user_metadata?.role as string | undefined
         const dest = userRole ? (ROLE_ROUTES[userRole] ?? '/') : '/'
-        router.push(dest)
-        router.refresh()
+        window.location.href = dest
         return
       }
     } catch {
@@ -280,12 +277,11 @@ export default function LoginPage() {
     // Demo role fallback
     document.cookie = `cliniva_demo_role=${authRole.role}; path=/; max-age=86400`
     const dest = ROLE_ROUTES[authRole.role] ?? '/doctor'
-    router.push(dest)
-    router.refresh()
+    window.location.href = dest
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FF] text-[#0B1C30] relative overflow-x-hidden flex flex-col justify-between selection:bg-primary/20">
+    <div className="min-h-screen bg-surface text-on-surface relative overflow-x-hidden flex flex-col justify-between selection:bg-primary/20">
       {/* Dynamic Ambient Background Elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
         <div className="absolute -top-32 -right-32 w-[550px] h-[550px] bg-gradient-to-br from-primary/10 via-secondary-fixed/15 to-transparent rounded-full blur-3xl" />
@@ -295,7 +291,7 @@ export default function LoginPage() {
       </div>
 
       {/* Top Brand & Enterprise Status Bar */}
-      <header className="w-full border-b border-outline-variant/30 bg-white/80 backdrop-blur-md sticky top-0 z-30 shadow-[0_1px_12px_rgba(0,0,0,0.02)]">
+      <header className="w-full border-b border-outline-variant/30 bg-surface-container-lowest/90 backdrop-blur-md sticky top-0 z-30 shadow-[0_1px_12px_rgba(0,0,0,0.02)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Logo & Medical Facility Info */}
           <div className="flex items-center gap-3">
@@ -304,7 +300,7 @@ export default function LoginPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-heading text-headline-sm sm:text-headline-md font-bold tracking-tight text-[#0B1C30]">
+                <span className="font-heading text-headline-sm sm:text-headline-md font-bold tracking-tight text-on-surface">
                   Cliniva OS
                 </span>
                 <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-primary-fixed/50 text-on-primary-fixed-variant border border-primary-fixed">
@@ -325,10 +321,13 @@ export default function LoginPage() {
               <span className="font-semibold text-on-surface">9 Workspaces Ready</span>
             </div>
 
+            {/* Dark / Light Mode Switcher */}
+            <ThemeToggle />
+
             {/* Staff Sign-In Trigger */}
             <button
               onClick={() => openAuthModalForRole(ROLE_CARDS[0])}
-              className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-white hover:bg-surface-container-low border border-outline-variant/60 text-on-surface font-semibold text-label-md transition-all shadow-sm hover:shadow active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-surface-container-lowest hover:bg-surface-container-low border border-outline-variant/60 text-on-surface font-semibold text-label-md transition-all shadow-sm hover:shadow active:scale-95"
             >
               <span className="material-symbols-outlined text-[18px] text-primary">key</span>
               <span className="hidden sm:inline">Enterprise Staff Sign-In</span>
@@ -358,7 +357,7 @@ export default function LoginPage() {
         </div>
 
         {/* Filter and Search Bar Toolbar */}
-        <div className="bg-white/90 backdrop-blur-md rounded-2xl p-2 sm:p-3 border border-outline-variant/40 shadow-card mb-8">
+        <div className="bg-surface-container-lowest/90 backdrop-blur-md rounded-2xl p-2 sm:p-3 border border-outline-variant/40 shadow-card mb-8">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             {/* Category Filter Pills */}
             <div className="flex items-center gap-1.5 overflow-x-auto smooth-touch-scroll pb-1 sm:pb-0">
@@ -415,7 +414,7 @@ export default function LoginPage() {
 
         {/* Roles Grid */}
         {filteredRoles.length === 0 ? (
-          <div className="bg-white rounded-2xl p-12 text-center border border-outline-variant/30 shadow-card max-w-md mx-auto">
+          <div className="bg-surface-container-lowest rounded-2xl p-12 text-center border border-outline-variant/30 shadow-card max-w-md mx-auto">
             <span className="material-symbols-outlined text-outline text-[48px] mb-2">search_off</span>
             <h3 className="font-heading text-headline-sm font-semibold text-on-surface mb-1">No roles matched</h3>
             <p className="text-body-sm text-on-surface-variant mb-4">
@@ -441,7 +440,7 @@ export default function LoginPage() {
                 <div
                   key={card.role}
                   onClick={() => handleQuickLaunch(card)}
-                  className={`group relative bg-white rounded-2xl p-5 border border-outline-variant/40 transition-all duration-200 cursor-pointer flex flex-col justify-between hover:-translate-y-1 hover:shadow-card-hover ${card.accent.ringColor}`}
+                  className={`group relative bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/40 transition-all duration-200 cursor-pointer flex flex-col justify-between hover:-translate-y-1 hover:shadow-card-hover ${card.accent.ringColor}`}
                 >
                   {/* Subtle top ambient glow */}
                   <div className="absolute top-0 right-0 left-0 h-1 rounded-t-2xl bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -498,9 +497,8 @@ export default function LoginPage() {
                   {/* Actions Bar */}
                   <div className="pt-3 border-t border-outline-variant/20 flex items-center justify-between gap-2">
                     {/* Launch Workspace Button */}
-                    <button
-                      type="button"
-                      disabled={isLaunching}
+                    <a
+                      href={ROLE_ROUTES[card.role] ?? '/doctor'}
                       onClick={(e) => {
                         e.stopPropagation()
                         handleQuickLaunch(card)
@@ -522,7 +520,7 @@ export default function LoginPage() {
                           </span>
                         </>
                       )}
-                    </button>
+                    </a>
 
                     {/* Credentials Sign-In Shortcut Button */}
                     <button
@@ -544,7 +542,7 @@ export default function LoginPage() {
         )}
 
         {/* Quick Helper Banner */}
-        <div className="mt-8 p-4 rounded-2xl bg-white/70 border border-outline-variant/30 backdrop-blur-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+        <div className="mt-8 p-4 rounded-2xl bg-surface-container-lowest/80 border border-outline-variant/30 backdrop-blur-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
               <span className="material-symbols-outlined text-[18px]">lightbulb</span>
@@ -575,7 +573,7 @@ export default function LoginPage() {
           onClick={() => setShowAuthModal(false)}
         >
           <div
-            className="w-full max-w-md bg-white rounded-2xl p-6 sm:p-7 shadow-modal border border-outline-variant/30 relative max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-md bg-surface-container-lowest rounded-2xl p-6 sm:p-7 shadow-modal border border-outline-variant/30 relative max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -741,7 +739,7 @@ export default function LoginPage() {
       )}
 
       {/* Compliance & Security Footer */}
-      <footer className="w-full border-t border-outline-variant/30 bg-white/60 backdrop-blur-md py-6">
+      <footer className="w-full border-t border-outline-variant/30 bg-surface-container-lowest/70 backdrop-blur-md py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-[12px] text-on-surface-variant">
             <span className="flex items-center gap-1.5 font-medium">

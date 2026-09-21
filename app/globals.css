@@ -11,16 +11,44 @@
   --color-secondary: #006b5f;
   --color-tertiary: #b90538;
   --color-surface: #f8f9ff;
+  --color-surface-dim: #e2e8f0;
+  --color-surface-bright: #ffffff;
   --color-surface-container-lowest: #ffffff;
-  --color-on-surface: #0b1c30;
-  --color-on-surface-variant: #3d4947;
-  --color-outline: #6d7a77;
-  --color-outline-variant: #bcc9c6;
+  --color-surface-container-low: #eff4ff;
+  --color-surface-container: #e5eeff;
+  --color-surface-container-high: #dce9ff;
+  --color-surface-container-highest: #d3e4fe;
+  --color-on-surface: #0f172a;
+  --color-on-surface-variant: #334155;
+  --color-outline: #64748b;
+  --color-outline-variant: #cbd5e1;
 
   /* Card shadows */
   --shadow-card: 0px 2px 4px rgba(15, 23, 42, 0.03), 0px 8px 16px -4px rgba(13, 148, 136, 0.04);
   --shadow-card-hover: 0px 6px 12px -2px rgba(15, 23, 42, 0.05), 0px 16px 24px -4px rgba(13, 148, 136, 0.06);
   --shadow-modal: 0px 20px 32px -8px rgba(15, 23, 42, 0.08), 0px 32px 48px -12px rgba(15, 23, 42, 0.06);
+}
+
+.dark {
+  --color-primary: #008f80;
+  --color-secondary: #009688;
+  --color-tertiary: #f43f5e;
+  --color-surface: #0b1120;
+  --color-surface-dim: #070c18;
+  --color-surface-bright: #131d35;
+  --color-surface-container-lowest: #0f172a;
+  --color-surface-container-low: #1e293b;
+  --color-surface-container: #24344d;
+  --color-surface-container-high: #2d4060;
+  --color-surface-container-highest: #3b5278;
+  --color-on-surface: #f8fafc;
+  --color-on-surface-variant: #cbd5e1;
+  --color-outline: #94a3b8;
+  --color-outline-variant: #334155;
+
+  --shadow-card: 0px 2px 4px rgba(0, 0, 0, 0.4), 0px 8px 16px -4px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0px 6px 12px -2px rgba(0, 0, 0, 0.5), 0px 16px 24px -4px rgba(0, 0, 0, 0.4);
+  --shadow-modal: 0px 20px 32px -8px rgba(0, 0, 0, 0.6);
 }
 
 /* ─── Base Resets ─── */
@@ -35,8 +63,8 @@
 
   body {
     overscroll-behavior: none;
-    background-color: #f8f9ff;
-    color: #0b1c30;
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
     font-family: 'Inter', sans-serif;
   }
 
@@ -166,9 +194,13 @@
 
   /* Input field — min 16px on mobile to prevent iOS Safari auto-zoom */
   .input-field {
-    @apply w-full px-space-md py-2.5 bg-white border border-outline-variant/50 rounded-lg text-[16px] md:text-body-md text-on-surface placeholder:text-on-surface-variant/60 transition-all duration-150;
+    @apply w-full px-space-md py-2.5 bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-[16px] md:text-body-md text-on-surface transition-all duration-150;
     outline: none;
     touch-action: manipulation;
+  }
+  .input-field::placeholder {
+    color: var(--color-on-surface-variant);
+    opacity: 0.65;
   }
   .input-field:focus {
     border-color: var(--color-primary);

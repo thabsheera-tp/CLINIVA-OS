@@ -21,7 +21,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem('cliniva_theme') as Theme | null
-      const initialTheme = stored || 'system'
+      const initialTheme = stored || 'light'
       setThemeState(initialTheme)
 
       const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches

@@ -649,3 +649,191 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO meal_orders (tenant_id, patient_id, meal_slot, dietary_flag, status, special_instructions) VALUES
   ('c0000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', 'lunch', 'low_sodium', 'preparing', 'Strict low-sodium per Cardiology order'),
   ('c0000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000003', 'lunch', 'diabetic',   'ordered',   'Diabetic diet, no refined sugars');
+
+-- ========================================================
+-- 17. FAMILY HEALTH LOCKER & DOCUMENT VAULT
+-- ========================================================
+DO $$ BEGIN
+  CREATE TYPE family_relationship AS ENUM ('self', 'spouse', 'child', 'parent', 'sibling', 'other');
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE record_category AS ENUM (
+    'prescription', 'lab_report', 'discharge_summary',
+    'vaccine_card', 'scan_imaging', 'clinical_note', 'insurance_doc'
+  );
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE vaccine_status AS ENUM ('administered', 'upcoming', 'overdue');
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+CREATE TABLE IF NOT EXISTS family_members (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  primary_user_id     UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  first_name          TEXT NOT NULL,
+  last_name           TEXT NOT NULL,
+  relationship        family_relationship NOT NULL DEFAULT 'other',
+  dob                 DATE,
+  gender              gender DEFAULT 'prefer_not_to_say',
+  blood_group         TEXT,
+  allergies           TEXT[] DEFAULT '{}',
+  chronic_conditions  TEXT[] DEFAULT '{}',
+  emergency_contact   TEXT,
+  avatar_color        TEXT DEFAULT 'primary',
+  is_primary          BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS family_records (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  family_member_id    UUID NOT NULL REFERENCES family_members(id) ON DELETE CASCADE,
+  primary_user_id     UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  category            record_category NOT NULL DEFAULT 'prescription',
+  title               TEXT NOT NULL,
+  doctor_name         TEXT,
+  clinic_hospital     TEXT,
+  record_date         DATE NOT NULL DEFAULT CURRENT_DATE,
+  storage_path        TEXT,
+  file_name           TEXT NOT NULL,
+  file_size_bytes     BIGINT,
+  mime_type           TEXT,
+  notes               TEXT,
+  tags                TEXT[] DEFAULT '{}',
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS family_vaccinations (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  family_member_id    UUID NOT NULL REFERENCES family_members(id) ON DELETE CASCADE,
+  primary_user_id     UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  vaccine_name        TEXT NOT NULL,
+  dose_label          TEXT NOT NULL DEFAULT 'Dose 1',
+  status              vaccine_status NOT NULL DEFAULT 'administered',
+  administered_date   DATE,
+  due_date            DATE,
+  clinic_provider     TEXT,
+  batch_number        TEXT,
+  certificate_path    TEXT,
+  notes               TEXT,
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS family_members_user_idx ON family_members(primary_user_id);
+CREATE INDEX IF NOT EXISTS family_records_member_idx ON family_records(family_member_id);
+CREATE INDEX IF NOT EXISTS family_records_user_idx ON family_records(primary_user_id);
+CREATE INDEX IF NOT EXISTS family_records_category_idx ON family_records(category);
+CREATE INDEX IF NOT EXISTS family_vaccinations_member_idx ON family_vaccinations(family_member_id);
+
+ALTER TABLE family_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE family_records ENABLE ROW LEVEL SECURITY;
+ALTER TABLE family_vaccinations ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  CREATE POLICY "family_members_user_all" ON family_members FOR ALL USING (primary_user_id = auth.uid()) WITH CHECK (primary_user_id = auth.uid());
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "family_records_user_all" ON family_records FOR ALL USING (primary_user_id = auth.uid()) WITH CHECK (primary_user_id = auth.uid());
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "family_vaccinations_user_all" ON family_vaccinations FOR ALL USING (primary_user_id = auth.uid()) WITH CHECK (primary_user_id = auth.uid());
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+-- Storage Bucket Setup for Secure Prescriptions
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'family_health_locker',
+  'family_health_locker',
+  FALSE,
+  15728640,
+  ARRAY['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/heic']
+)
+ON CONFLICT (id) DO UPDATE SET
+  public = FALSE,
+  file_size_limit = 15728640,
+  allowed_mime_types = ARRAY['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/heic'];
+
+-- ========================================================
+-- 18. SMART MEDICATION REMINDERS & ADHERENCE LOGS
+-- ========================================================
+CREATE TABLE IF NOT EXISTS patient_medication_reminders (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id         UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  patient_name    TEXT NOT NULL DEFAULT 'Self',
+  medicine_name   TEXT NOT NULL,
+  dosage          TEXT NOT NULL,
+  frequency       TEXT NOT NULL DEFAULT 'once_daily',
+  schedule_times  TEXT[] NOT NULL DEFAULT '{"08:00"}',
+  meal_timing     TEXT DEFAULT 'after_meal',
+  instructions    TEXT,
+  category        TEXT DEFAULT 'prescription',
+  color_code      TEXT DEFAULT 'emerald',
+  total_pills     INTEGER DEFAULT 30,
+  pills_remaining INTEGER DEFAULT 30,
+  is_active       BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS medication_dose_logs (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  reminder_id     UUID NOT NULL REFERENCES patient_medication_reminders(id) ON DELETE CASCADE,
+  user_id         UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  scheduled_time  TIME NOT NULL,
+  scheduled_date  DATE NOT NULL DEFAULT CURRENT_DATE,
+  status          TEXT NOT NULL DEFAULT 'pending',
+  taken_at        TIMESTAMPTZ,
+  notes           TEXT,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE(reminder_id, scheduled_date, scheduled_time)
+);
+
+CREATE INDEX IF NOT EXISTS med_reminders_user_idx ON patient_medication_reminders(user_id);
+CREATE INDEX IF NOT EXISTS dose_logs_date_idx ON medication_dose_logs(user_id, scheduled_date);
+
+ALTER TABLE patient_medication_reminders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE medication_dose_logs ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  CREATE POLICY "user_med_reminders_all" ON patient_medication_reminders FOR ALL USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "user_dose_logs_all" ON medication_dose_logs FOR ALL USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+-- ========================================================
+-- 19. EMERGENCY SOS & AMBULANCE DISPATCH ALERTS
+-- ========================================================
+CREATE TABLE IF NOT EXISTS emergency_sos_alerts (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id             UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  patient_name        TEXT NOT NULL DEFAULT 'Emergency Patient',
+  phone               TEXT NOT NULL DEFAULT '+1 (555) 201-9481',
+  latitude            DOUBLE PRECISION,
+  longitude           DOUBLE PRECISION,
+  accuracy_meters     DOUBLE PRECISION,
+  status              TEXT NOT NULL DEFAULT 'dispatched',
+  chief_complaint     TEXT DEFAULT 'Emergency SOS Triggered by Patient',
+  ambulance_unit      TEXT DEFAULT 'Unit Med-4 (Rapid Response)',
+  eta_minutes         INTEGER DEFAULT 7,
+  dispatched_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+  resolved_at         TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS sos_alerts_dispatched_idx ON emergency_sos_alerts(dispatched_at DESC);
+CREATE INDEX IF NOT EXISTS sos_alerts_status_idx ON emergency_sos_alerts(status);
+
+ALTER TABLE emergency_sos_alerts ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  CREATE POLICY "anyone_can_insert_sos" ON emergency_sos_alerts FOR INSERT WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "user_and_staff_read_sos" ON emergency_sos_alerts FOR SELECT USING (true);
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+

@@ -6,6 +6,9 @@ import { usePathname } from 'next/navigation'
 import StatusBadge from '@/components/ui/StatusBadge'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import AISymptomChecker from '@/components/patient/AISymptomChecker'
+import FamilyHealthLocker from '@/components/patient/FamilyHealthLocker'
+import SmartMedicationReminders from '@/components/patient/SmartMedicationReminders'
+import EmergencySOSButton from '@/components/ui/EmergencySOSButton'
 
 type Props = {
   firstName: string
@@ -16,6 +19,7 @@ function PortalShell({ children, firstName }: { children: React.ReactNode; first
 
   const NAV = [
     { label: 'Home',    icon: 'home',          href: '/portal' },
+    { label: 'Locker',  icon: 'family_restroom', href: '/portal/locker' },
     { label: 'Queue',   icon: 'queue',          href: '/portal/queue' },
     { label: 'Records', icon: 'folder_shared',  href: '/portal/records' },
     { label: 'Rx',      icon: 'medication',     href: '/portal/prescriptions' },
@@ -46,6 +50,9 @@ function PortalShell({ children, firstName }: { children: React.ReactNode; first
       <div className="px-gutter-mobile py-space-md space-y-space-md">
         {children}
       </div>
+
+      {/* Floating Prominent Emergency SOS Button */}
+      <EmergencySOSButton patientName={`${firstName} Delacroix`} />
 
       {/* Mobile Bottom Nav - with correct paths */}
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-surface-container-lowest border-t border-outline-variant/30 flex items-center justify-around px-2 py-2 z-50 shadow-lg">
@@ -84,6 +91,9 @@ export function PortalHome({ firstName }: Props) {
         <p className="text-body-sm text-on-surface-variant">Good morning,</p>
         <h1 className="font-heading text-headline-lg-mobile text-on-surface font-semibold">{firstName}</h1>
       </div>
+
+      {/* Prominent Emergency SOS & Ambulance Dispatch Banner */}
+      <EmergencySOSButton variant="banner" patientName={`${firstName} Delacroix`} className="my-1" />
 
       {/* Live Queue Token Card */}
       <div className="bg-gradient-to-br from-primary to-primary-container rounded-2xl p-space-md text-on-primary relative overflow-hidden" style={{ boxShadow: '0 8px 24px rgba(0, 104, 95, 0.25)' }}>
@@ -139,6 +149,7 @@ export function PortalHome({ firstName }: Props) {
         <h2 className="font-heading text-headline-sm text-on-surface font-semibold mb-space-sm">Quick Actions</h2>
         <div className="grid grid-cols-2 gap-space-sm">
           {[
+            { label: 'Family Health Locker', icon: 'family_restroom', color: 'bg-indigo-500/15 border border-indigo-500/30 text-indigo-700 dark:text-indigo-300', href: '/portal/locker' },
             { label: 'AI Symptom Checker', icon: 'smart_toy',        color: 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300', href: '/portal/symptoms' },
             { label: 'Book Appointment',   icon: 'calendar_add_on',  color: 'bg-primary-fixed/40', href: '/portal/queue' },
             { label: 'My Prescriptions',   icon: 'medication',       color: 'bg-secondary-fixed/40', href: '/portal/prescriptions' },
@@ -164,6 +175,15 @@ export function PortalSymptomChecker({ firstName }: Props) {
   return (
     <PortalShell firstName={firstName}>
       <AISymptomChecker />
+    </PortalShell>
+  )
+}
+
+// ─── Family Health Locker Sub-Page ────────────────────────────────────────────
+export function PortalFamilyLocker({ firstName }: Props) {
+  return (
+    <PortalShell firstName={firstName}>
+      <FamilyHealthLocker />
     </PortalShell>
   )
 }
@@ -263,37 +283,19 @@ export function PortalRecords({ firstName }: Props) {
   )
 }
 
-// ─── Prescriptions Sub-Page ───────────────────────────────────────────────────
+// ─── Prescriptions & Medication Reminders Sub-Page ───────────────────────────
 export function PortalPrescriptions({ firstName }: Props) {
   return (
     <PortalShell firstName={firstName}>
-      <div className="flex flex-col space-y-0.5">
-        <p className="text-body-sm text-on-surface-variant">My Medications</p>
-        <h1 className="font-heading text-headline-md text-on-surface font-semibold">Active Prescriptions</h1>
-      </div>
+      <SmartMedicationReminders />
+    </PortalShell>
+  )
+}
 
-      <div className="clinical-card">
-        <div className="divide-y divide-outline-variant/10">
-          {[
-            { drug: 'Atorvastatin 40mg', frequency: 'Once daily at bedtime', duration: '30 days', refill: '14 days left', rx: 'RX-4091' },
-            { drug: 'Lisinopril 10mg', frequency: 'Once daily — Morning', duration: '30 days', refill: 'Active', rx: 'RX-4092' },
-            { drug: 'Aspirin 81mg', frequency: 'Once daily — Morning', duration: 'Indefinite', refill: 'Active', rx: 'RX-4093' },
-          ].map((med) => (
-            <div key={med.drug} className="flex items-start gap-space-sm px-space-md py-space-sm">
-              <div className="w-9 h-9 rounded-xl bg-secondary-fixed/30 flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-primary text-[18px]">medication</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-label-md text-on-surface font-semibold">{med.drug}</p>
-                <p className="text-body-sm text-on-surface-variant">{med.frequency}</p>
-                <p className="text-label-sm text-outline font-mono mt-0.5">#{med.rx}</p>
-                <p className="text-body-sm text-primary font-medium">{med.refill}</p>
-              </div>
-              <button className="text-primary text-label-sm font-semibold flex-shrink-0 hover:underline">Refill</button>
-            </div>
-          ))}
-        </div>
-      </div>
+export function PortalReminders({ firstName }: Props) {
+  return (
+    <PortalShell firstName={firstName}>
+      <SmartMedicationReminders />
     </PortalShell>
   )
 }

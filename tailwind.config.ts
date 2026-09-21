@@ -49,30 +49,30 @@ const config: Config = {
         'on-error-container': '#93000a',
 
         // Surfaces (canvas, cards, layers)
-        surface: '#f8f9ff',
-        'surface-dim': '#cbdbf5',
-        'surface-bright': '#f8f9ff',
-        'surface-container-lowest': '#ffffff',
-        'surface-container-low': '#eff4ff',
-        'surface-container': '#e5eeff',
-        'surface-container-high': '#dce9ff',
-        'surface-container-highest': '#d3e4fe',
-        'surface-variant': '#d3e4fe',
+        surface: 'var(--color-surface, #f8f9ff)',
+        'surface-dim': 'var(--color-surface-dim, #cbdbf5)',
+        'surface-bright': 'var(--color-surface-bright, #f8f9ff)',
+        'surface-container-lowest': 'var(--color-surface-container-lowest, #ffffff)',
+        'surface-container-low': 'var(--color-surface-container-low, #eff4ff)',
+        'surface-container': 'var(--color-surface-container, #e5eeff)',
+        'surface-container-high': 'var(--color-surface-container-high, #dce9ff)',
+        'surface-container-highest': 'var(--color-surface-container-highest, #d3e4fe)',
+        'surface-variant': 'var(--color-surface-container, #d3e4fe)',
         'surface-tint': '#006a61',
 
         // On-surfaces (text, icons)
-        'on-surface': '#0b1c30',
-        'on-surface-variant': '#3d4947',
-        'on-background': '#0b1c30',
-        background: '#f8f9ff',
+        'on-surface': 'var(--color-on-surface, #0f172a)',
+        'on-surface-variant': 'var(--color-on-surface-variant, #334155)',
+        'on-background': 'var(--color-on-surface, #0f172a)',
+        background: 'var(--color-surface, #f8f9ff)',
 
         // Inverse
         'inverse-surface': '#213145',
         'inverse-on-surface': '#eaf1ff',
 
         // Borders
-        outline: '#6d7a77',
-        'outline-variant': '#bcc9c6',
+        outline: 'var(--color-outline, #64748b)',
+        'outline-variant': 'var(--color-outline-variant, #cbd5e1)',
 
         // Semantic status colors (design-system spec)
         'status-success': '#27AE60',

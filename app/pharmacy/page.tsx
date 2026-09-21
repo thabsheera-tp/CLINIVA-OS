@@ -23,8 +23,8 @@ export const metadata = { title: 'Pharmacy & Stock' }
 export default async function PharmacyDashboard() {
   const supabase = createServerClient()
   const { data: { session } } = await supabase.auth.getSession()
-  if (!session) redirect('/login')
-  const userName = session.user.user_metadata?.display_name ?? 'Marcus Vance, PharmD'
+  if (!session && process.env.NEXT_PUBLIC_DEMO_MODE === 'false') redirect('/login')
+  const userName = session?.user?.user_metadata?.display_name ?? 'Marcus Vance, PharmD'
 
   return (
     <DashboardShell

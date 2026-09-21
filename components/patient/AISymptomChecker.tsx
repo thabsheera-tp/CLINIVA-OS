@@ -177,113 +177,135 @@ export default function AISymptomChecker({ className = '', initialSymptom, onBoo
     return COMMON_SYMPTOMS.filter((s) => s.category === activeCategory)
   }, [activeCategory])
 
-  // AI Diagnostic Heuristic Analysis
-  const runSymptomAnalysis = () => {
+  // AI Diagnostic Analysis (API endpoint call with zero-downtime local fallback)
+  const runSymptomAnalysis = async () => {
     setIsAnalyzing(true)
     setAnalysisResult(null)
 
-    // Simulate AI inference latency with realistic feedback
-    setTimeout(() => {
-      const categoryScores: Record<string, number> = {
-        cardio: 0,
-        derm: 0,
-        neuro: 0,
-        ortho: 0,
-        ent: 0,
-        gastro: 0,
-        general: 0,
-      }
-
-      let hasEmergencyRedFlag = false
-
-      // 1. Score from selected chips
-      selectedSymptoms.forEach((symptomId) => {
-        const item = COMMON_SYMPTOMS.find((s) => s.id === symptomId)
-        if (item) {
-          categoryScores[item.category] = (categoryScores[item.category] || 0) + item.weight
-          if (item.isRedFlag) hasEmergencyRedFlag = true
-        }
+    try {
+      const response = await fetch('/api/ai/symptom-checker', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          symptoms: selectedSymptoms,
+          description: customDescription,
+          severity,
+          duration,
+        }),
       })
 
-      // 2. Score from free-form text input (NLP keyword search)
-      const text = customDescription.toLowerCase()
-      if (text.includes('chest') || text.includes('heart') || text.includes('angina') || text.includes('pulse')) {
-        categoryScores.cardio += 12
-        if (text.includes('severe') || text.includes('crushing') || text.includes('radiat')) {
-          hasEmergencyRedFlag = true
-        }
+      if (response.ok) {
+        const data = await response.json()
+        setAnalysisResult(data)
+        setIsAnalyzing(false)
+        return
       }
-      if (text.includes('skin') || text.includes('rash') || text.includes('itch') || text.includes('acne') || text.includes('eczema')) {
-        categoryScores.derm += 12
-      }
-      if (text.includes('headache') || text.includes('migraine') || text.includes('numb') || text.includes('dizzy') || text.includes('seizure')) {
-        categoryScores.neuro += 12
-        if (text.includes('faint') || text.includes('speech') || text.includes('paraly')) {
-          hasEmergencyRedFlag = true
-        }
-      }
-      if (text.includes('bone') || text.includes('joint') || text.includes('knee') || text.includes('back pain') || text.includes('fracture')) {
-        categoryScores.ortho += 12
-      }
-      if (text.includes('throat') || text.includes('cough') || text.includes('ear') || text.includes('sinus') || text.includes('breathing')) {
-        categoryScores.ent += 10
-      }
-      if (text.includes('stomach') || text.includes('vomit') || text.includes('reflux') || text.includes('diarrhea') || text.includes('abdomen')) {
-        categoryScores.gastro += 12
-      }
-      if (text.includes('fever') || text.includes('chills') || text.includes('tired') || text.includes('weakness')) {
-        categoryScores.general += 8
-      }
+    } catch {
+      // Gracefully fall back to client heuristic engine
+    }
 
-      // 3. Find highest matching category
-      let highestCategory = 'general'
-      let maxScore = -1
+    // Client-side fallback heuristic execution
+    const categoryScores: Record<string, number> = {
+      cardio: 0,
+      derm: 0,
+      neuro: 0,
+      ortho: 0,
+      ent: 0,
+      gastro: 0,
+      general: 0,
+      peds: 0,
+    }
 
-      Object.entries(categoryScores).forEach(([cat, score]) => {
-        if (score > maxScore) {
-          maxScore = score
-          highestCategory = cat
-        }
-      })
+    let hasEmergencyRedFlag = false
 
-      // If no symptoms selected and no description, default to general medicine
-      if (maxScore <= 0) {
-        highestCategory = 'general'
-        maxScore = 5
+    // 1. Score from selected chips
+    selectedSymptoms.forEach((symptomId) => {
+      const item = COMMON_SYMPTOMS.find((s) => s.id === symptomId)
+      if (item) {
+        categoryScores[item.category] = (categoryScores[item.category] || 0) + item.weight
+        if (item.isRedFlag) hasEmergencyRedFlag = true
       }
+    })
 
-      const deptProfile = DEPARTMENT_PROFILES[highestCategory] || DEPARTMENT_PROFILES.general
-
-      // Determine urgency
-      let urgency: 'routine' | 'urgent' | 'emergency' = 'routine'
-      if (hasEmergencyRedFlag || severity >= 9) {
-        urgency = 'emergency'
-      } else if (severity >= 7 || maxScore >= 16) {
-        urgency = 'urgent'
+    // 2. Score from free-form text input (NLP keyword search)
+    const text = customDescription.toLowerCase()
+    if (text.includes('chest') || text.includes('heart') || text.includes('angina') || text.includes('pulse')) {
+      categoryScores.cardio += 12
+      if (text.includes('severe') || text.includes('crushing') || text.includes('radiat')) {
+        hasEmergencyRedFlag = true
       }
-
-      // Calculate confidence percentage
-      const computedConfidence = Math.min(98, Math.max(76, 75 + Math.min(22, maxScore * 2)))
-
-      const result: RecommendationResult = {
-        department: deptProfile.name,
-        doctor: deptProfile.doctor,
-        doctorTitle: deptProfile.doctorTitle,
-        confidence: computedConfidence,
-        urgency,
-        rationale: deptProfile.rationaleTemplate,
-        suggestedAction:
-          urgency === 'emergency'
-            ? 'Proceed to Emergency Triage immediately or call emergency dispatch.'
-            : `Schedule a consultation with ${deptProfile.doctor} (${deptProfile.name}) within ${
-                urgency === 'urgent' ? '24 hours' : 'the next 3-5 days'
-              }.`,
-        recommendedTests: deptProfile.tests,
+    }
+    if (text.includes('skin') || text.includes('rash') || text.includes('itch') || text.includes('acne') || text.includes('eczema')) {
+      categoryScores.derm += 12
+    }
+    if (text.includes('headache') || text.includes('migraine') || text.includes('numb') || text.includes('dizzy') || text.includes('seizure')) {
+      categoryScores.neuro += 12
+      if (text.includes('faint') || text.includes('speech') || text.includes('paraly')) {
+        hasEmergencyRedFlag = true
       }
+    }
+    if (text.includes('bone') || text.includes('joint') || text.includes('knee') || text.includes('back pain') || text.includes('fracture')) {
+      categoryScores.ortho += 12
+    }
+    if (text.includes('throat') || text.includes('cough') || text.includes('ear') || text.includes('sinus') || text.includes('breathing')) {
+      categoryScores.ent += 10
+    }
+    if (text.includes('stomach') || text.includes('vomit') || text.includes('reflux') || text.includes('diarrhea') || text.includes('abdomen')) {
+      categoryScores.gastro += 12
+    }
+    if (text.includes('fever') || text.includes('chills') || text.includes('tired') || text.includes('weakness')) {
+      categoryScores.general += 8
+    }
+    if (text.includes('child') || text.includes('baby') || text.includes('pediatric')) {
+      categoryScores.peds += 14
+    }
 
-      setAnalysisResult(result)
-      setIsAnalyzing(false)
-    }, 700)
+    // 3. Find highest matching category
+    let highestCategory = 'general'
+    let maxScore = -1
+
+    Object.entries(categoryScores).forEach(([cat, score]) => {
+      if (score > maxScore) {
+        maxScore = score
+        highestCategory = cat
+      }
+    })
+
+    if (maxScore <= 0) {
+      highestCategory = 'general'
+      maxScore = 5
+    }
+
+    const deptProfile = DEPARTMENT_PROFILES[highestCategory] || DEPARTMENT_PROFILES.general
+
+    // Determine urgency
+    let urgency: 'routine' | 'urgent' | 'emergency' = 'routine'
+    if (hasEmergencyRedFlag || severity >= 9) {
+      urgency = 'emergency'
+    } else if (severity >= 7 || maxScore >= 16) {
+      urgency = 'urgent'
+    }
+
+    const computedConfidence = Math.min(98, Math.max(76, 75 + Math.min(22, maxScore * 2)))
+
+    const result: RecommendationResult = {
+      department: deptProfile.name,
+      doctor: deptProfile.doctor,
+      doctorTitle: deptProfile.doctorTitle,
+      confidence: computedConfidence,
+      urgency,
+      rationale: deptProfile.rationaleTemplate,
+      suggestedAction:
+        urgency === 'emergency'
+          ? 'Proceed to Emergency Triage immediately or call emergency dispatch.'
+          : `Schedule a consultation with ${deptProfile.doctor} (${deptProfile.name}) within ${
+              urgency === 'urgent' ? '24 hours' : 'the next 3-5 days'
+            }.`,
+      recommendedTests: deptProfile.tests,
+    }
+
+    setAnalysisResult(result)
+    setIsAnalyzing(false)
   }
 
   // Handle direct booking prefill action

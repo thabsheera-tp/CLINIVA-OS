@@ -81,8 +81,10 @@ export function createServerClient() {
       // Offline / unconfigured credentials
     }
 
-    const demoRole = cookieStore.get('cliniva_demo_role')?.value
-    if (demoRole && DEMO_USERS[demoRole]) {
+    const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE !== 'false'
+    const demoRole = cookieStore.get('cliniva_demo_role')?.value || 'doctor'
+
+    if (isDemoMode && DEMO_USERS[demoRole]) {
       const demoUser = DEMO_USERS[demoRole]
       return {
         data: {

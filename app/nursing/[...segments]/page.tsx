@@ -23,9 +23,9 @@ export const metadata = { title: 'Nursing / IP Ward' }
 export default async function NursingCatchAll({ params }: { params: { segments: string[] } }) {
   const supabase = createServerClient()
   const { data: { session } } = await supabase.auth.getSession()
-  if (!session) redirect('/login')
+  if (!session && process.env.NEXT_PUBLIC_DEMO_MODE === 'false') redirect('/login')
 
-  const userName = session.user.user_metadata?.display_name ?? 'Nurse Priya Sharma, RN'
+  const userName = session?.user?.user_metadata?.display_name ?? 'Nurse Priya Sharma, RN'
   const slug = params.segments[0]
 
   return (

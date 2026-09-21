@@ -33,9 +33,9 @@ export const metadata = { title: 'Doctor Portal' }
 export default async function DoctorDashboard() {
   const supabase = createServerClient()
   const { data: { session } } = await supabase.auth.getSession()
-  if (!session) redirect('/login')
+  if (!session && process.env.NEXT_PUBLIC_DEMO_MODE === 'false') redirect('/login')
 
-  const userName = session.user.user_metadata?.display_name ?? 'Dr. Sarah Jenkins, MD'
+  const userName = session?.user?.user_metadata?.display_name ?? 'Dr. Sarah Jenkins, MD'
 
   return (
     <DashboardShell

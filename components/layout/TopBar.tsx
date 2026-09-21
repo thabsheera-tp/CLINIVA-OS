@@ -44,8 +44,7 @@ export default function TopBar({
   const handleRoleSwitch = (targetRole: string, targetPath: string) => {
     document.cookie = `cliniva_demo_role=${targetRole}; path=/; max-age=86400`
     setDropdownOpen(false)
-    router.push(targetPath)
-    router.refresh()
+    window.location.href = targetPath
   }
 
   const handleSignOut = async () => {
@@ -53,8 +52,7 @@ export default function TopBar({
     try {
       await supabase.auth.signOut()
     } catch {}
-    router.push('/login')
-    router.refresh()
+    window.location.href = '/login'
   }
 
   const WORKSPACE_LIST = [

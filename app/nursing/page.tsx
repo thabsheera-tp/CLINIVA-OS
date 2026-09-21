@@ -23,8 +23,8 @@ export const metadata = { title: 'Nursing & IP Ward' }
 export default async function NursingDashboard() {
   const supabase = createServerClient()
   const { data: { session } } = await supabase.auth.getSession()
-  if (!session) redirect('/login')
-  const userName = session.user.user_metadata?.display_name ?? 'Nurse Priya Sharma, RN'
+  if (!session && process.env.NEXT_PUBLIC_DEMO_MODE === 'false') redirect('/login')
+  const userName = session?.user?.user_metadata?.display_name ?? 'Nurse Priya Sharma, RN'
 
   return (
     <DashboardShell

@@ -30,7 +30,7 @@ export default async function HomePage() {
   }
 
   // Check demo role cookie
-  const cookieStore = await cookies()
+  const cookieStore = cookies()
   const demoRole = cookieStore.get('cliniva_demo_role')?.value
 
   if (demoRole && ROLE_ROUTES[demoRole]) {
