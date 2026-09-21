@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cliniva OS — Unified Clinical Workspace Suite</title>
+  <meta name="description" content="Cliniva OS Doctor Dashboard and Mobile Clinical Workspace suite extracted from Stitch UI."/>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              200: '#99f6e4',
+              500: '#14b8a6',
+              600: '#0d9488',
+              700: '#0f766e',
+              800: '#00685f',
+              900: '#005049',
+            },
+            surface: '#f8f9ff',
+            card: '#ffffff',
+            slateDark: '#0b1c30',
+            borderSubtle: '#e2e8f0',
+          },
+          fontFamily: {
+            heading: ['"Plus Jakarta Sans"', 'sans-serif'],
+            body: ['"Inter"', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8f9ff;
+      color: #0b1c30;
+      overflow-x: hidden;
+    }
+    .heading-font {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 20px -4px rgba(11, 28, 48, 0.04);
+    }
+    .device-shadow {
+      box-shadow: 0 25px 60px -15px rgba(0, 104, 95, 0.15), 0 10px 25px -5px rgba(11, 28, 48, 0.08);
+    }
+    iframe {
+      border: none;
+      transition: width 0.3s ease, height 0.3s ease;
+    }
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-borderSubtle px-6 py-3.5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center border border-brand-200">
+        <span class="material-symbols-outlined text-brand-800 text-2xl">vital_signs</span>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="heading-font font-bold text-lg text-slateDark leading-none">Cliniva OS</h1>
+          <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-brand-50 text-brand-700 border border-brand-200">Stitch UI Sync</span>
+        </div>
+        <p class="text-xs text-slate-500 font-medium">Doctor Portal & Clinical Workspace</p>
+      </div>
+    </div>
+
+    <!-- Quick Screen Selector Pills -->
+    <div class="hidden lg:flex items-center gap-1.5 p-1 bg-slate-100 rounded-full border border-slate-200" id="navPills">
+      <button onclick="switchScreen('doctor-dashboard.html', 'desktop', this)" class="screen-tab active px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all bg-white text-brand-800 shadow-sm">
+        🩺 Doctor Dashboard (Desktop)
+      </button>
+      <button onclick="switchScreen('mobile-clinical-workspace/clinical-dashboard.html', 'mobile', this)" class="screen-tab px-3 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900 transition-all">
+        📋 Clinical Triage
+      </button>
+      <button onclick="switchScreen('mobile-clinical-workspace/patient-records.html', 'mobile', this)" class="screen-tab px-3 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900 transition-all">
+        📁 Patient Records
+      </button>
+      <button onclick="switchScreen('mobile-clinical-workspace/e-prescriptions.html', 'mobile', this)" class="screen-tab px-3 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900 transition-all">
+        💊 e-Prescriptions
+      </button>
+      <button onclick="switchScreen('mobile-clinical-workspace/ip-wards-diets.html', 'mobile', this)" class="screen-tab px-3 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900 transition-all">
+        🛏️ IP Wards & Diets
+      </button>
+      <button onclick="switchScreen('mobile-clinical-workspace/settings.html', 'mobile', this)" class="screen-tab px-3 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900 transition-all">
+        ⚙️ Settings
+      </button>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex items-center gap-2.5">
+      <a id="directViewBtn" href="doctor-dashboard.html" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-800 hover:bg-brand-900 text-white rounded-full text-xs font-semibold shadow-sm transition-all">
+        <span class="material-symbols-outlined text-base">open_in_new</span>
+        <span>Open Standalone</span>
+      </a>
+      <a href="#designSystem" class="inline-flex items-center gap-1 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-semibold transition-all">
+        <span class="material-symbols-outlined text-base">palette</span>
+        <span>Tokens</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Interactive Viewer Sub-Toolbar -->
+  <div class="bg-white border-b border-borderSubtle px-6 py-2.5 flex flex-wrap items-center justify-between gap-4">
+    <!-- Active Screen Title & Metadata -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        <span id="activeDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="activeScreenName" class="heading-font font-semibold text-sm text-slateDark">Cliniva OS Doctor Dashboard (Desktop)</span>
+      </div>
+      <span class="text-slate-300">|</span>
+      <span id="activeDimensionBadge" class="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded">100% Responsive</span>
+    </div>
+
+    <!-- Viewport Mode Buttons -->
+    <div class="flex items-center gap-2">
+      <span class="text-xs font-medium text-slate-500">Preview Device:</span>
+      <div class="flex items-center p-0.5 bg-slate-100 rounded-lg border border-slate-200">
+        <button onclick="setDevicePreset('desktop')" id="btnDeviceDesktop" class="device-btn active px-2.5 py-1 text-xs font-semibold rounded-md bg-white text-brand-800 shadow-xs transition-all flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">desktop_windows</span> Desktop
+        </button>
+        <button onclick="setDevicePreset('tablet')" id="btnDeviceTablet" class="device-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">tablet_mac</span> Tablet (768px)
+        </button>
+        <button onclick="setDevicePreset('mobile')" id="btnDeviceMobile" class="device-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">smartphone</span> Mobile (390px)
+        </button>
+      </div>
+
+      <!-- Refresh / Rotate controls -->
+      <button onclick="reloadPreview()" title="Reload Frame" class="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-md transition-all">
+        <span class="material-symbols-outlined text-sm">refresh</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Showcase Workspace -->
+  <main class="flex-1 p-4 lg:p-6 flex flex-col items-center justify-start">
+    <!-- Preview Container Frame -->
+    <div id="frameContainer" class="w-full h-[calc(100vh-165px)] max-w-full rounded-2xl overflow-hidden glass-card transition-all duration-300 flex flex-col">
+      <!-- Simulated Device Status Bar for Mobile -->
+      <div id="deviceBar" class="hidden h-7 bg-slate-900 text-white px-6 flex items-center justify-between text-[11px] font-medium select-none">
+        <span id="statusBarTime">9:41</span>
+        <div class="w-24 h-3.5 bg-black rounded-b-xl mx-auto -mt-1"></div>
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-xs">signal_cellular_alt</span>
+          <span class="material-symbols-outlined text-xs">wifi</span>
+          <span class="material-symbols-outlined text-xs">battery_full</span>
+        </div>
+      </div>
+
+      <!-- Iframe Target -->
+      <iframe id="previewFrame" src="doctor-dashboard.html" class="w-full h-full flex-1 bg-white" title="Cliniva OS Screen Preview"></iframe>
+    </div>
+  </main>
+
+  <!-- Design System & Assets Explorer Section -->
+  <section id="designSystem" class="bg-white border-t border-borderSubtle py-12 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-6 border-b border-borderSubtle gap-4">
+        <div>
+          <span class="px-3 py-1 rounded-full bg-brand-50 text-brand-800 text-xs font-bold uppercase tracking-wider">Design System & Assets</span>
+          <h2 class="heading-font text-2xl lg:text-3xl font-bold text-slateDark mt-2">Cliniva Soft Clinical Design Tokens</h2>
+          <p class="text-sm text-slate-500 mt-1">High-trust, calming clinical interface engineered specifically for acute medical teams.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <a href="design-system/tokens.json" download class="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-semibold transition-all">
+            <span class="material-symbols-outlined text-sm">download</span>
+            <span>Download tokens.json</span>
+          </a>
+          <a href="design-system/Cliniva-Doctor-Portal-Design.md" download class="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-800 hover:bg-brand-900 text-white rounded-lg text-xs font-semibold transition-all">
+            <span class="material-symbols-outlined text-sm">description</span>
+            <span>Download DESIGN.md</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Color Palette Grid -->
+      <div class="mb-10">
+        <h3 class="heading-font font-bold text-base text-slateDark mb-4">Curated Clinical Colors</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+          <div class="p-3 rounded-xl border border-borderSubtle bg-white">
+            <div class="h-14 rounded-lg bg-[#00685f] mb-2 shadow-inner"></div>
+            <div class="text-xs font-semibold text-slateDark">Primary Teal</div>
+            <div class="text-[11px] font-mono text-slate-400">#00685F</div>
+          </div>
+          <div class="p-3 rounded-xl border border-borderSubtle bg-white">
+            <div class="h-14 rounded-lg bg-[#008378] mb-2 shadow-inner"></div>
+            <div class="text-xs font-semibold text-slateDark">Primary Container</div>
+            <div class="text-[11px] font-mono text-slate-400">#008378</div>
+          </div>
+          <div class="p-3 rounded-xl border border-borderSubtle bg-white">
+            <div class="h-14 rounded-lg bg-[#71f8e4] mb-2 shadow-inner"></div>
+            <div class="text-xs font-semibold text-slateDark">Secondary Fixed</div>
+            <div class="text-[11px] font-mono text-slate-400">#71F8E4</div>
+          </div>
+          <div class="p-3 rounded-xl border border-borderSubtle bg-white">
+            <div class="h-14 rounded-lg bg-[#b90538] mb-2 shadow-inner"></div>
+            <div class="text-xs font-semibold text-slateDark">Tertiary Critical</div>
+            <div class="text-[11px] font-mono text-slate-400">#B90538</div>
+          </div>
+          <div class="p-3 rounded-xl border border-borderSubtle bg-white">
+            <div class="h-14 rounded-lg bg-[#f8f9ff] mb-2 border border-slate-200"></div>
+            <div class="text-xs font-semibold text-slateDark">Surface Canvas</div>
+            <div class="text-[11px] font-mono text-slate-400">#F8F9FF</div>
+          </div>
+          <div class="p-3 rounded-xl border border-borderSubtle bg-white">
+            <div class="h-14 rounded-lg bg-[#0b1c30] mb-2 shadow-inner"></div>
+            <div class="text-xs font-semibold text-slateDark">High-Contrast Text</div>
+            <div class="text-[11px] font-mono text-slate-400">#0B1C30</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- File Structure & Asset Gallery -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Project Files Directory -->
+        <div class="p-5 rounded-2xl border border-borderSubtle bg-slate-50">
+          <div class="flex items-center gap-2 mb-3 text-slateDark font-bold text-sm heading-font">
+            <span class="material-symbols-outlined text-brand-800">folder_open</span>
+            <span>Downloaded Project Structure</span>
+          </div>
+          <ul class="text-xs space-y-2 text-slate-600 font-mono">
+            <li class="flex items-center justify-between p-1.5 rounded bg-white border border-slate-200">
+              <span>📁 /doctor-dashboard.html</span>
+              <span class="text-slate-400 text-[10px]">58 KB</span>
+            </li>
+            <li class="flex items-center justify-between p-1.5 rounded bg-white border border-slate-200">
+              <span>📁 /mobile-clinical-workspace/</span>
+              <span class="text-slate-400 text-[10px]">5 screens</span>
+            </li>
+            <li class="flex items-center justify-between p-1.5 rounded bg-white border border-slate-200">
+              <span>📁 /assets/logo.svg</span>
+              <span class="text-slate-400 text-[10px]">SVG</span>
+            </li>
+            <li class="flex items-center justify-between p-1.5 rounded bg-white border border-slate-200">
+              <span>📁 /design-system/</span>
+              <span class="text-slate-400 text-[10px]">Markdown & JSON</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Typography Standards -->
+        <div class="p-5 rounded-2xl border border-borderSubtle bg-slate-50">
+          <div class="flex items-center gap-2 mb-3 text-slateDark font-bold text-sm heading-font">
+            <span class="material-symbols-outlined text-brand-800">text_fields</span>
+            <span>Typography Hierarchy</span>
+          </div>
+          <div class="space-y-3">
+            <div>
+              <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Display & Headings</div>
+              <div class="heading-font font-bold text-lg text-slateDark">Plus Jakarta Sans</div>
+              <p class="text-[11px] text-slate-500">Tight kerning for patient titles, diagnostic banners, and dashboard telemetry.</p>
+            </div>
+            <div class="pt-2 border-t border-slate-200">
+              <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Body & Numeric Metrics</div>
+              <div class="font-medium text-base text-slateDark">Inter (Tabular Numbers)</div>
+              <p class="text-[11px] text-slate-500">Unambiguous glyphs with lining figures for blood pressure, dosages, and lab trends.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Direct Screen Access Links -->
+        <div class="p-5 rounded-2xl border border-borderSubtle bg-slate-50 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-3 text-slateDark font-bold text-sm heading-font">
+              <span class="material-symbols-outlined text-brand-800">link</span>
+              <span>Direct Screen Links</span>
+            </div>
+            <div class="space-y-1.5">
+              <a href="doctor-dashboard.html" class="flex items-center justify-between text-xs text-brand-800 hover:underline p-1">
+                <span>🩺 Doctor Portal Dashboard (Desktop)</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </a>
+              <a href="mobile-clinical-workspace/clinical-dashboard.html" class="flex items-center justify-between text-xs text-brand-800 hover:underline p-1">
+                <span>📋 Clinical Dashboard (Mobile)</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </a>
+              <a href="mobile-clinical-workspace/patient-records.html" class="flex items-center justify-between text-xs text-brand-800 hover:underline p-1">
+                <span>📁 Patient Records (Mobile)</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </a>
+              <a href="mobile-clinical-workspace/e-prescriptions.html" class="flex items-center justify-between text-xs text-brand-800 hover:underline p-1">
+                <span>💊 e-Prescriptions (Mobile)</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </a>
+              <a href="mobile-clinical-workspace/ip-wards-diets.html" class="flex items-center justify-between text-xs text-brand-800 hover:underline p-1">
+                <span>🛏️ IP Wards & Diets (Mobile)</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </a>
+              <a href="mobile-clinical-workspace/settings.html" class="flex items-center justify-between text-xs text-brand-800 hover:underline p-1">
+                <span>⚙️ Settings (Mobile)</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-borderSubtle py-4 px-6 text-center text-xs text-slate-400">
+    Cliniva OS Suite &copy; 2026 • Exported from Stitch UI Projects (Doctor Dashboard & Clinical Workspace)
+  </footer>
+
+  <!-- Script for Switcher and Viewport Resizer -->
+  <script>
+    const frame = document.getElementById('previewFrame');
+    const container = document.getElementById('frameContainer');
+    const directBtn = document.getElementById('directViewBtn');
+    const activeScreenLabel = document.getElementById('activeScreenName');
+    const dimensionBadge = document.getElementById('activeDimensionBadge');
+    const deviceBar = document.getElementById('deviceBar');
+
+    const screens = {
+      'doctor-dashboard.html': { title: 'Cliniva OS Doctor Dashboard (Desktop)', defaultDevice: 'desktop' },
+      'mobile-clinical-workspace/clinical-dashboard.html': { title: 'Clinical Triage & Live Queue (Mobile)', defaultDevice: 'mobile' },
+      'mobile-clinical-workspace/patient-records.html': { title: 'Patient Records & History (Mobile)', defaultDevice: 'mobile' },
+      'mobile-clinical-workspace/e-prescriptions.html': { title: 'e-Prescriptions & Dosages (Mobile)', defaultDevice: 'mobile' },
+      'mobile-clinical-workspace/ip-wards-diets.html': { title: 'IP Wards & Nutritional Diets (Mobile)', defaultDevice: 'mobile' },
+      'mobile-clinical-workspace/settings.html': { title: 'Clinical Settings & Preferences (Mobile)', defaultDevice: 'mobile' }
+    };
+
+    let currentUrl = 'doctor-dashboard.html';
+
+    function switchScreen(url, deviceHint, btnElement) {
+      currentUrl = url;
+      frame.src = url;
+      directBtn.href = url;
+
+      // Update Nav Pills
+      document.querySelectorAll('#navPills .screen-tab').forEach(b => {
+        b.classList.remove('bg-white', 'text-brand-800', 'shadow-sm', 'font-semibold');
+        b.classList.add('text-slate-600', 'font-medium');
+      });
+      if (btnElement) {
+        btnElement.classList.add('bg-white', 'text-brand-800', 'shadow-sm', 'font-semibold');
+        btnElement.classList.remove('text-slate-600', 'font-medium');
+      }
+
+      if (screens[url]) {
+        activeScreenLabel.textContent = screens[url].title;
+        setDevicePreset(deviceHint || screens[url].defaultDevice);
+      }
+    }
+
+    function setDevicePreset(mode) {
+      document.querySelectorAll('.device-btn').forEach(b => {
+        b.classList.remove('bg-white', 'text-brand-800', 'shadow-xs', 'font-semibold');
+        b.classList.add('text-slate-600', 'font-medium');
+      });
+
+      if (mode === 'desktop') {
+        document.getElementById('btnDeviceDesktop').classList.add('bg-white', 'text-brand-800', 'shadow-xs', 'font-semibold');
+        container.style.width = '100%';
+        container.style.maxWidth = '100%';
+        container.classList.remove('device-shadow', 'border-slate-800');
+        deviceBar.classList.add('hidden');
+        dimensionBadge.textContent = '100% Fluid Desktop';
+      } else if (mode === 'tablet') {
+        document.getElementById('btnDeviceTablet').classList.add('bg-white', 'text-brand-800', 'shadow-xs', 'font-semibold');
+        container.style.width = '768px';
+        container.style.maxWidth = '768px';
+        container.classList.add('device-shadow');
+        deviceBar.classList.add('hidden');
+        dimensionBadge.textContent = 'Tablet 768 × 1024';
+      } else if (mode === 'mobile') {
+        document.getElementById('btnDeviceMobile').classList.add('bg-white', 'text-brand-800', 'shadow-xs', 'font-semibold');
+        container.style.width = '390px';
+        container.style.maxWidth = '390px';
+        container.classList.add('device-shadow');
+        deviceBar.classList.remove('hidden');
+        dimensionBadge.textContent = 'Mobile 390 × 844';
+      }
+    }
+
+    function reloadPreview() {
+      frame.src = currentUrl;
+    }
+
+    // Set mobile status bar time
+    function updateClock() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      document.getElementById('statusBarTime').textContent = `${hours}:${minutes}`;
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+  </script>
+</body>
+</html>

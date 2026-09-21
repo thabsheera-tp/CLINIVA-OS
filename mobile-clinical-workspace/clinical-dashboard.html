@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"on-secondary-container": "#006f64", "surface-bright": "#f7f9fb", "surface-container-high": "#e6e8ea", "tertiary-fixed-dim": "#ffb3ad", "primary": "#005c55", "surface-container-lowest": "#ffffff", "secondary": "#006b5f", "surface-container-low": "#f2f4f6", "secondary-fixed": "#71f8e4", "primary-fixed": "#9cf2e8", "on-tertiary-fixed": "#410004", "primary-fixed-dim": "#80d5cb", "surface-variant": "#e0e3e5", "background": "#f7f9fb", "error": "#ba1a1a", "inverse-surface": "#2d3133", "on-surface": "#191c1e", "surface-tint": "#006a63", "inverse-primary": "#80d5cb", "on-primary-fixed": "#00201d", "surface-container-highest": "#e0e3e5", "on-surface-variant": "#3e4947", "primary-container": "#0f766e", "inverse-on-surface": "#eff1f3", "surface": "#f7f9fb", "on-secondary-fixed": "#00201c", "on-tertiary-container": "#ffe5e2", "on-primary": "#ffffff", "on-tertiary-fixed-variant": "#930013", "on-background": "#191c1e", "surface-container": "#eceef0", "on-secondary": "#ffffff", "secondary-fixed-dim": "#4fdbc8", "on-primary-container": "#a3faef", "on-secondary-fixed-variant": "#005048", "on-primary-fixed-variant": "#00504a", "on-error": "#ffffff", "error-container": "#ffdad6", "secondary-container": "#6df5e1", "surface-dim": "#d8dadc", "outline": "#6e7977", "tertiary-fixed": "#ffdad7", "on-tertiary": "#ffffff", "tertiary-container": "#ca282d", "on-error-container": "#93000a", "outline-variant": "#bdc9c6", "tertiary": "#a60419"}, borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"}, spacing: {"margin": "32px", "space-lg": "24px", "space-xs": "4px", "space-sm": "8px", "space-md": "16px", "space-xl": "32px", "gutter": "24px"}, fontFamily: {"body-sm": ["Inter"], "headline-lg": ["Inter"], "body-lg": ["Inter"], "body-md": ["Inter"], "headline-xl": ["Inter"], "headline-sm": ["Inter"], "label-sm": ["Inter"], "label-md": ["Inter"], "headline-md": ["Inter"]}, fontSize: {"body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}], "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}], "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}], "headline-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}], "headline-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}], "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}], "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}], "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]}}}};</script><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface/80 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="Cliniva OS Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAM2-LxhG2cBZWj4U3O2Fjp0kTn7g-95Na-fTt1zf0XELUOabr-N7YDpQXD4UtvtIDIyfHZMydXTn8iCv9Uxu2YbmHXfBTYIyAMneinwSp_vmOjdEVvCIFOZHsi86hjRxfpdQNNycnPB9iZZIlYsfMty1nld2COw-z6K12XgQIsCSmss6AVEomfbXZnegoYgk1rp30sg6lxzD2mCHFchSt1fHZtIF9YGnYvn2VpTsWTFExqGM94I3r9"/><div class="flex flex-col"><span class="text-headline-sm font-headline-sm text-on-surface">Dr. Sarah Jenkins</span><span class="text-body-sm text-on-surface-variant">Available</span></div></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full px-gutter pt-16 pb-24 bg-surface flex-grow"><div class="flex flex-col w-full gap-space-lg pb-12">
+<!-- 1. Header Status Toggle & Live Digital Clock -->
+<div class="flex items-center justify-between bg-surface-container-low rounded-2xl p-space-md shadow-sm">
+<div class="flex items-center gap-space-sm">
+<button class="flex items-center gap-space-xs bg-primary text-on-primary px-space-md py-2 rounded-full text-label-md font-label-md transition-all active:scale-95 shadow-sm" id="status-toggle-btn">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
+<span id="status-label">Available</span>
+</button>
+<span class="text-body-sm text-on-surface-variant">Auto-sync active</span>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-lowest px-space-md py-2 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">schedule</span>
+<span class="text-label-md font-label-md text-on-surface" id="live-clock">10:42 AM</span>
+</div>
+</div>
+<!-- 2. Tabbed Live Token Queue -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<h2 class="text-headline-md font-headline-md text-on-surface">Patient Queue</h2>
+<span class="text-body-sm text-on-surface-variant bg-surface-container-high px-space-sm py-1 rounded-full">5 Active</span>
+</div>
+<!-- Queue Tabs -->
+<div class="flex bg-surface-container-high p-1 rounded-2xl gap-1">
+<button class="flex-1 py-2 text-center rounded-xl text-label-md font-label-md bg-surface-container-lowest text-primary shadow-sm transition-all" id="tab-waiting" onclick="switchQueueTab('waiting')">Waiting (3)</button>
+<button class="flex-1 py-2 text-center rounded-xl text-label-md font-label-md text-on-surface-variant transition-all" id="tab-consulting" onclick="switchQueueTab('consulting')">Consulting (1)</button>
+<button class="flex-1 py-2 text-center rounded-xl text-label-md font-label-md text-on-surface-variant transition-all" id="tab-completed" onclick="switchQueueTab('completed')">Completed</button>
+</div>
+<!-- Queue List Items -->
+<div class="flex flex-col gap-space-sm" id="queue-content-waiting">
+<div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex items-center justify-between cursor-pointer hover:bg-surface-bright transition-all" onclick="selectPatient('Eleanor Vance', 'UHID #84920')">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-primary-fixed-dim text-on-primary-fixed font-headline-sm flex items-center justify-center">#14</div>
+<div class="flex flex-col">
+<span class="text-headline-sm text-on-surface">Eleanor Vance</span>
+<span class="text-body-sm text-on-surface-variant">F, 42 yrs • UHID #84920</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-1">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed text-label-sm px-2 py-0.5 rounded-full font-label-sm">High BP</span>
+<span class="text-body-sm text-on-surface-variant">10m wait</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex items-center justify-between cursor-pointer hover:bg-surface-bright transition-all" onclick="selectPatient('Marcus Chen', 'UHID #84921')">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high text-on-surface font-headline-sm flex items-center justify-center">#15</div>
+<div class="flex flex-col">
+<span class="text-headline-sm text-on-surface">Marcus Chen</span>
+<span class="text-body-sm text-on-surface-variant">M, 28 yrs • UHID #84921</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-1">
+<span class="bg-error-container text-on-error-container text-label-sm px-2 py-0.5 rounded-full font-label-sm">Emergency</span>
+<span class="text-body-sm text-on-surface-variant">Scheduled</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex items-center justify-between cursor-pointer hover:bg-surface-bright transition-all" onclick="selectPatient('Sarah Jenkins', 'UHID #84922')">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high text-on-surface font-headline-sm flex items-center justify-center">#16</div>
+<div class="flex flex-col">
+<span class="text-headline-sm text-on-surface">Robert Fox</span>
+<span class="text-body-sm text-on-surface-variant">M, 55 yrs • UHID #84922</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-1">
+<span class="bg-primary-fixed text-on-primary-fixed text-label-sm px-2 py-0.5 rounded-full font-label-sm">Routine</span>
+<span class="text-body-sm text-on-surface-variant">25m wait</span>
+</div>
+</div>
+</div>
+<div class="hidden flex flex-col gap-space-sm" id="queue-content-consulting">
+<div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-secondary-fixed text-on-secondary-fixed font-headline-sm flex items-center justify-center">#13</div>
+<div class="flex flex-col">
+<span class="text-headline-sm text-on-surface">Amina Patel</span>
+<span class="text-body-sm text-on-surface-variant">F, 34 yrs • UHID #84919</span>
+</div>
+</div>
+<span class="bg-secondary-container text-on-secondary-container text-label-sm px-3 py-1 rounded-full font-label-sm">In Progress</span>
+</div>
+</div>
+<div class="hidden flex flex-col gap-space-sm" id="queue-content-completed">
+<div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex items-center justify-between opacity-75">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high text-on-surface font-headline-sm flex items-center justify-center">#12</div>
+<div class="flex flex-col">
+<span class="text-headline-sm text-on-surface">David Miller</span>
+<span class="text-body-sm text-on-surface-variant">M, 61 yrs • UHID #84918</span>
+</div>
+</div>
+<span class="text-body-sm text-on-surface-variant">Completed 10:15 AM</span>
+</div>
+</div>
+</div>
+<!-- 3. Active 360° Patient Profile & Vitals EHR -->
+<div class="flex flex-col gap-space-md bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-headline-sm">EV</div>
+<div>
+<h3 class="text-headline-sm text-on-surface" id="active-patient-name">Eleanor Vance</h3>
+<p class="text-body-sm text-on-surface-variant" id="active-patient-uhid">UHID #84920 • F, 42 yrs</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary">verified</span>
+</div>
+<!-- Soft-Red Alert Banner -->
+<div class="bg-error-container text-on-error-container p-space-md rounded-xl flex items-center gap-space-md shadow-sm">
+<span class="material-symbols-outlined text-[24px]">warning</span>
+<div class="flex flex-col">
+<span class="text-label-md font-label-md">Active Allergies</span>
+<span class="text-body-sm">Penicillin, NSAIDs (Severe Anaphylaxis Risk)</span>
+</div>
+</div>
+<!-- Vitals Grid -->
+<div class="grid grid-cols-2 gap-space-sm">
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-1">
+<span class="text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary">monitor_heart</span> Blood Pressure
+        </span>
+<span class="text-headline-md text-on-surface">142/90 <span class="text-body-sm text-error">mmHg</span></span>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-1">
+<span class="text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">pulse_alert</span> Heart Rate
+        </span>
+<span class="text-headline-md text-on-surface">98 <span class="text-body-sm text-on-surface-variant">bpm</span></span>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-1">
+<span class="text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">thermometer</span> Temperature
+        </span>
+<span class="text-headline-md text-on-surface">99.4 <span class="text-body-sm text-on-surface-variant">°F</span></span>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-1">
+<span class="text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">air</span> SpO2 Level
+        </span>
+<span class="text-headline-md text-on-surface">96% <span class="text-body-sm text-on-surface-variant">Room Air</span></span>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex gap-space-sm pt-space-xs">
+<button class="flex-1 bg-surface-container-high text-on-surface py-3 px-space-md rounded-xl text-label-md font-label-md flex items-center justify-center gap-2 hover:bg-surface-container-highest transition-all" onclick="triggerAction('Admitted to IP Ward')">
+<span class="material-symbols-outlined text-[18px]">hotel</span> Admit to IP Ward
+      </button>
+<button class="flex-1 bg-surface-container-high text-on-surface py-3 px-space-md rounded-xl text-label-md font-label-md flex items-center justify-center gap-2 hover:bg-surface-container-highest transition-all" onclick="triggerAction('Medical Diet Set')">
+<span class="material-symbols-outlined text-[18px]">restaurant</span> Set Diet
+      </button>
+</div>
+</div>
+<!-- 4. Smart e-Prescription (e-Rx) Form -->
+<div class="flex flex-col gap-space-md bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm">
+<div class="flex items-center justify-between">
+<h3 class="text-headline-md font-headline-md text-on-surface">Smart e-Prescription</h3>
+<span class="text-body-sm text-primary">Cliniva e-Rx v2.4</span>
+</div>
+<!-- Viral Fever Protocol Quick Preset -->
+<button class="bg-primary-fixed text-on-primary-fixed p-space-md rounded-xl flex items-center justify-between text-left hover:brightness-95 transition-all shadow-sm" onclick="applyPreset()">
+<div class="flex items-center gap-space-md">
+<span class="material-symbols-outlined text-primary text-[24px]">bolt</span>
+<div class="flex flex-col">
+<span class="text-label-md font-label-md">Apply Quick Preset</span>
+<span class="text-body-sm opacity-80">Viral Fever Protocol (Paracetamol + Vit C)</span>
+</div>
+</div>
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+<!-- Drug Search Autocomplete -->
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-md text-on-surface-variant">Medication Search</label>
+<div class="relative">
+<span class="absolute left-3 top-3 material-symbols-outlined text-outline">search</span>
+<input class="w-full bg-surface-container-low pl-10 pr-space-md py-3 rounded-xl text-on-surface focus:outline-none focus:ring-2 focus:ring-primary transition-all" id="drug-input" placeholder="Search drug name (e.g., Paracetamol, Amoxicillin)..." type="text"/>
+</div>
+</div>
+<!-- Dosage Frequency & Duration -->
+<div class="grid grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-md text-on-surface-variant">Frequency</label>
+<select class="bg-surface-container-low p-3 rounded-xl text-on-surface focus:outline-none focus:ring-2 focus:ring-primary transition-all" id="freq-select">
+<option>1-0-1 (Morning/Night)</option>
+<option>1-1-1 (TDS)</option>
+<option>1-0-0 (Morning only)</option>
+<option>0-0-1 (Night only)</option>
+</select>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-md text-on-surface-variant">Duration</label>
+<select class="bg-surface-container-low p-3 rounded-xl text-on-surface focus:outline-none focus:ring-2 focus:ring-primary transition-all" id="duration-select">
+<option>5 Days</option>
+<option>3 Days</option>
+<option>7 Days</option>
+<option>14 Days</option>
+</select>
+</div>
+</div>
+<!-- Active Prescription List Preview -->
+<div class="flex flex-col gap-space-sm bg-surface-container-low p-space-md rounded-xl" id="rx-list">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-headline-sm text-on-surface">Paracetamol 650mg</span>
+<span class="text-body-sm text-on-surface-variant">1-0-1 • After Food • 5 Days</span>
+</div>
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+</div>
+</div>
+<!-- Prominent Submit Button -->
+<button class="w-full bg-primary text-on-primary py-4 rounded-xl text-headline-sm font-headline-sm flex items-center justify-center gap-2 shadow-md hover:brightness-105 active:scale-98 transition-all" onclick="submitRx()">
+<span class="material-symbols-outlined">send</span> Submit &amp; Send to Pharmacy
+    </button>
+</div>
+<!-- Toast Notification Overlay Container -->
+<div class="fixed bottom-24 inset-x-gutter z-50 flex flex-col gap-2 pointer-events-none transition-all duration-300 transform translate-y-20 opacity-0" id="toast-container">
+<div class="bg-inverse-surface text-inverse-on-surface p-space-md rounded-xl shadow-xl flex items-center gap-space-md" id="toast-message">
+<span class="material-symbols-outlined text-secondary-fixed" id="toast-icon">check_circle</span>
+<span class="text-body-md" id="toast-text">Action completed successfully</span>
+</div>
+</div>
+<script>
+    // Live Digital Clock
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      document.getElementById('live-clock').innerText = hours + ':' + minutes + ' ' + ampm;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Status Toggle Button
+    const statusBtn = document.getElementById('status-toggle-btn');
+    const statusLabel = document.getElementById('status-label');
+    let isAvailable = true;
+    statusBtn.addEventListener('click', () => {
+      isAvailable = !isAvailable;
+      if (isAvailable) {
+        statusLabel.innerText = "Available";
+        statusBtn.classList.remove('bg-tertiary', 'text-on-tertiary');
+        statusBtn.classList.add('bg-primary', 'text-on-primary');
+        showToast("Status updated: Available for consultations");
+      } else {
+        statusLabel.innerText = "On-Break";
+        statusBtn.classList.remove('bg-primary', 'text-on-primary');
+        statusBtn.classList.add('bg-tertiary', 'text-on-tertiary');
+        showToast("Status updated: On-Break");
+      }
+    });
+
+    // Queue Tabs
+    function switchQueueTab(tabName) {
+      ['waiting', 'consulting', 'completed'].forEach(t => {
+        const el = document.getElementById('queue-content-' + t);
+        const tabEl = document.getElementById('tab-' + t);
+        if (t === tabName) {
+          el.classList.remove('hidden');
+          tabEl.className = "flex-1 py-2 text-center rounded-xl text-label-md font-label-md bg-surface-container-lowest text-primary shadow-sm transition-all";
+        } else {
+          el.classList.add('hidden');
+          tabEl.className = "flex-1 py-2 text-center rounded-xl text-label-md font-label-md text-on-surface-variant transition-all";
+        }
+      });
+    }
+
+    // Select Patient from Queue
+    function selectPatient(name, uhid) {
+      document.getElementById('active-patient-name').innerText = name;
+      document.getElementById('active-patient-uhid').innerText = uhid + ' • F, 42 yrs';
+      showToast("Loaded EHR for " + name);
+    }
+
+    // Trigger Action Buttons
+    function triggerAction(actionName) {
+      showToast(actionName + " successfully updated.");
+    }
+
+    // Apply Preset
+    function applyPreset() {
+      const rxList = document.getElementById('rx-list');
+      rxList.innerHTML += `
+        <div class="flex items-center justify-between border-t border-surface-container pt-space-xs mt-space-xs">
+          <div class="flex flex-col">
+            <span class="text-headline-sm text-on-surface">Vitamin C 500mg</span>
+            <span class="text-body-sm text-on-surface-variant">1-0-0 • With Food • 5 Days</span>
+          </div>
+          <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+        </div>
+      `;
+      showToast("Viral Fever Protocol preset applied");
+    }
+
+    // Submit Prescription
+    function submitRx() {
+      showToast("e-Prescription sent successfully to Central Pharmacy!");
+    }
+
+    // Toast Notification Utility
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      const text = document.getElementById('toast-text');
+      text.innerText = message;
+      container.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        container.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+  </script>
+</div></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-1px_8px_rgba(0,0,0,0.04)]" data-active-classes="bg-primary-container text-on-primary-container font-medium"><div class="flex justify-around items-center h-20 px-space-sm"><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 rounded-xl transition-all bg-primary-container text-on-primary-container font-medium" data-path="queue" href="clinical-dashboard.html"><span class="material-symbols-outlined">list_alt</span><span class="text-label-sm">Queue</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 rounded-xl text-on-surface-variant hover:text-on-surface transition-all" data-path="patients" href="patient-records.html"><span class="material-symbols-outlined">group</span><span class="text-label-sm">Patients</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 rounded-xl text-on-surface-variant hover:text-on-surface transition-all" data-path="e-rx" href="e-prescriptions.html"><span class="material-symbols-outlined">maps_ugc</span><span class="text-label-sm">e-Rx</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 rounded-xl text-on-surface-variant hover:text-on-surface transition-all" data-path="wards" href="ip-wards-diets.html"><span class="material-symbols-outlined">local_hospital</span><span class="text-label-sm">Wards</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 rounded-xl text-on-surface-variant hover:text-on-surface transition-all" data-path="settings" href="settings.html"><span class="material-symbols-outlined">settings</span><span class="text-label-sm">Settings</span></a></div></nav></body></html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"on-secondary-container": "#006f64", "surface-bright": "#f7f9fb", "surface-container-high": "#e6e8ea", "tertiary-fixed-dim": "#ffb3ad", "primary": "#005c55", "surface-container-lowest": "#ffffff", "secondary": "#006b5f", "surface-container-low": "#f2f4f6", "secondary-fixed": "#71f8e4", "primary-fixed": "#9cf2e8", "on-tertiary-fixed": "#410004", "primary-fixed-dim": "#80d5cb", "surface-variant": "#e0e3e5", "background": "#f7f9fb", "error": "#ba1a1a", "inverse-surface": "#2d3133", "on-surface": "#191c1e", "surface-tint": "#006a63", "inverse-primary": "#80d5cb", "on-primary-fixed": "#00201d", "surface-container-highest": "#e0e3e5", "on-surface-variant": "#3e4947", "primary-container": "#0f766e", "inverse-on-surface": "#eff1f3", "surface": "#f7f9fb", "on-secondary-fixed": "#00201c", "on-tertiary-container": "#ffe5e2", "on-primary": "#ffffff", "on-tertiary-fixed-variant": "#930013", "on-background": "#191c1e", "surface-container": "#eceef0", "on-secondary": "#ffffff", "secondary-fixed-dim": "#4fdbc8", "on-primary-container": "#a3faef", "on-secondary-fixed-variant": "#005048", "on-primary-fixed-variant": "#00504a", "on-error": "#ffffff", "error-container": "#ffdad6", "secondary-container": "#6df5e1", "surface-dim": "#d8dadc", "outline": "#6e7977", "tertiary-fixed": "#ffdad7", "on-tertiary": "#ffffff", "tertiary-container": "#ca282d", "on-error-container": "#93000a", "outline-variant": "#bdc9c6", "tertiary": "#a60419"}, borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"}, spacing: {"margin": "32px", "space-lg": "24px", "space-xs": "4px", "space-sm": "8px", "space-md": "16px", "space-xl": "32px", "gutter": "24px"}, fontFamily: {"body-sm": ["Inter"], "headline-lg": ["Inter"], "body-lg": ["Inter"], "body-md": ["Inter"], "headline-xl": ["Inter"], "headline-sm": ["Inter"], "label-sm": ["Inter"], "label-md": ["Inter"], "headline-md": ["Inter"]}, fontSize: {"body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}], "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}], "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}], "headline-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}], "headline-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}], "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}], "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}], "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]}}}};</script><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface/80 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="Cliniva OS Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAM2-LxhG2cBZWj4U3O2Fjp0kTn7g-95Na-fTt1zf0XELUOabr-N7YDpQXD4UtvtIDIyfHZMydXTn8iCv9Uxu2YbmHXfBTYIyAMneinwSp_vmOjdEVvCIFOZHsi86hjRxfpdQNNycnPB9iZZIlYsfMty1nld2COw-z6K12XgQIsCSmss6AVEomfbXZnegoYgk1rp30sg6lxzD2mCHFchSt1fHZtIF9YGnYvn2VpTsWTFExqGM94I3r9"/><div class="flex flex-col"><span class="text-headline-sm font-headline-sm text-on-surface">Dr. Sarah Jenkins</span><span class="text-body-sm text-on-surface-variant">Available</span></div></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full px-gutter pt-16 pb-24 bg-surface flex-grow"><div class="flex flex-col w-full gap-space-lg">
+<!-- Top Stats Banner -->
+<div class="grid grid-cols-3 gap-space-sm">
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant mb-space-xs">
+<span class="text-label-sm">ICU Occupancy</span>
+<span class="material-symbols-outlined text-[18px] text-error">monitor_heart</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="text-headline-md font-headline-md text-on-surface">18/20</span>
+<span class="text-body-sm text-error font-medium">90%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-error h-full rounded-full" style="width: 90%;"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant mb-space-xs">
+<span class="text-label-sm">General Ward</span>
+<span class="material-symbols-outlined text-[18px] text-primary">local_hospital</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="text-headline-md font-headline-md text-on-surface">42/60</span>
+<span class="text-body-sm text-primary font-medium">70%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 70%;"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant mb-space-xs">
+<span class="text-label-sm">Private Rooms</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">hotel</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="text-headline-md font-headline-md text-on-surface">12/15</span>
+<span class="text-body-sm text-secondary font-medium">80%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 80%;"></div>
+</div>
+</div>
+</div>
+<!-- Action Bar & Tabs -->
+<div class="flex items-center justify-between gap-space-md">
+<div class="flex bg-surface-container p-1 rounded-xl w-full max-w-xs">
+<button class="flex-1 py-1.5 px-space-md rounded-lg text-label-md font-medium bg-surface-container-lowest text-on-surface shadow-sm transition-all" id="tab-wards" onclick="switchTab('wards')">Ward Beds</button>
+<button class="flex-1 py-1.5 px-space-md rounded-lg text-label-md font-medium text-on-surface-variant transition-all" id="tab-diets" onclick="switchTab('diets')">Diet Charts</button>
+</div>
+<button class="bg-primary text-on-primary px-space-md py-2.5 rounded-xl text-label-md flex items-center gap-space-sm shadow-sm active:scale-95 transition-transform" onclick="toggleModal('admissionModal')">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+<span>Admit Patient</span>
+</button>
+</div>
+<!-- Tab Content: Ward Management -->
+<div class="flex flex-col gap-space-md" id="content-wards">
+<!-- Filter Chips -->
+<div class="flex gap-space-xs overflow-x-auto pb-1">
+<button class="bg-primary-container text-on-primary-container px-space-md py-1.5 rounded-full text-label-sm whitespace-nowrap">All Wards (95)</button>
+<button class="bg-surface-container-lowest text-on-surface-variant px-space-md py-1.5 rounded-full text-label-sm whitespace-nowrap shadow-sm">ICU (20)</button>
+<button class="bg-surface-container-lowest text-on-surface-variant px-space-md py-1.5 rounded-full text-label-sm whitespace-nowrap shadow-sm">General (60)</button>
+<button class="bg-surface-container-lowest text-on-surface-variant px-space-md py-1.5 rounded-full text-label-sm whitespace-nowrap shadow-sm">Private (15)</button>
+</div>
+<!-- Bed Grid -->
+<div class="grid grid-cols-2 gap-space-md">
+<!-- Bed Card 1 - Occupied (ICU) -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 w-2 h-full bg-error"></div>
+<div class="flex justify-between items-start">
+<span class="text-label-sm font-medium text-on-surface-variant">ICU-04</span>
+<span class="bg-error-container text-on-error-container px-space-xs py-0.5 rounded text-[10px] font-medium">Critical</span>
+</div>
+<div>
+<h4 class="text-headline-sm text-on-surface">Arthur Pendelton</h4>
+<p class="text-body-sm text-on-surface-variant">Admitted: Post-Op Cardiac</p>
+</div>
+<div class="flex items-center justify-between pt-space-xs text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">nutrition</span>Low Sodium</span>
+<button class="text-primary font-medium" onclick="openBedDetail('ICU-04', 'Arthur Pendelton', 'Critical')">Manage</button>
+</div>
+</div>
+<!-- Bed Card 2 - Occupied (General) -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 w-2 h-full bg-primary"></div>
+<div class="flex justify-between items-start">
+<span class="text-label-sm font-medium text-on-surface-variant">GEN-12</span>
+<span class="bg-primary-fixed text-on-primary-fixed px-space-xs py-0.5 rounded text-[10px] font-medium">Stable</span>
+</div>
+<div>
+<h4 class="text-headline-sm text-on-surface">Eleanor Vance</h4>
+<p class="text-body-sm text-on-surface-variant">Admitted: Pneumonia</p>
+</div>
+<div class="flex items-center justify-between pt-space-xs text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">nutrition</span>Diabetic</span>
+<button class="text-primary font-medium" onclick="openBedDetail('GEN-12', 'Eleanor Vance', 'Stable')">Manage</button>
+</div>
+</div>
+<!-- Bed Card 3 - Available -->
+<div class="bg-surface-container-low p-space-md rounded-xl border border-dashed border-outline-variant flex flex-col justify-between items-center text-center py-space-lg">
+<span class="material-symbols-outlined text-outline text-[32px]">king_bed</span>
+<div>
+<h4 class="text-headline-sm text-on-surface">GEN-15</h4>
+<p class="text-body-sm text-on-surface-variant">Available Clean Bed</p>
+</div>
+<button class="bg-surface-container-lowest text-primary px-space-md py-1 rounded-lg text-label-sm shadow-sm font-medium" onclick="toggleModal('admissionModal')">Assign</button>
+</div>
+<!-- Bed Card 4 - Occupied (Private) -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 w-2 h-full bg-secondary"></div>
+<div class="flex justify-between items-start">
+<span class="text-label-sm font-medium text-on-surface-variant">PVT-02</span>
+<span class="bg-secondary-fixed text-on-secondary-fixed px-space-xs py-0.5 rounded text-[10px] font-medium">Recovery</span>
+</div>
+<div>
+<h4 class="text-headline-sm text-on-surface">Marcus Brody</h4>
+<p class="text-body-sm text-on-surface-variant">Admitted: Appendectomy</p>
+</div>
+<div class="flex items-center justify-between pt-space-xs text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">nutrition</span>Liquid Diet</span>
+<button class="text-primary font-medium" onclick="openBedDetail('PVT-02', 'Marcus Brody', 'Recovery')">Manage</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Tab Content: Medical Diets -->
+<div class="flex flex-col gap-space-md hidden" id="content-diets">
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined">nutrition</span>
+</div>
+<div>
+<h4 class="text-headline-sm text-on-surface">Dietary Kitchen Dispatch</h4>
+<p class="text-body-sm text-on-surface-variant">Next delivery: Lunch (12:30 PM)</p>
+</div>
+</div>
+<button class="bg-surface-container text-on-surface px-space-md py-2 rounded-xl text-label-md font-medium" onclick="toggleModal('dietModal')">Update Diets</button>
+</div>
+<!-- Diet Categories -->
+<div class="flex flex-col gap-space-sm">
+<h3 class="text-headline-sm text-on-surface">Active Diet Orders</h3>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex justify-between items-center">
+<span class="text-label-md font-medium text-on-surface">Diabetic (1,800 kcal)</span>
+<span class="bg-primary-container text-on-primary-container px-space-sm py-0.5 rounded-full text-label-sm">14 Patients</span>
+</div>
+<div class="text-body-sm text-on-surface-variant flex flex-wrap gap-space-xs">
+<span class="bg-surface-container px-space-sm py-1 rounded">GEN-12 (Eleanor Vance)</span>
+<span class="bg-surface-container px-space-sm py-1 rounded">GEN-18 (Robert Lang)</span>
+<span class="bg-surface-container px-space-sm py-1 rounded">+12 more</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex justify-between items-center">
+<span class="text-label-md font-medium text-on-surface">Low Sodium (Cardiac)</span>
+<span class="bg-tertiary-container text-on-tertiary-container px-space-sm py-0.5 rounded-full text-label-sm">8 Patients</span>
+</div>
+<div class="text-body-sm text-on-surface-variant flex flex-wrap gap-space-xs">
+<span class="bg-surface-container px-space-sm py-1 rounded">ICU-04 (Arthur Pendelton)</span>
+<span class="bg-surface-container px-space-sm py-1 rounded">PVT-05 (Sarah Connor)</span>
+<span class="bg-surface-container px-space-sm py-1 rounded">+6 more</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex justify-between items-center">
+<span class="text-label-md font-medium text-on-surface">Full Liquid Diet</span>
+<span class="bg-secondary-container text-on-secondary-container px-space-sm py-0.5 rounded-full text-label-sm">5 Patients</span>
+</div>
+<div class="text-body-sm text-on-surface-variant flex flex-wrap gap-space-xs">
+<span class="bg-surface-container px-space-sm py-1 rounded">PVT-02 (Marcus Brody)</span>
+<span class="bg-surface-container px-space-sm py-1 rounded">ICU-01 (John Doe)</span>
+<span class="bg-surface-container px-space-sm py-1 rounded">+3 more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Admission Request Modal -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/40 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-gutter" id="admissionModal">
+<div class="bg-surface-container-lowest w-full max-w-lg rounded-t-2xl sm:rounded-xl p-space-lg flex flex-col gap-space-md shadow-2xl max-h-[795px] overflow-y-auto">
+<div class="flex items-center justify-between">
+<h3 class="text-headline-md text-on-surface">New IP Admission Request</h3>
+<button class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant" onclick="toggleModal('admissionModal')">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-space-md">
+<div>
+<label class="text-label-md text-on-surface-variant block mb-space-xs">Patient Search</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline">search</span>
+<input class="w-full bg-surface pl-10 pr-space-md py-2.5 rounded-xl border border-outline-variant text-on-surface focus:outline-primary" placeholder="Search by name, MRN, or phone..." type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-space-md">
+<div>
+<label class="text-label-md text-on-surface-variant block mb-space-xs">Ward Type</label>
+<select class="w-full bg-surface px-space-md py-2.5 rounded-xl border border-outline-variant text-on-surface focus:outline-primary">
+<option>ICU (Intensive Care)</option>
+<option>General Ward</option>
+<option>Private Room</option>
+</select>
+</div>
+<div>
+<label class="text-label-md text-on-surface-variant block mb-space-xs">Assign Bed</label>
+<select class="w-full bg-surface px-space-md py-2.5 rounded-xl border border-outline-variant text-on-surface focus:outline-primary">
+<option>GEN-15 (Available)</option>
+<option>GEN-22 (Available)</option>
+</select>
+</div>
+</div>
+<div>
+<label class="text-label-md text-on-surface-variant block mb-space-xs">Admitting Diagnosis</label>
+<input class="w-full bg-surface px-space-md py-2.5 rounded-xl border border-outline-variant text-on-surface focus:outline-primary" placeholder="e.g. Acute Appendicitis" type="text"/>
+</div>
+<div>
+<label class="text-label-md text-on-surface-variant block mb-space-xs">Initial Medical Diet</label>
+<select class="w-full bg-surface px-space-md py-2.5 rounded-xl border border-outline-variant text-on-surface focus:outline-primary">
+<option>Regular Diet</option>
+<option>Diabetic (1,800 kcal)</option>
+<option>Low Sodium (Cardiac)</option>
+<option>Full Liquid Diet</option>
+<option>Renal Restriction</option>
+</select>
+</div>
+<div>
+<label class="text-label-md text-on-surface-variant block mb-space-xs">Attending Physician</label>
+<input class="w-full bg-surface px-space-md py-2.5 rounded-xl border border-outline-variant text-on-surface focus:outline-primary" readonly="" type="text" value="Dr. Sarah Jenkins"/>
+</div>
+<div class="flex gap-space-sm pt-space-sm">
+<button class="flex-1 bg-surface-container text-on-surface py-3 rounded-xl font-medium text-label-md" onclick="toggleModal('admissionModal')">Cancel</button>
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-xl font-medium text-label-md shadow-sm" onclick="toggleModal('admissionModal'); showToast('Patient admitted successfully');">Confirm Admission</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Toast Notification Container -->
+<div class="fixed bottom-24 inset-x-gutter z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex justify-center" id="toast">
+<div class="bg-inverse-surface text-inverse-on-surface px-space-lg py-3 rounded-full shadow-lg text-label-md flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[18px] text-primary-fixed">check_circle</span>
+<span id="toast-message">Action completed</span>
+</div>
+</div>
+<script>
+    function switchTab(tab) {
+      const wardsContent = document.getElementById('content-wards');
+      const dietsContent = document.getElementById('content-diets');
+      const tabWards = document.getElementById('tab-wards');
+      const tabDiets = document.getElementById('tab-diets');
+
+      if (tab === 'wards') {
+        wardsContent.classList.remove('hidden');
+        dietsContent.classList.add('hidden');
+        tabWards.className = "flex-1 py-1.5 px-space-md rounded-lg text-label-md font-medium bg-surface-container-lowest text-on-surface shadow-sm transition-all";
+        tabDiets.className = "flex-1 py-1.5 px-space-md rounded-lg text-label-md font-medium text-on-surface-variant transition-all";
+      } else {
+        wardsContent.classList.add('hidden');
+        dietsContent.classList.remove('hidden');
+        tabDiets.className = "flex-1 py-1.5 px-space-md rounded-lg text-label-md font-medium bg-surface-container-lowest text-on-surface shadow-sm transition-all";
+        tabWards.className = "flex-1 py-1.5 px-space-md rounded-lg text-label-md font-medium text-on-surface-variant transition-all";
+      }
+    }
+
+    function toggleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.classList.toggle('hidden');
+    }
+
+    function openBedDetail(bed, patient, status) {
+      showToast(`Viewing bed ${bed} - ${patient}`);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toast-message');
+      msgEl.textContent = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+  </script>
+</div></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-1px_8px_rgba(0,0,0,0.04)]" data-active-classes="bg-primary-container text-on-primary-container font-medium"><div class="flex justify-around items-center h-20 px-space-sm"><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 rounded-xl text-on-surface-variant hover:text-on-surface transition-all" data-path="queue" href="clinical-dashboard.html"><span class="material-symbols-outlined">list_alt</span><span class="text-label-sm">Queue</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 rounded-xl text-on-surface-variant hover:text-on-surface transition-all" data-path="patients" href="patient-records.html"><span class="material-symbols-outlined">group</span><span class="text-label-sm">Patients</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 rounded-xl text-on-surface-variant hover:text-on-surface transition-all" data-path="e-rx" href="e-prescriptions.html"><span class="material-symbols-outlined">maps_ugc</span><span class="text-label-sm">e-Rx</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 rounded-xl transition-all bg-primary-container text-on-primary-container font-medium" data-path="wards" href="ip-wards-diets.html"><span class="material-symbols-outlined">local_hospital</span><span class="text-label-sm">Wards</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 rounded-xl text-on-surface-variant hover:text-on-surface transition-all" data-path="settings" href="settings.html"><span class="material-symbols-outlined">settings</span><span class="text-label-sm">Settings</span></a></div></nav></body></html>
