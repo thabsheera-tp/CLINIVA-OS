@@ -7,6 +7,7 @@ import { createClientSideClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import InstantPatientSearch from '@/components/ui/InstantPatientSearch'
+import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 
 type TopBarProps = {
   userName: string
@@ -40,6 +41,47 @@ export default function TopBar({
   const [clinicMenuOpen, setClinicMenuOpen] = useState(false)
   const [selectedClinic, setSelectedClinic] = useState(clinicName)
   const supabase = createClientSideClient()
+  const {
+    setRegisterOpen,
+    setVitalsOpen,
+    setConsultOpen,
+    setPaymentOpen,
+    setDispenseOpen,
+    setPrescriptionOpen,
+  } = useClinicRealtime()
+
+  const handlePrimaryAction = () => {
+    if (primaryAction?.onClick) {
+      primaryAction.onClick()
+      return
+    }
+
+    if (primaryAction?.href) {
+      router.push(primaryAction.href)
+      return
+    }
+
+    const label = primaryAction?.label?.toLowerCase() || ''
+    if (label.includes('rx') || label.includes('prescription')) {
+      setPrescriptionOpen(true)
+    } else if (label.includes('vital')) {
+      setVitalsOpen(true)
+    } else if (label.includes('register') || label.includes('patient')) {
+      setRegisterOpen(true)
+    } else if (label.includes('dispense')) {
+      setDispenseOpen(true)
+    } else if (label.includes('invoice') || label.includes('payment') || label.includes('bill')) {
+      setPaymentOpen(true)
+    } else if (label.includes('consult')) {
+      setConsultOpen(true)
+    } else if (label.includes('result') || label.includes('sample')) {
+      router.push('/lab')
+    } else if (label.includes('staff')) {
+      router.push('/admin/users')
+    } else if (label.includes('order')) {
+      router.push('/canteen/orders')
+    }
+  }
 
   const handleRoleSwitch = (targetRole: string, targetPath: string) => {
     document.cookie = `cliniva_demo_role=${targetRole}; path=/; max-age=86400`
@@ -208,14 +250,14 @@ export default function TopBar({
           {primaryAction && (
             <>
               <button
-                onClick={primaryAction.onClick}
+                onClick={handlePrimaryAction}
                 className="btn-primary hidden sm:inline-flex touch-tap"
               >
                 <span className="material-symbols-outlined text-[18px]">{primaryAction.icon}</span>
                 <span>{primaryAction.label}</span>
               </button>
               <button
-                onClick={primaryAction.onClick}
+                onClick={handlePrimaryAction}
                 className="sm:hidden p-2 rounded-full bg-primary text-on-primary shadow-sm touch-tap flex items-center justify-center"
                 title={primaryAction.label}
                 aria-label={primaryAction.label}
