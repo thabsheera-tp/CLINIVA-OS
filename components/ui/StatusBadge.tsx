@@ -14,28 +14,28 @@ type StatusBadgeProps = {
 
 const variantStyles: Record<Variant, { container: string; dot: string; defaultIcon?: string }> = {
   routine: {
-    container: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/25',
+    container: 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50',
     dot: 'bg-emerald-500',
     defaultIcon: 'check_circle',
   },
   warning: {
-    container: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30',
+    container: 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50',
     dot: 'bg-amber-500',
     defaultIcon: 'schedule',
   },
   critical: {
-    container: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/40 font-extrabold',
+    container: 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/50 font-bold',
     dot: 'bg-rose-500',
     defaultIcon: 'priority_high',
   },
   info: {
-    container: 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-500/25',
-    dot: 'bg-indigo-500',
+    container: 'bg-sky-50 text-sky-800 border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800/50',
+    dot: 'bg-sky-500',
     defaultIcon: 'info',
   },
   neutral: {
-    container: 'bg-surface-container text-on-surface-variant border-outline-variant/30',
-    dot: 'bg-outline',
+    container: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
+    dot: 'bg-slate-400',
   },
 }
 

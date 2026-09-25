@@ -47,57 +47,57 @@ export default function QuickActionBar({ className = '' }: QuickActionBarProps) 
 
   return (
     <div
-      className={`flex items-center gap-2 p-1.5 bg-surface-container-low/80 backdrop-blur-sm rounded-2xl border border-outline-variant/30 overflow-x-auto smooth-touch-scroll ${className}`}
+      className={`flex items-center gap-2 p-1.5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-x-auto smooth-touch-scroll ${className}`}
     >
-        <div className="flex items-center gap-1.5 px-2.5 py-1 text-label-sm font-semibold text-on-surface-variant uppercase tracking-wider flex-shrink-0">
-          <span className="material-symbols-outlined text-primary text-[18px]">bolt</span>
+        <div className="flex items-center gap-1.5 px-2.5 py-1 text-label-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex-shrink-0">
+          <span className="material-symbols-outlined text-teal-600 dark:text-teal-400 text-[18px]">bolt</span>
           <span>Quick Actions</span>
         </div>
 
         <button
           onClick={() => setBookingOpen(true)}
-          className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap hover-lift btn-press flex-shrink-0"
+          className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap flex-shrink-0"
           title="Instant Book (⌘B)"
         >
-          <span className="material-symbols-outlined text-[16px] text-primary">event_available</span>
+          <span className="material-symbols-outlined text-[16px] text-teal-600 dark:text-teal-400">event_available</span>
           <span>Book Appt</span>
-          <kbd className="hidden sm:inline-block ml-1 px-1 py-0.2 rounded text-[10px] bg-surface-container font-mono text-outline">
+          <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
             ⌘B
           </kbd>
         </button>
 
         <button
           onClick={() => setPrescriptionOpen(true)}
-          className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap hover-lift btn-press flex-shrink-0"
+          className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap flex-shrink-0"
           title="Write Prescription (⌘P)"
         >
-          <span className="material-symbols-outlined text-[16px] text-primary">prescriptions</span>
+          <span className="material-symbols-outlined text-[16px] text-teal-600 dark:text-teal-400">prescriptions</span>
           <span>e-Prescription</span>
-          <kbd className="hidden sm:inline-block ml-1 px-1 py-0.2 rounded text-[10px] bg-surface-container font-mono text-outline">
+          <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
             ⌘P
           </kbd>
         </button>
 
         <button
           onClick={() => setRegisterOpen(true)}
-          className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap hover-lift btn-press flex-shrink-0"
+          className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap flex-shrink-0"
           title="Emergency Intake (⌘E)"
         >
-          <span className="material-symbols-outlined text-[16px] text-tertiary">emergency</span>
+          <span className="material-symbols-outlined text-[16px] text-rose-600 dark:text-rose-400">emergency</span>
           <span>Emergency Intake</span>
-          <kbd className="hidden sm:inline-block ml-1 px-1 py-0.2 rounded text-[10px] bg-surface-container font-mono text-outline">
+          <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
             ⌘E
           </kbd>
         </button>
 
         <button
           onClick={() => setVitalsOpen(true)}
-          className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap hover-lift btn-press flex-shrink-0"
+          className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap flex-shrink-0"
           title="Record Vitals (⌘V)"
         >
-          <span className="material-symbols-outlined text-[16px] text-secondary">monitor_heart</span>
+          <span className="material-symbols-outlined text-[16px] text-sky-600 dark:text-sky-400">monitor_heart</span>
           <span>Record Vitals</span>
-          <kbd className="hidden sm:inline-block ml-1 px-1 py-0.2 rounded text-[10px] bg-surface-container font-mono text-outline">
+          <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
             ⌘V
           </kbd>
         </button>

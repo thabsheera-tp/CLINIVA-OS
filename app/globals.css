@@ -5,50 +5,61 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── CSS Custom Properties (Cliniva Soft Clinical Tokens) ─── */
+/* ─── CSS Custom Properties (Accessible Enterprise Clinical Tokens) ─── */
 :root {
-  --color-primary: #00685f;
-  --color-secondary: #006b5f;
-  --color-tertiary: #b90538;
-  --color-surface: #f8f9ff;
-  --color-surface-dim: #e2e8f0;
-  --color-surface-bright: #ffffff;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #eff4ff;
-  --color-surface-container: #e5eeff;
-  --color-surface-container-high: #dce9ff;
-  --color-surface-container-highest: #d3e4fe;
-  --color-on-surface: #0f172a;
-  --color-on-surface-variant: #334155;
-  --color-outline: #64748b;
-  --color-outline-variant: #cbd5e1;
+  --color-primary: #0d9488; /* Teal 600 - focused interactive accent */
+  --color-primary-container: #0f766e; /* Teal 700 */
+  --color-secondary: #0284c7; /* Sky 600 */
+  --color-tertiary: #e11d48; /* Rose 600 */
 
-  /* Card shadows */
-  --shadow-card: 0px 2px 4px rgba(15, 23, 42, 0.03), 0px 8px 16px -4px rgba(13, 148, 136, 0.04);
-  --shadow-card-hover: 0px 6px 12px -2px rgba(15, 23, 42, 0.05), 0px 16px 24px -4px rgba(13, 148, 136, 0.06);
-  --shadow-modal: 0px 20px 32px -8px rgba(15, 23, 42, 0.08), 0px 32px 48px -12px rgba(15, 23, 42, 0.06);
+  /* Light Mode Surfaces: Pure white cards on clean off-white slate-50 canvas */
+  --color-surface: #f8fafc; /* bg-slate-50 */
+  --color-surface-dim: #f1f5f9; /* bg-slate-100 */
+  --color-surface-bright: #ffffff; /* pure white */
+  --color-surface-container-lowest: #ffffff; /* Card backgrounds: pure bg-white */
+  --color-surface-container-low: #f8fafc; /* bg-slate-50 */
+  --color-surface-container: #f1f5f9; /* bg-slate-100 */
+  --color-surface-container-high: #e2e8f0; /* bg-slate-200 */
+  --color-surface-container-highest: #cbd5e1; /* bg-slate-300 */
+
+  /* High-Contrast Light Mode Typography */
+  --color-on-surface: #0f172a; /* text-slate-900: sharp primary data */
+  --color-on-surface-variant: #64748b; /* text-slate-500: readable secondary labels */
+  --color-outline: #94a3b8; /* text-slate-400 */
+  --color-outline-variant: #e2e8f0; /* border-slate-200: subtle 1px border */
+
+  /* Shadows: Clean & subtle 1px borders; remove heavy drop-shadows */
+  --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-modal: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
 }
 
 .dark {
-  --color-primary: #008f80;
-  --color-secondary: #009688;
-  --color-tertiary: #f43f5e;
-  --color-surface: #0b1120;
-  --color-surface-dim: #070c18;
-  --color-surface-bright: #131d35;
-  --color-surface-container-lowest: #0f172a;
-  --color-surface-container-low: #1e293b;
-  --color-surface-container: #24344d;
-  --color-surface-container-high: #2d4060;
-  --color-surface-container-highest: #3b5278;
-  --color-on-surface: #f8fafc;
-  --color-on-surface-variant: #cbd5e1;
-  --color-outline: #94a3b8;
-  --color-outline-variant: #334155;
+  --color-primary: #14b8a6; /* Teal 500 */
+  --color-primary-container: #0d9488; /* Teal 600 */
+  --color-secondary: #38bdf8; /* Sky 400 */
+  --color-tertiary: #f43f5e; /* Rose 500 */
 
-  --shadow-card: 0px 2px 4px rgba(0, 0, 0, 0.4), 0px 8px 16px -4px rgba(0, 0, 0, 0.3);
-  --shadow-card-hover: 0px 6px 12px -2px rgba(0, 0, 0, 0.5), 0px 16px 24px -4px rgba(0, 0, 0, 0.4);
-  --shadow-modal: 0px 20px 32px -8px rgba(0, 0, 0, 0.6);
+  /* Dark Mode Surfaces: Pure slate-900 cards on deep slate-950 canvas (No monochromatic blue wash!) */
+  --color-surface: #020617; /* Main Background: bg-slate-950 */
+  --color-surface-dim: #020617; /* bg-slate-950 */
+  --color-surface-bright: #0f172a; /* bg-slate-900 */
+  --color-surface-container-lowest: #0f172a; /* Card Backgrounds: bg-slate-900 */
+  --color-surface-container-low: #0f172a; /* bg-slate-900 */
+  --color-surface-container: #1e293b; /* bg-slate-800 */
+  --color-surface-container-high: #334155; /* bg-slate-700 */
+  --color-surface-container-highest: #475569; /* bg-slate-600 */
+
+  /* High-Contrast Dark Mode Typography */
+  --color-on-surface: #f8fafc; /* text-slate-50: sharp primary data */
+  --color-on-surface-variant: #94a3b8; /* text-slate-400: readable secondary labels */
+  --color-outline: #64748b; /* text-slate-500 */
+  --color-outline-variant: #1e293b; /* border-slate-800: subtle 1px border */
+
+  /* Dark mode: crisp 1px borders, subtle depth without heavy shadows */
+  --shadow-card: none;
+  --shadow-card-hover: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+  --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
 }
 
 /* ─── Base Resets ─── */
@@ -88,15 +99,20 @@
     height: 5px;
   }
   ::-webkit-scrollbar-track {
-    background: #eff4ff;
-    border-radius: 9999px;
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #bcc9c6;
+    background: #cbd5e1;
     border-radius: 9999px;
   }
+  .dark ::-webkit-scrollbar-thumb {
+    background: #334155;
+  }
   ::-webkit-scrollbar-thumb:hover {
-    background: #6d7a77;
+    background: #94a3b8;
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #475569;
   }
 }
 
@@ -104,99 +120,77 @@
 @layer components {
   /* Sidebar navigation link */
   .nav-link {
-    @apply flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all duration-150 cursor-pointer;
+    @apply flex items-center justify-between px-space-md py-space-sm rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-slate-100 transition-all duration-150 cursor-pointer;
   }
 
   .nav-link-active {
-    @apply bg-secondary-fixed/50 text-on-primary-fixed-variant font-semibold;
-    box-shadow: 0 2px 8px rgba(0, 107, 95, 0.08);
+    @apply bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 font-semibold border-l-4 border-teal-600 dark:border-teal-400;
   }
 
   /* KPI stat card */
   .stat-card {
-    @apply relative overflow-hidden bg-surface-container-lowest p-space-md rounded-2xl flex flex-col justify-between transition-all duration-200;
-    box-shadow: var(--shadow-card);
+    @apply relative overflow-hidden bg-white dark:bg-slate-900 p-space-md rounded-2xl flex flex-col justify-between transition-all duration-150 border border-slate-200 dark:border-slate-800 shadow-xs;
   }
   .stat-card:hover {
-    box-shadow: var(--shadow-card-hover);
+    @apply border-slate-300 dark:border-slate-700;
   }
 
   /* Clinical data card */
   .clinical-card {
-    @apply bg-surface-container-lowest rounded-2xl border border-outline-variant/30;
-    box-shadow: var(--shadow-card);
+    @apply bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs;
   }
 
-  /* Status badge variants */
+  /* Status badge variants — accessible semantic contrast */
   .badge-routine {
-    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-bold uppercase tracking-wider;
-    background: #F0FDF4;
-    border: 1px solid #BBF7D0;
-    color: #15803D;
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-semibold uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50;
   }
 
   .badge-warning {
-    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-bold uppercase tracking-wider;
-    background: #FFFBEB;
-    border: 1px solid #FDE68A;
-    color: #B45309;
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-semibold uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50;
   }
 
   .badge-critical {
-    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-bold uppercase tracking-wider;
-    background: #FFF1F2;
-    border: 1px solid #FECDD3;
-    color: #BE123C;
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-bold uppercase tracking-wider bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/50;
   }
 
   .badge-neutral {
-    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-bold uppercase tracking-wider;
-    background: #F1F5F9;
-    border: 1px solid #CBD5E1;
-    color: #475569;
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-semibold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700;
   }
 
   /* Live indicator pulse dot */
   .live-dot {
-    @apply w-2 h-2 rounded-full bg-primary-fixed-dim animate-pulse;
+    @apply w-2 h-2 rounded-full bg-teal-500 animate-pulse;
   }
 
   /* Primary button */
   .btn-primary {
-    @apply inline-flex items-center gap-space-xs px-space-lg py-2.5 bg-primary text-on-primary font-medium text-label-md rounded-full transition-all duration-150;
-    box-shadow: 0 2px 8px rgba(0, 104, 95, 0.25);
-  }
-  .btn-primary:hover {
-    @apply bg-primary-container;
-    box-shadow: 0 4px 16px rgba(0, 104, 95, 0.3);
+    @apply inline-flex items-center gap-space-xs px-4 py-2 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-medium text-label-md rounded-xl transition-all duration-150 shadow-xs touch-tap;
   }
 
   /* Secondary button */
   .btn-secondary {
-    @apply inline-flex items-center gap-space-xs px-space-md py-2.5 bg-surface-container text-on-surface font-medium text-label-md rounded-full hover:bg-surface-container-high transition-all duration-150;
+    @apply inline-flex items-center gap-space-xs px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-medium text-label-md rounded-xl transition-all duration-150 shadow-xs touch-tap;
   }
 
   /* Ghost / outline button */
   .btn-ghost {
-    @apply inline-flex items-center gap-space-xs px-space-md py-2.5 bg-transparent text-on-surface-variant font-medium text-label-md rounded-full border border-outline-variant hover:bg-surface-container-low hover:text-on-surface transition-all duration-150;
+    @apply inline-flex items-center gap-space-xs px-3 py-1.5 bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 font-medium text-label-md rounded-xl transition-all duration-150 touch-tap;
   }
 
   /* Urgent / destructive button */
   .btn-urgent {
-    @apply inline-flex items-center gap-space-xs px-space-md py-2.5 font-medium text-label-md rounded-full transition-all duration-150;
-    background: #FFF1F2;
-    color: #E11D48;
-    border: 1px solid #FFE4E6;
-  }
-  .btn-urgent:hover {
-    background: #FFE4E6;
+    @apply inline-flex items-center gap-space-xs px-3 py-1.5 font-medium text-label-md rounded-xl transition-all duration-150 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900/50 touch-tap;
   }
 
-  /* Input field — min 16px on mobile to prevent iOS Safari auto-zoom */
+  /* Input field */
   .input-field {
-    @apply w-full px-space-md py-2.5 bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-[16px] md:text-body-md text-on-surface transition-all duration-150;
+    @apply w-full px-3.5 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-[15px] md:text-body-md text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all duration-150;
     outline: none;
     touch-action: manipulation;
+  }
+  .input-field:focus {
+    border-color: #0d9488;
+    box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.15);
   }
   .input-field::placeholder {
     color: var(--color-on-surface-variant);

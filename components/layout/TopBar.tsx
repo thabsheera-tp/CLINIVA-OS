@@ -111,13 +111,13 @@ export default function TopBar({
 
   return (
     <>
-      <header className="fixed top-0 left-0 lg:left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-md border-b border-outline-variant/20 z-40 px-3 sm:px-gutter lg:px-gutter-desktop flex items-center justify-between gap-2 sm:gap-gutter">
+      <header className="fixed top-0 left-0 lg:left-72 right-0 h-16 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 z-40 px-3 sm:px-gutter lg:px-gutter-desktop flex items-center justify-between gap-2 sm:gap-gutter">
         {/* Left: Mobile hamburger + Clinic selector / wordmark */}
         <div className="flex items-center gap-2 sm:gap-gutter min-w-0">
           {/* Hamburger toggle button for mobile */}
           <button
             onClick={onToggleMobileMenu}
-            className="lg:hidden p-2 rounded-xl hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors touch-tap flex-shrink-0"
+            className="lg:hidden p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors touch-tap flex-shrink-0"
             aria-label="Open Navigation Drawer"
           >
             <span className="material-symbols-outlined text-[24px]">menu</span>
@@ -127,16 +127,16 @@ export default function TopBar({
           <div className="relative">
             <button
               onClick={() => setClinicMenuOpen(!clinicMenuOpen)}
-              className="hidden lg:flex items-center gap-space-xs px-space-md py-space-xs bg-surface-container-low rounded-lg border border-outline-variant/30 cursor-pointer hover:bg-surface-container transition-colors flex-shrink-0 touch-tap"
+              className="hidden lg:flex items-center gap-space-xs px-space-md py-space-xs bg-slate-50 dark:bg-slate-950 rounded-lg border border-slate-200 dark:border-slate-800 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex-shrink-0 touch-tap"
             >
-              <span className="material-symbols-outlined text-primary text-[18px]">{clinicIcon}</span>
-              <span className="text-label-md text-on-surface truncate max-w-[180px] xl:max-w-[220px]">{selectedClinic}</span>
-              <span className="material-symbols-outlined text-on-surface-variant text-[16px]">expand_more</span>
+              <span className="material-symbols-outlined text-teal-600 dark:text-teal-400 text-[18px]">{clinicIcon}</span>
+              <span className="text-label-md text-slate-900 dark:text-slate-100 truncate max-w-[180px] xl:max-w-[220px] font-medium">{selectedClinic}</span>
+              <span className="material-symbols-outlined text-slate-400 text-[16px]">expand_more</span>
             </button>
 
             {clinicMenuOpen && (
-              <div className="absolute left-0 top-12 w-72 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-modal py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-3 py-1 text-label-sm text-on-surface-variant uppercase font-semibold">Active Campus / Facility</div>
+              <div className="absolute left-0 top-12 w-72 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="px-3 py-1 text-label-sm text-slate-400 dark:text-slate-500 uppercase font-semibold">Active Campus / Facility</div>
                 {['St. Jude Medical Center — Main Hospital', 'St. Jude West Campus (OPD Clinic)', 'St. Jude South Pediatric Wing'].map((campus) => (
                   <button
                     key={campus}
@@ -144,12 +144,12 @@ export default function TopBar({
                       setSelectedClinic(campus)
                       setClinicMenuOpen(false)
                     }}
-                    className={`w-full text-left px-3 py-2 text-label-md hover:bg-surface-container-low transition-colors flex items-center justify-between ${
-                      selectedClinic === campus ? 'text-primary font-semibold bg-surface-container-low' : 'text-on-surface'
+                    className={`w-full text-left px-3 py-2 text-label-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-between ${
+                      selectedClinic === campus ? 'text-teal-600 dark:text-teal-400 font-semibold bg-slate-50 dark:bg-slate-800/60' : 'text-slate-700 dark:text-slate-300'
                     }`}
                   >
                     <span className="truncate">{campus}</span>
-                    {selectedClinic === campus && <span className="material-symbols-outlined text-primary text-[18px]">check</span>}
+                    {selectedClinic === campus && <span className="material-symbols-outlined text-teal-600 dark:text-teal-400 text-[18px]">check</span>}
                   </button>
                 ))}
               </div>
@@ -158,10 +158,10 @@ export default function TopBar({
 
           {/* Mobile: logo wordmark */}
           <div className="lg:hidden flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-on-primary flex-shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-teal-600 flex items-center justify-center text-white flex-shrink-0">
               <span className="material-symbols-outlined text-[16px]">medical_services</span>
             </div>
-            <span className="font-heading font-semibold text-primary text-headline-sm truncate">
+            <span className="font-heading font-semibold text-slate-900 dark:text-slate-50 text-headline-sm truncate">
               Cliniva OS
             </span>
           </div>
@@ -177,7 +177,7 @@ export default function TopBar({
           {/* Mobile search toggle button */}
           <button
             onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-            className="md:hidden p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low rounded-full transition-colors touch-tap"
+            className="md:hidden p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors touch-tap"
             aria-label="Toggle search"
           >
             <span className="material-symbols-outlined text-[22px]">
@@ -186,12 +186,12 @@ export default function TopBar({
           </button>
 
           {/* Live sync indicator with dual-ring medical telemetry radar */}
-          <div className="hidden xl:flex items-center gap-2 px-3 py-1 bg-surface-container-low border border-outline-variant/30 rounded-full">
+          <div className="hidden xl:flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
-            <span className="text-[12px] font-semibold text-on-surface">{liveSyncLabel}</span>
+            <span className="text-[12px] font-semibold text-slate-700 dark:text-slate-300">{liveSyncLabel}</span>
           </div>
 
           {/* Theme Toggle (Dark / Light Mode) */}
@@ -201,44 +201,44 @@ export default function TopBar({
           <div className="relative">
             <button
               onClick={() => setNotificationsOpen(!notificationsOpen)}
-              className="relative p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low rounded-full transition-colors touch-tap"
+              className="relative p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors touch-tap"
               aria-label="Notifications"
             >
               <span className="material-symbols-outlined text-[22px]">notifications</span>
-              <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-tertiary text-on-tertiary text-[10px] leading-tight flex items-center justify-center rounded-full font-bold">
+              <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white text-[10px] leading-tight flex items-center justify-center rounded-full font-bold">
                 {notificationCount || 3}
               </span>
             </button>
 
             {notificationsOpen && (
-              <div className="absolute right-0 top-12 w-80 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-modal p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="flex items-center justify-between pb-2 border-b border-outline-variant/20 mb-2">
-                  <span className="text-label-md font-bold text-on-surface">Clinical Alerts</span>
-                  <span className="text-[11px] bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full font-semibold">3 Unread</span>
+              <div className="absolute right-0 top-12 w-80 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 mb-2">
+                  <span className="text-label-md font-bold text-slate-900 dark:text-slate-100">Clinical Alerts</span>
+                  <span className="text-[11px] bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-900/40 px-2 py-0.5 rounded-full font-semibold">3 Unread</span>
                 </div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
-                  <div className="p-2 rounded-xl bg-error/5 border border-error/20 flex gap-2.5 items-start">
-                    <span className="material-symbols-outlined text-error text-[18px] flex-shrink-0 mt-0.5">priority_high</span>
+                  <div className="p-2.5 rounded-xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200/60 dark:border-rose-900/40 flex gap-2.5 items-start">
+                    <span className="material-symbols-outlined text-rose-600 dark:text-rose-400 text-[18px] flex-shrink-0 mt-0.5">priority_high</span>
                     <div>
-                      <p className="text-label-sm font-semibold text-on-surface">Critical Troponin Result</p>
-                      <p className="text-[12px] text-on-surface-variant">Patient Marcus Delacroix: 0.08 ng/mL (STAT alert)</p>
-                      <span className="text-[10px] text-outline">5 mins ago</span>
+                      <p className="text-label-sm font-semibold text-slate-900 dark:text-slate-100">Critical Troponin Result</p>
+                      <p className="text-[12px] text-slate-500 dark:text-slate-400">Patient Marcus Delacroix: 0.08 ng/mL (STAT alert)</p>
+                      <span className="text-[10px] text-slate-400">5 mins ago</span>
                     </div>
                   </div>
-                  <div className="p-2 rounded-xl bg-surface-container-low flex gap-2.5 items-start">
-                    <span className="material-symbols-outlined text-primary text-[18px] flex-shrink-0 mt-0.5">prescriptions</span>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex gap-2.5 items-start">
+                    <span className="material-symbols-outlined text-teal-600 dark:text-teal-400 text-[18px] flex-shrink-0 mt-0.5">prescriptions</span>
                     <div>
-                      <p className="text-label-sm font-semibold text-on-surface">Rx Verification Needed</p>
-                      <p className="text-[12px] text-on-surface-variant">Central Pharmacy flagged Lisinopril interaction</p>
-                      <span className="text-[10px] text-outline">18 mins ago</span>
+                      <p className="text-label-sm font-semibold text-slate-900 dark:text-slate-100">Rx Verification Needed</p>
+                      <p className="text-[12px] text-slate-500 dark:text-slate-400">Central Pharmacy flagged Lisinopril interaction</p>
+                      <span className="text-[10px] text-slate-400">18 mins ago</span>
                     </div>
                   </div>
-                  <div className="p-2 rounded-xl bg-surface-container-low flex gap-2.5 items-start">
-                    <span className="material-symbols-outlined text-secondary text-[18px] flex-shrink-0 mt-0.5">how_to_reg</span>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex gap-2.5 items-start">
+                    <span className="material-symbols-outlined text-sky-600 dark:text-sky-400 text-[18px] flex-shrink-0 mt-0.5">how_to_reg</span>
                     <div>
-                      <p className="text-label-sm font-semibold text-on-surface">New Inpatient Admission</p>
-                      <p className="text-[12px] text-on-surface-variant">Bed A-02 occupied by Priya Mehta</p>
-                      <span className="text-[10px] text-outline">35 mins ago</span>
+                      <p className="text-label-sm font-semibold text-slate-900 dark:text-slate-100">New Inpatient Admission</p>
+                      <p className="text-[12px] text-slate-500 dark:text-slate-400">Bed A-02 occupied by Priya Mehta</p>
+                      <span className="text-[10px] text-slate-400">35 mins ago</span>
                     </div>
                   </div>
                 </div>
@@ -258,7 +258,7 @@ export default function TopBar({
               </button>
               <button
                 onClick={handlePrimaryAction}
-                className="sm:hidden p-2 rounded-full bg-primary text-on-primary shadow-sm touch-tap flex items-center justify-center"
+                className="sm:hidden p-2 rounded-xl bg-teal-600 text-white shadow-xs touch-tap flex items-center justify-center"
                 title={primaryAction.label}
                 aria-label={primaryAction.label}
               >
@@ -271,7 +271,7 @@ export default function TopBar({
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-space-sm pl-1.5 sm:pl-space-sm border-l border-outline-variant/30 cursor-pointer group touch-tap"
+              className="flex items-center gap-space-sm pl-1.5 sm:pl-space-sm border-l border-slate-200 dark:border-slate-800 cursor-pointer group touch-tap"
               aria-label="User profile menu"
             >
               {userAvatar ? (
@@ -280,42 +280,42 @@ export default function TopBar({
                   alt="Profile"
                   width={32}
                   height={32}
-                  className="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20"
+                  className="w-8 h-8 rounded-full object-cover ring-2 ring-teal-500/20"
                 />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-semibold text-label-md">
+                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-800 dark:text-slate-200 font-semibold text-label-md">
                   {userName.charAt(0).toUpperCase()}
                 </div>
               )}
               <div className="flex-col text-left hidden lg:flex">
                 <div className="flex items-center gap-1">
-                  <span className="text-label-md text-on-surface group-hover:text-primary transition-colors truncate max-w-[120px]">
+                  <span className="text-label-md text-slate-900 dark:text-slate-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors truncate max-w-[120px] font-medium">
                     {userName}
                   </span>
-                  <span className="material-symbols-outlined text-on-surface-variant text-[16px]">expand_more</span>
+                  <span className="material-symbols-outlined text-slate-400 text-[16px]">expand_more</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary" />
-                  <span className="text-label-sm text-secondary font-semibold">{userRole}</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span className="text-label-sm text-slate-500 dark:text-slate-400 font-medium">{userRole}</span>
                 </div>
               </div>
             </button>
 
             {/* Dropdown menu */}
             {dropdownOpen && (
-              <div className="absolute right-0 top-12 w-64 max-w-[calc(100vw-1.5rem)] bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-modal py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-space-md py-1 border-b border-outline-variant/20 mb-1">
-                  <p className="text-label-sm text-on-surface-variant uppercase font-semibold">Switch Workspace</p>
+              <div className="absolute right-0 top-12 w-64 max-w-[calc(100vw-1.5rem)] bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="px-space-md py-1 border-b border-slate-100 dark:border-slate-800 mb-1">
+                  <p className="text-label-sm text-slate-400 dark:text-slate-500 uppercase font-semibold">Switch Workspace</p>
                 </div>
-                <div className="max-h-56 overflow-y-auto smooth-touch-scroll divide-y divide-outline-variant/10">
+                <div className="max-h-56 overflow-y-auto smooth-touch-scroll divide-y divide-slate-100 dark:divide-slate-800">
                   {WORKSPACE_LIST.map((ws) => (
                     <button
                       key={ws.role}
                       onClick={() => handleRoleSwitch(ws.role, ws.path)}
                       className={`w-full flex items-center gap-space-sm px-space-md py-2 text-left text-label-md transition-colors touch-tap ${
                         userRole?.toLowerCase().includes(ws.role) || (ws.role === 'nurse' && userRole?.toLowerCase().includes('nurs'))
-                          ? 'bg-secondary-fixed/30 text-primary font-semibold'
-                          : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'
+                          ? 'bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 font-semibold'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
                       }`}
                     >
                       <span className="material-symbols-outlined text-[18px] flex-shrink-0">{ws.icon}</span>
@@ -324,18 +324,18 @@ export default function TopBar({
                   ))}
                 </div>
 
-                <div className="border-t border-outline-variant/20 mt-1 pt-1">
+                <div className="border-t border-slate-100 dark:border-slate-800 mt-1 pt-1">
                   <Link
                     href="/login?switch=true"
                     onClick={() => setDropdownOpen(false)}
-                    className="flex items-center gap-space-sm px-space-md py-2 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors text-label-md touch-tap"
+                    className="flex items-center gap-space-sm px-space-md py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors text-label-md touch-tap"
                   >
                     <span className="material-symbols-outlined text-[18px]">switch_account</span>
                     Role Selection Screen
                   </Link>
                   <button
                     onClick={handleSignOut}
-                    className="w-full flex items-center gap-space-sm px-space-md py-2 text-tertiary hover:bg-error-container/20 transition-colors text-label-md touch-tap"
+                    className="w-full flex items-center gap-space-sm px-space-md py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors text-label-md touch-tap"
                   >
                     <span className="material-symbols-outlined text-[18px]">logout</span>
                     Sign out
@@ -349,7 +349,7 @@ export default function TopBar({
 
       {/* Expandable Mobile Search Drawer */}
       {mobileSearchOpen && (
-        <div className="md:hidden fixed top-16 left-0 right-0 z-30 bg-surface-container-lowest border-b border-outline-variant/30 p-3 shadow-md animate-in slide-in-from-top-2 duration-150">
+        <div className="md:hidden fixed top-16 left-0 right-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-3 shadow-md animate-in slide-in-from-top-2 duration-150">
           <div className="flex items-center gap-2">
             <InstantPatientSearch
               autoFocus
@@ -358,7 +358,7 @@ export default function TopBar({
             />
             <button
               onClick={() => setMobileSearchOpen(false)}
-              className="p-2 text-on-surface-variant hover:text-on-surface"
+              className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
               aria-label="Close search"
             >
               <span className="material-symbols-outlined text-[20px]">close</span>

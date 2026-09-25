@@ -136,7 +136,7 @@ export default function InstantPatientSearch({
             setIsOpen(true)
           }}
           placeholder={placeholder}
-          className="w-full pl-10 pr-16 py-2 bg-surface-container-low border border-outline-variant/40 rounded-full text-body-sm text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-on-surface-variant/70 transition-all"
+          className="w-full pl-10 pr-16 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-body-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600/30 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all"
         />
         {query ? (
           <button
@@ -146,12 +146,12 @@ export default function InstantPatientSearch({
               setResults([])
               setIsOpen(false)
             }}
-            className="absolute right-3 p-1 text-on-surface-variant hover:text-on-surface"
+            className="absolute right-3 p-1 text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
           >
             <span className="material-symbols-outlined text-[16px]">close</span>
           </button>
         ) : (
-          <kbd className="absolute right-3 text-label-sm bg-surface-container text-on-surface-variant px-1.5 py-0.5 rounded border border-outline-variant/40 font-mono text-[11px] pointer-events-none">
+          <kbd className="absolute right-3 text-label-sm bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 font-mono text-[11px] pointer-events-none">
             ⌘K
           </kbd>
         )}
@@ -159,17 +159,17 @@ export default function InstantPatientSearch({
 
       {/* Floating Results Dropdown */}
       {isOpen && query.trim().length > 0 && (
-        <div className="absolute left-0 right-0 top-12 max-h-96 overflow-y-auto bg-surface-container-lowest rounded-2xl border border-outline-variant/40 shadow-modal z-50 p-2 animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="absolute left-0 right-0 top-12 max-h-96 overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl z-50 p-2 animate-in fade-in slide-in-from-top-2 duration-150">
           {/* Loading Skeletons */}
           {loading && (
             <div className="space-y-2 p-2">
-              <div className="h-4 w-28 bg-surface-container-high rounded animate-pulse" />
+              <div className="h-4 w-28 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-3 p-2 rounded-xl bg-surface-container-low animate-pulse">
-                  <div className="w-10 h-10 rounded-full bg-surface-container-high flex-shrink-0" />
+                <div key={i} className="flex items-center gap-3 p-2 rounded-xl bg-slate-50 dark:bg-slate-950 animate-pulse">
+                  <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex-shrink-0" />
                   <div className="flex-1 space-y-1.5">
-                    <div className="h-3.5 w-32 bg-surface-container-high rounded" />
-                    <div className="h-2.5 w-48 bg-surface-container rounded" />
+                    <div className="h-3.5 w-32 bg-slate-200 dark:bg-slate-800 rounded" />
+                    <div className="h-2.5 w-48 bg-slate-100 dark:bg-slate-800/60 rounded" />
                   </div>
                 </div>
               ))}
@@ -179,7 +179,7 @@ export default function InstantPatientSearch({
           {/* Results List */}
           {!loading && results.length > 0 && (
             <div className="space-y-1">
-              <div className="px-3 py-1 text-label-sm text-on-surface-variant uppercase font-semibold flex items-center justify-between">
+              <div className="px-3 py-1 text-label-sm text-slate-400 dark:text-slate-500 uppercase font-semibold flex items-center justify-between">
                 <span>Matching Patients ({results.length})</span>
                 <span className="text-[11px] font-normal lowercase">Press Enter or click to view chart</span>
               </div>
@@ -188,22 +188,22 @@ export default function InstantPatientSearch({
                 <div
                   key={patient.id}
                   onClick={() => handleSelect(patient)}
-                  className="flex items-center justify-between p-2.5 rounded-xl hover:bg-surface-container-low transition-colors cursor-pointer group"
+                  className="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors cursor-pointer group"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold text-label-md flex-shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800/40 flex items-center justify-center text-teal-700 dark:text-teal-300 font-bold text-label-md flex-shrink-0">
                       {patient.first_name[0]}{patient.last_name[0]}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-on-surface text-body-md truncate">
+                        <span className="font-semibold text-slate-900 dark:text-slate-100 text-body-md truncate">
                           {patient.first_name} {patient.last_name}
                         </span>
-                        <span className="font-mono text-label-sm font-semibold text-primary px-1.5 py-0.2 rounded bg-surface-container">
+                        <span className="font-mono text-label-sm font-semibold text-teal-700 dark:text-teal-400 px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                           #{patient.mrn}
                         </span>
                       </div>
-                      <p className="text-body-sm text-on-surface-variant truncate">
+                      <p className="text-body-sm text-slate-500 dark:text-slate-400 truncate">
                         {patient.gender} • {patient.phone}
                       </p>
                     </div>
@@ -217,7 +217,7 @@ export default function InstantPatientSearch({
                         setIsOpen(false)
                         setBookingOpen(true)
                       }}
-                      className="px-2 py-1 text-label-sm bg-surface-container hover:bg-surface-container-high rounded-lg font-medium text-on-surface"
+                      className="px-2.5 py-1 text-label-sm bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg font-medium text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700"
                       title="Book Appointment"
                     >
                       Book
@@ -229,7 +229,7 @@ export default function InstantPatientSearch({
                         setIsOpen(false)
                         setVitalsOpen(true)
                       }}
-                      className="px-2 py-1 text-label-sm bg-surface-container hover:bg-surface-container-high rounded-lg font-medium text-on-surface"
+                      className="px-2.5 py-1 text-label-sm bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg font-medium text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700"
                       title="Record Vitals"
                     >
                       Vitals
