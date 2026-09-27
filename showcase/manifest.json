@@ -1,0 +1,405 @@
+{
+  "title": "Cliniva OS Clinical Dashboards Showcase",
+  "generatedAt": "2026-09-26T17:57:44.413Z",
+  "resolution": "3840x2160",
+  "deviceScaleFactor": 2,
+  "totalScreens": 12,
+  "dashboards": [
+    {
+      "id": "doctor-cockpit",
+      "title": "Clinical Cockpit & OPD",
+      "role": "Attending Physician / Cardiologist",
+      "category": "Clinical & Inpatient",
+      "route": "/doctor",
+      "demoRole": "doctor",
+      "stitchFile": "doctor-portal.html",
+      "badge": "Real-Time EHR",
+      "badgeColor": "emerald",
+      "description": "High-velocity consultation interface featuring real-time patient queue, live vitals telemetry (BP, HR, SpO2), quick SOAP notes, and 1-click consultation initiation.",
+      "keyMetrics": [
+        {
+          "label": "Today's Schedule",
+          "value": "18 Consults"
+        },
+        {
+          "label": "Live in Queue",
+          "value": "5 Patients"
+        },
+        {
+          "label": "Pending STAT",
+          "value": "3 Critical"
+        },
+        {
+          "label": "Avg Wait Time",
+          "value": "14 mins"
+        }
+      ],
+      "heroImage": "screenshots/doctor-cockpit_hero.png",
+      "fullImage": "screenshots/doctor-cockpit_full.png",
+      "capturedAt": "2026-09-26T17:56:51.796Z"
+    },
+    {
+      "id": "doctor-queue",
+      "title": "OPD Live Queue & Patient Flow",
+      "role": "OPD Physician & Triage Lead",
+      "category": "Clinical & Inpatient",
+      "route": "/doctor/queue",
+      "demoRole": "doctor",
+      "stitchFile": "doctor-portal.html",
+      "badge": "Smart Triage",
+      "badgeColor": "sky",
+      "description": "Intelligent patient pacing and queue sequencing with live acuity tags, emergency STAT overrides, and direct patient call bell management.",
+      "keyMetrics": [
+        {
+          "label": "Queue Capacity",
+          "value": "25 Slots"
+        },
+        {
+          "label": "Triage Accuracy",
+          "value": "99.4%"
+        },
+        {
+          "label": "Active Call",
+          "value": "Token #7"
+        },
+        {
+          "label": "Discharge Pace",
+          "value": "4.2/hr"
+        }
+      ],
+      "heroImage": "screenshots/doctor-queue_hero.png",
+      "fullImage": "screenshots/doctor-queue_full.png",
+      "capturedAt": "2026-09-26T17:56:56.192Z"
+    },
+    {
+      "id": "nursing-ward",
+      "title": "Inpatient Ward & Bed Board",
+      "role": "Charge Nurse (RN)",
+      "category": "Clinical & Inpatient",
+      "route": "/nursing",
+      "demoRole": "nurse",
+      "stitchFile": "nursing-ward.html",
+      "badge": "Live Telemetry",
+      "badgeColor": "teal",
+      "description": "Comprehensive inpatient oversight displaying visual bed allocations, real-time vital telemetry streams, Medication Administration Records (MAR), and nurse shift handovers.",
+      "keyMetrics": [
+        {
+          "label": "Ward Occupancy",
+          "value": "88% (22/25)"
+        },
+        {
+          "label": "Pending Meds",
+          "value": "4 Overdue"
+        },
+        {
+          "label": "Fall Risk Alerts",
+          "value": "2 High Risk"
+        },
+        {
+          "label": "Shift Roster",
+          "value": "6 RNs Active"
+        }
+      ],
+      "heroImage": "screenshots/nursing-ward_hero.png",
+      "fullImage": "screenshots/nursing-ward_full.png",
+      "capturedAt": "2026-09-26T17:57:00.548Z"
+    },
+    {
+      "id": "pharmacy-dispense",
+      "title": "Pharmacy & Dispensing Hub",
+      "role": "Chief Pharmacist",
+      "category": "Diagnostic & Ancillary",
+      "route": "/pharmacy",
+      "demoRole": "pharmacist",
+      "stitchFile": "pharmacy.html",
+      "badge": "FEFO Tracking",
+      "badgeColor": "indigo",
+      "description": "Digital e-prescription dispensing line with FEFO (First-Expired, First-Out) batch verification, narcotic vault dual-signoff, and drug-drug interaction warning engines.",
+      "keyMetrics": [
+        {
+          "label": "Rx Queue",
+          "value": "12 Active"
+        },
+        {
+          "label": "Dispense Speed",
+          "value": "3.1 min avg"
+        },
+        {
+          "label": "Formulary Items",
+          "value": "1,420 SKU"
+        },
+        {
+          "label": "Stock Stockouts",
+          "value": "0 Critical"
+        }
+      ],
+      "heroImage": "screenshots/pharmacy-dispense_hero.png",
+      "fullImage": "screenshots/pharmacy-dispense_full.png",
+      "capturedAt": "2026-09-26T17:57:05.000Z"
+    },
+    {
+      "id": "lab-diagnostics",
+      "title": "Diagnostics & STAT Laboratory",
+      "role": "Medical Laboratory Technologist",
+      "category": "Diagnostic & Ancillary",
+      "route": "/lab",
+      "demoRole": "lab_tech",
+      "stitchFile": "lab-diagnostics.html",
+      "badge": "STAT Priority",
+      "badgeColor": "amber",
+      "description": "Automated laboratory workbench featuring barcode specimen accessioning, bi-directional analyzer telemetry, critical value panic alerts, and pathologist e-signatures.",
+      "keyMetrics": [
+        {
+          "label": "STAT Turnaround",
+          "value": "18 mins"
+        },
+        {
+          "label": "Samples Run Today",
+          "value": "184 Tests"
+        },
+        {
+          "label": "Panic Flag",
+          "value": "Troponin-T STAT"
+        },
+        {
+          "label": "Analyzer Uptime",
+          "value": "99.9%"
+        }
+      ],
+      "heroImage": "screenshots/lab-diagnostics_hero.png",
+      "fullImage": "screenshots/lab-diagnostics_full.png",
+      "capturedAt": "2026-09-26T17:57:09.100Z"
+    },
+    {
+      "id": "front-desk-opd",
+      "title": "Front Desk & Patient Intake",
+      "role": "Patient Care Coordinator",
+      "category": "Front Office & Revenue",
+      "route": "/front-desk",
+      "demoRole": "front_desk",
+      "stitchFile": "front-desk.html",
+      "badge": "Fast Intake",
+      "badgeColor": "blue",
+      "description": "Express biometric and insurance patient intake terminal with token generation, physician schedule roster, clinic wait-time predictors, and wheelchair assistance dispatch.",
+      "keyMetrics": [
+        {
+          "label": "Registrations",
+          "value": "94 Today"
+        },
+        {
+          "label": "Intake Velocity",
+          "value": "90s / Patient"
+        },
+        {
+          "label": "Ins. Pre-Auth",
+          "value": "98% Instant"
+        },
+        {
+          "label": "Token Active",
+          "value": "#118 Issued"
+        }
+      ],
+      "heroImage": "screenshots/front-desk-opd_hero.png",
+      "fullImage": "screenshots/front-desk-opd_full.png",
+      "capturedAt": "2026-09-26T17:57:14.097Z"
+    },
+    {
+      "id": "billing-cashier",
+      "title": "Billing & Revenue Cycle",
+      "role": "Cashier & Revenue Cycle Officer",
+      "category": "Front Office & Revenue",
+      "route": "/billing",
+      "demoRole": "cashier",
+      "stitchFile": "billing-cashier.html",
+      "badge": "Split Settlement",
+      "badgeColor": "emerald",
+      "description": "High-security cashier terminal supporting split copay/insurance settlements, cashless QR payments, IPD interim bill reconciliation, and automatic financial audit logging.",
+      "keyMetrics": [
+        {
+          "label": "Daily Collections",
+          "value": "$42,850"
+        },
+        {
+          "label": "Pending Claims",
+          "value": "14 Files"
+        },
+        {
+          "label": "Collection Rate",
+          "value": "97.2%"
+        },
+        {
+          "label": "Reconciliation",
+          "value": "Zero Delta"
+        }
+      ],
+      "heroImage": "screenshots/billing-cashier_hero.png",
+      "fullImage": "screenshots/billing-cashier_full.png",
+      "capturedAt": "2026-09-26T17:57:18.119Z"
+    },
+    {
+      "id": "admin-operations",
+      "title": "Hospital Governance & Admin",
+      "role": "Medical Director / System Admin",
+      "category": "Administration",
+      "route": "/admin",
+      "demoRole": "admin",
+      "stitchFile": "admin-management.html",
+      "badge": "HIPAA Audited",
+      "badgeColor": "purple",
+      "description": "Executive governance cockpit delivering multi-department census metrics, staff privilege provisioning, HL7/FHIR pipeline health, and immutable regulatory audit logs.",
+      "keyMetrics": [
+        {
+          "label": "Total Occupancy",
+          "value": "84.6%"
+        },
+        {
+          "label": "Active Staff",
+          "value": "128 On-Duty"
+        },
+        {
+          "label": "FHIR Throughput",
+          "value": "450 msg/sec"
+        },
+        {
+          "label": "Security Grade",
+          "value": "SOC-2 Ready"
+        }
+      ],
+      "heroImage": "screenshots/admin-operations_hero.png",
+      "fullImage": "screenshots/admin-operations_full.png",
+      "capturedAt": "2026-09-26T17:57:22.334Z"
+    },
+    {
+      "id": "canteen-dietary",
+      "title": "Dietary & Nutrition Services",
+      "role": "Clinical Dietitian & Canteen Manager",
+      "category": "Administration",
+      "route": "/canteen",
+      "demoRole": "canteen",
+      "stitchFile": "canteen-dietary.html",
+      "badge": "Therapeutic Menus",
+      "badgeColor": "orange",
+      "description": "Specialized meal staging workstation synchronizing patient medical diets (diabetic, renal, NPO) with kitchen preparation, tray barcode dispatch, and staff cashless dining.",
+      "keyMetrics": [
+        {
+          "label": "Meal Trays Today",
+          "value": "340 Prepped"
+        },
+        {
+          "label": "NPO Alerts",
+          "value": "8 Beds Active"
+        },
+        {
+          "label": "Allergen Filter",
+          "value": "100% Guard"
+        },
+        {
+          "label": "Kitchen Velocity",
+          "value": "12m Assembly"
+        }
+      ],
+      "heroImage": "screenshots/canteen-dietary_hero.png",
+      "fullImage": "screenshots/canteen-dietary_full.png",
+      "capturedAt": "2026-09-26T17:57:26.321Z"
+    },
+    {
+      "id": "patient-portal",
+      "title": "Patient Health Portal & Locker",
+      "role": "Patient Self-Service",
+      "category": "Patient Self-Service",
+      "route": "/portal",
+      "demoRole": "patient",
+      "stitchFile": "patient-portal.html",
+      "badge": "Encrypted Vault",
+      "badgeColor": "cyan",
+      "description": "Modern, accessible mobile-responsive patient companion allowing verified discharge summary downloads, real-time lab report viewing, and medication schedule alerts.",
+      "keyMetrics": [
+        {
+          "label": "Active Users",
+          "value": "3,410"
+        },
+        {
+          "label": "Report Downloads",
+          "value": "620 This Wk"
+        },
+        {
+          "label": "Adherence Score",
+          "value": "94%"
+        },
+        {
+          "label": "Access Portal",
+          "value": "Zero Trust"
+        }
+      ],
+      "heroImage": "screenshots/patient-portal_hero.png",
+      "fullImage": "screenshots/patient-portal_full.png",
+      "capturedAt": "2026-09-26T17:57:32.036Z"
+    },
+    {
+      "id": "role-switcher-gateway",
+      "title": "Clinical Switcher & Auth Gate",
+      "role": "Universal Multi-Role Access",
+      "category": "Patient Self-Service",
+      "route": "/login",
+      "demoRole": "doctor",
+      "stitchFile": "login-role-portal.html",
+      "badge": "Instant Simulation",
+      "badgeColor": "rose",
+      "description": "Enterprise role-switching terminal designed for executive demonstrations, enabling seamless 1-click transitions across all 9 hospital staff roles without re-authenticating.",
+      "keyMetrics": [
+        {
+          "label": "Hospital Roles",
+          "value": "9 Configured"
+        },
+        {
+          "label": "Switch Speed",
+          "value": "< 200ms"
+        },
+        {
+          "label": "MFA Emulation",
+          "value": "Biometric/PIN"
+        },
+        {
+          "label": "Session Isolation",
+          "value": "Multi-Tenant"
+        }
+      ],
+      "heroImage": "screenshots/role-switcher-gateway_hero.png",
+      "fullImage": "screenshots/role-switcher-gateway_full.png",
+      "capturedAt": "2026-09-26T17:57:38.337Z"
+    },
+    {
+      "id": "platform-overview",
+      "title": "Cliniva OS Platform Overview",
+      "role": "Hospital Leadership & Enterprise",
+      "category": "Administration",
+      "route": "/",
+      "demoRole": "doctor",
+      "stitchFile": "index.html",
+      "badge": "Enterprise Architecture",
+      "badgeColor": "emerald",
+      "description": "Comprehensive high-level view of the Cliniva OS cloud-native hospital operating system, outlining modular EMR, HL7/FHIR bridges, and departmental interoperability.",
+      "keyMetrics": [
+        {
+          "label": "Integrated Modules",
+          "value": "9 Clinical"
+        },
+        {
+          "label": "Sub-Screens",
+          "value": "45+ Workspaces"
+        },
+        {
+          "label": "Interoperability",
+          "value": "FHIR R4"
+        },
+        {
+          "label": "Architecture",
+          "value": "Next.js 14 App"
+        }
+      ],
+      "heroImage": "screenshots/platform-overview_hero.png",
+      "fullImage": "screenshots/platform-overview_full.png",
+      "capturedAt": "2026-09-26T17:57:44.412Z"
+    }
+  ]
+}

@@ -281,7 +281,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface text-on-surface relative overflow-x-hidden flex flex-col justify-between selection:bg-primary/20">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-50 relative overflow-x-hidden flex flex-col justify-between selection:bg-primary/20 transition-colors duration-200">
       {/* Dynamic Ambient Background Elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
         <div className="absolute -top-32 -right-32 w-[550px] h-[550px] bg-gradient-to-br from-primary/10 via-secondary-fixed/15 to-transparent rounded-full blur-3xl" />

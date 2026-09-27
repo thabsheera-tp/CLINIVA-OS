@@ -46,7 +46,7 @@ export default function DashboardShell({
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
 
   return (
-    <div className="dashboard-shell min-h-screen">
+    <div className="dashboard-shell min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-50 transition-colors duration-200">
       <Sidebar
         role={role}
         roleLabel={roleLabel}
@@ -77,8 +77,8 @@ export default function DashboardShell({
           onToggleMobileMenu={() => setMobileDrawerOpen(!mobileDrawerOpen)}
         />
 
-        {/* Page content — top-padded for fixed header, bottom-padded for mobile bottom nav */}
-        <main className="flex-1 pt-16 px-3 sm:px-gutter lg:px-gutter-desktop py-4 sm:py-gutter bg-surface min-h-screen pb-24 lg:pb-gutter overflow-x-hidden">
+        {/* Page content — top-padded for fixed header (h-16), bottom-padded for mobile bottom nav */}
+        <main className="flex-1 pt-20 sm:pt-24 px-3 sm:px-gutter lg:px-gutter-desktop pb-24 lg:pb-gutter bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-50 min-h-screen overflow-x-hidden transition-colors duration-200">
           {children}
         </main>
       </div>

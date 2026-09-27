@@ -13,7 +13,7 @@ export default function NotFound() {
   ]
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col items-center justify-center p-6 text-on-surface">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-50 flex flex-col items-center justify-center p-6 transition-colors duration-200">
       <div className="max-w-2xl w-full text-center space-y-6">
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-secondary-fixed/50 text-primary shadow-sm">
           <span className="material-symbols-outlined text-[44px]">healing</span>

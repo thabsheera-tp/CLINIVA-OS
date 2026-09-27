@@ -47,13 +47,31 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* Dark mode initialization: runs before paint to prevent white flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('cliniva_theme');
+                  var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (theme === 'dark' || (theme === 'system' && systemDark)) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
         {/* Material Symbols for icons (same as Stitch design) */}
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
         />
       </head>
-      <body className="font-body bg-surface text-on-surface antialiased transition-colors duration-200">
+      <body className="font-body bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-50 antialiased transition-colors duration-200">
         <ThemeProvider>
           <ClinicRealtimeProvider>
             <GlobalModalRoot />
