@@ -336,29 +336,29 @@ export default function SimpleLandingPage() {
   }, [activeCategory, searchQuery])
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col selection:bg-teal-500/20 selection:text-teal-900 dark:selection:text-teal-200">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col selection:bg-teal-500/20 selection:text-teal-900 dark:selection:text-teal-200 overflow-x-hidden">
       
       {/* ─── Top Header ─── */}
-      <header className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           
           {/* Logo & Simple System Tagline */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-700 to-teal-500 text-white flex items-center justify-center shadow-md shadow-teal-700/20 group-hover:scale-105 transition-transform flex-shrink-0">
-              <Activity className="w-5 h-5" strokeWidth={2.2} />
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-teal-700 to-teal-500 text-white flex items-center justify-center shadow-md shadow-teal-700/20 group-hover:scale-105 transition-transform flex-shrink-0">
+              <Activity className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={2.2} />
             </div>
             <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-slate-900 dark:text-slate-100 text-lg tracking-tight font-heading">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-bold text-slate-900 dark:text-slate-100 text-base sm:text-lg tracking-tight font-heading">
                   Cliniva OS
                 </span>
-                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/70 px-2 py-0.5 rounded-full border border-teal-200/80 dark:border-teal-800/80">
+                <span className="hidden xs:inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/70 px-1.5 sm:px-2 py-0.5 rounded-full border border-teal-200/80 dark:border-teal-800/80">
                   <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
-                  Live System
+                  Live
                 </span>
               </div>
               <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
-                Simple Hospital & Clinic Operating System
+                Simple Hospital & Clinic OS
               </span>
             </div>
           </Link>
@@ -383,12 +383,12 @@ export default function SimpleLandingPage() {
           </nav>
 
           {/* Right Action Controls */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <ThemeToggle />
 
             <Link
               href="/doctor"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs sm:text-sm font-semibold shadow-md shadow-teal-700/20 transition-all hover:scale-[1.02]"
+              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs sm:text-sm font-semibold shadow-md shadow-teal-700/20 transition-all hover:scale-[1.02]"
             >
               <span>Doctor Portal</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -454,71 +454,71 @@ export default function SimpleLandingPage() {
       </header>
 
       {/* ─── Hero Section: Telling About The System Simply ─── */}
-      <section className="relative pt-12 sm:pt-20 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
+      <section className="relative pt-10 sm:pt-20 pb-12 sm:pb-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
         
         {/* Simple Friendly Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/70 border border-teal-200/80 dark:border-teal-800/80 text-teal-800 dark:text-teal-300 text-xs sm:text-sm font-semibold mb-6 shadow-sm">
-          <Sparkles className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-          <span>Simple, Paperless Hospital & Clinic Management</span>
+        <div className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/70 border border-teal-200/80 dark:border-teal-800/80 text-teal-800 dark:text-teal-300 text-[11px] sm:text-sm font-semibold mb-4 sm:mb-6 shadow-sm">
+          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-teal-600 dark:text-teal-400 flex-shrink-0" />
+          <span>Simple, Paperless Hospital Software</span>
         </div>
 
         {/* Clear, Big, Plain-English Headline */}
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight leading-[1.18] mb-6 font-heading">
-          Smart healthcare management,{' '}
+        <h1 className="text-[28px] leading-tight sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight sm:leading-[1.18] mb-4 sm:mb-6 font-heading">
+          Healthcare management,{' '}
           <span className="bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 dark:from-teal-400 dark:via-teal-300 dark:to-emerald-400 bg-clip-text text-transparent">
-            made remarkably simple.
+            made simple.
           </span>
         </h1>
 
         {/* The Simple Explanation */}
-        <p className="text-base sm:text-lg lg:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed mb-8">
-          Cliniva OS connects your reception, doctors, nurses, pharmacy, lab, and billing in one easy-to-use system. 
-          No lost paperwork, no unreadable prescriptions, and no confusion — just smooth patient care from arrival to discharge.
+        <p className="text-sm sm:text-lg lg:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8 px-1">
+          Cliniva OS connects consultations, patient queues, prescriptions, inpatient beds, lab tests, and billing into one clean, easy-to-use platform.
         </p>
 
         {/* Main CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 max-w-md mx-auto mb-10">
+        <div className="flex flex-col xs:flex-row items-center justify-center gap-2.5 sm:gap-4 max-w-sm xs:max-w-md mx-auto mb-6 sm:mb-10 w-full">
           <a
             href="#departments"
-            className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-semibold text-sm shadow-lg shadow-teal-700/20 transition-all hover:scale-[1.02]"
+            className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-semibold text-sm shadow-lg shadow-teal-700/20 transition-all active:scale-[0.98]"
           >
             <Layers className="w-4 h-4" />
-            <span>Explore Workspaces ({WORKSPACES.length})</span>
+            <span>Launch Live Demo</span>
           </a>
 
           <a
-            href="#how-it-works"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-colors"
+            href="/login"
+            className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-colors active:scale-[0.98]"
           >
-            <span>See How It Works</span>
-            <ChevronDown className="w-4 h-4 text-slate-400" />
+            <Shield className="w-4 h-4 text-slate-400" />
+            <span>Staff Login</span>
           </a>
         </div>
 
         {/* Quick 1-Click Role Switcher Bar */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 shadow-md max-w-4xl mx-auto">
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 shadow-md max-w-4xl mx-auto">
           <div className="flex items-center justify-between gap-2 mb-3">
-            <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 text-amber-500" />
-              <span>Instant Test Drive — Tap Any Role to Enter:</span>
+            <span className="text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+              <span>Tap Any Role to Enter:</span>
             </span>
-            <span className="text-[11px] text-teal-700 dark:text-teal-400 font-semibold hidden sm:inline">
-              1-Click Direct Access
+            <span className="text-[11px] text-teal-700 dark:text-teal-400 font-semibold whitespace-nowrap">
+              1-Click Access
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2">
+          {/* Horizontal scroll on mobile, grid on larger screens */}
+          <div className="flex sm:grid sm:grid-cols-4 md:grid-cols-8 gap-2 overflow-x-auto pb-1 sm:pb-0 -mx-1 px-1 snap-x snap-mandatory scrollbar-hide">
             {WORKSPACES.slice(0, 8).map((ws) => {
               const Icon = ws.icon
               return (
                 <Link
                   key={ws.id}
                   href={ws.route}
-                  className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-teal-50 dark:hover:bg-teal-950/60 border border-slate-200/80 dark:border-slate-700/80 hover:border-teal-300 dark:hover:border-teal-700 text-slate-700 dark:text-slate-200 group transition-all"
+                  className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-teal-50 dark:hover:bg-teal-950/60 border border-slate-200/80 dark:border-slate-700/80 hover:border-teal-300 dark:hover:border-teal-700 text-slate-700 dark:text-slate-200 group transition-all snap-start flex-shrink-0 w-16 sm:w-auto"
                   title={`Open ${ws.title}`}
                 >
                   <Icon className="w-4 h-4 text-teal-600 dark:text-teal-400 group-hover:scale-110 transition-transform mb-1" />
-                  <span className="text-xs font-semibold tracking-tight text-center leading-tight">
+                  <span className="text-[10px] sm:text-xs font-semibold tracking-tight text-center leading-tight">
                     {ws.title.split(' ')[0]}
                   </span>
                 </Link>
@@ -528,33 +528,33 @@ export default function SimpleLandingPage() {
         </div>
 
         {/* Key Simplicity Pillars */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 pt-10 max-w-4xl mx-auto text-left">
-          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 pt-6 sm:pt-10 max-w-4xl mx-auto text-left">
+          <div className="flex items-center gap-2 sm:items-start sm:gap-2.5 p-2.5 sm:p-3 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
+            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
             <div>
-              <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block">100% Paperless</span>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400">All digital charts & e-Rx</span>
+              <span className="text-[11px] sm:text-xs font-bold text-slate-900 dark:text-slate-100 block">No Installation</span>
+              <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">Works in any browser</span>
             </div>
           </div>
-          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
-            <Zap className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+          <div className="flex items-center gap-2 sm:items-start sm:gap-2.5 p-2.5 sm:p-3 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
+            <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 flex-shrink-0" />
             <div>
-              <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block">Instant Sync</span>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400">Zero wait between rooms</span>
+              <span className="text-[11px] sm:text-xs font-bold text-slate-900 dark:text-slate-100 block">Pre-loaded Data</span>
+              <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">Ready to demo now</span>
             </div>
           </div>
-          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
-            <Smartphone className="w-5 h-5 text-sky-600 dark:text-sky-400 flex-shrink-0 mt-0.5" />
+          <div className="flex items-center gap-2 sm:items-start sm:gap-2.5 p-2.5 sm:p-3 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
+            <Smartphone className="w-4 h-4 sm:w-5 sm:h-5 text-sky-600 dark:text-sky-400 flex-shrink-0" />
             <div>
-              <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block">Tablet & Mobile</span>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400">Easy bedside ward rounds</span>
+              <span className="text-[11px] sm:text-xs font-bold text-slate-900 dark:text-slate-100 block">Mobile Friendly</span>
+              <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">Works on phones & tablets</span>
             </div>
           </div>
-          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
-            <Clock className="w-5 h-5 text-violet-600 dark:text-violet-400 flex-shrink-0 mt-0.5" />
+          <div className="flex items-center gap-2 sm:items-start sm:gap-2.5 p-2.5 sm:p-3 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
+            <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-violet-600 dark:text-violet-400 flex-shrink-0" />
             <div>
-              <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block">Quick To Learn</span>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400">Staff master it in 15 mins</span>
+              <span className="text-[11px] sm:text-xs font-bold text-slate-900 dark:text-slate-100 block">Instant 1-Click</span>
+              <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">Access any workspace</span>
             </div>
           </div>
         </div>
@@ -562,7 +562,7 @@ export default function SimpleLandingPage() {
       </section>
 
       {/* ─── Section: What is Cliniva OS? (Simple Comparison) ─── */}
-      <section id="about" className="py-14 sm:py-20 bg-white dark:bg-slate-900/60 border-y border-slate-200/80 dark:border-slate-800/80 transition-colors">
+      <section id="about" className="py-10 sm:py-20 bg-white dark:bg-slate-900/60 border-y border-slate-200/80 dark:border-slate-800/80 transition-colors">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-12">
@@ -637,7 +637,7 @@ export default function SimpleLandingPage() {
       </section>
 
       {/* ─── Section: How It Works in 4 Simple Steps ─── */}
-      <section id="how-it-works" className="py-14 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      <section id="how-it-works" className="py-10 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
         
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-xs font-bold text-teal-700 dark:text-teal-400 uppercase tracking-wider mb-2 block">
@@ -651,7 +651,7 @@ export default function SimpleLandingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 relative">
           
           {/* Step 1 */}
           <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-teal-500 transition-all flex flex-col justify-between">
@@ -746,7 +746,7 @@ export default function SimpleLandingPage() {
       </section>
 
       {/* ─── Section: Departments / Workspaces Directory ─── */}
-      <section id="departments" className="py-14 sm:py-20 bg-white/70 dark:bg-slate-900/40 border-y border-slate-200/80 dark:border-slate-800/80 transition-colors">
+      <section id="departments" className="py-10 sm:py-20 bg-white/70 dark:bg-slate-900/40 border-y border-slate-200/80 dark:border-slate-800/80 transition-colors">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-8">
@@ -762,49 +762,49 @@ export default function SimpleLandingPage() {
           </div>
 
           {/* Filter Bar & Search */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 mb-6 sm:mb-8">
             
-            {/* Category Tabs */}
-            <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto p-1 rounded-xl bg-slate-100 dark:bg-slate-800">
+            {/* Category Tabs — horizontal scroll on mobile */}
+            <div className="flex items-center gap-1 overflow-x-auto w-full sm:w-auto p-1 rounded-xl bg-slate-100 dark:bg-slate-800 scrollbar-hide snap-x">
               <button
                 onClick={() => setActiveCategory('all')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap snap-start ${
                   activeCategory === 'all'
                     ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-300 shadow-sm'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
-                All Workspaces ({WORKSPACES.length})
+                All ({WORKSPACES.length})
               </button>
               <button
                 onClick={() => setActiveCategory('clinical')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap snap-start ${
                   activeCategory === 'clinical'
                     ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-300 shadow-sm'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
-                Clinical (Doctor, Nurse, Patient)
+                Clinical
               </button>
               <button
                 onClick={() => setActiveCategory('operations')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap snap-start ${
                   activeCategory === 'operations'
                     ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-300 shadow-sm'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
-                Operations & Billing
+                Operations
               </button>
               <button
                 onClick={() => setActiveCategory('support')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap snap-start ${
                   activeCategory === 'support'
                     ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-300 shadow-sm'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
-                Pharmacy, Lab & Canteen
+                Lab & Canteen
               </button>
             </div>
 
@@ -831,7 +831,7 @@ export default function SimpleLandingPage() {
           </div>
 
           {/* Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {filteredWorkspaces.map((card) => {
               const Icon = card.icon
               return (
@@ -900,7 +900,7 @@ export default function SimpleLandingPage() {
       </section>
 
       {/* ─── Section: Key Benefits ─── */}
-      <section id="benefits" className="py-14 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      <section id="benefits" className="py-10 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-xs font-bold text-teal-700 dark:text-teal-400 uppercase tracking-wider mb-2 block">
             Simplicity & Speed
@@ -913,7 +913,7 @@ export default function SimpleLandingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5">
           <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-950 text-teal-700 dark:text-teal-300 flex items-center justify-center mb-3">
               <Zap className="w-5 h-5" />
@@ -953,7 +953,7 @@ export default function SimpleLandingPage() {
       </section>
 
       {/* ─── Section: Simple FAQ ─── */}
-      <section id="faq" className="py-14 sm:py-20 bg-white dark:bg-slate-900/60 border-y border-slate-200/80 dark:border-slate-800/80 transition-colors">
+      <section id="faq" className="py-10 sm:py-20 bg-white dark:bg-slate-900/60 border-y border-slate-200/80 dark:border-slate-800/80 transition-colors">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center mb-10">
@@ -1001,25 +1001,25 @@ export default function SimpleLandingPage() {
       </section>
 
       {/* ─── Ready to Start CTA Banner ─── */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center">
-        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-tr from-teal-800 via-teal-700 to-emerald-700 text-white shadow-xl relative overflow-hidden">
+      <section className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center">
+        <div className="p-6 sm:p-12 rounded-2xl sm:rounded-3xl bg-gradient-to-tr from-teal-800 via-teal-700 to-emerald-700 text-white shadow-xl relative overflow-hidden">
           <div className="relative z-10">
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3 font-heading">
+            <h2 className="text-xl sm:text-4xl font-extrabold tracking-tight mb-2 sm:mb-3 font-heading">
               Ready to experience Cliniva OS?
             </h2>
-            <p className="text-teal-100 text-xs sm:text-base max-w-xl mx-auto mb-8 leading-relaxed">
-              Open any workspace instantly to see how smooth, fast, and simple modern clinic management can be.
+            <p className="text-teal-100 text-xs sm:text-base max-w-xl mx-auto mb-5 sm:mb-8 leading-relaxed">
+              Open any workspace instantly — no sign-up required.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-3">
+            <div className="flex flex-col xs:flex-row items-center justify-center gap-2.5 sm:gap-3">
               <Link
                 href="/front-desk"
-                className="px-6 py-3 rounded-xl bg-white text-teal-800 hover:bg-teal-50 font-bold text-xs sm:text-sm shadow-md transition-all hover:scale-105"
+                className="w-full xs:w-auto px-5 sm:px-6 py-3 rounded-xl bg-white text-teal-800 hover:bg-teal-50 font-bold text-sm shadow-md transition-all active:scale-[0.98]"
               >
-                Start at Front Desk Check-In
+                Start at Front Desk
               </Link>
               <Link
                 href="/doctor"
-                className="px-6 py-3 rounded-xl bg-teal-900/60 hover:bg-teal-900/80 text-white font-semibold text-xs sm:text-sm border border-teal-500/40 transition-all"
+                className="w-full xs:w-auto px-5 sm:px-6 py-3 rounded-xl bg-teal-900/60 hover:bg-teal-900/80 text-white font-semibold text-sm border border-teal-500/40 transition-all active:scale-[0.98]"
               >
                 Open Doctor Portal
               </Link>
@@ -1029,18 +1029,18 @@ export default function SimpleLandingPage() {
       </section>
 
       {/* ─── Clean Modern Footer ─── */}
-      <footer className="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-8 transition-colors">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
+      <footer className="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-6 sm:py-8 transition-colors">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center sm:flex-row sm:justify-between gap-2 sm:gap-4 text-xs text-slate-500 dark:text-slate-400 text-center sm:text-left">
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded-md bg-teal-700 text-white flex items-center justify-center">
+            <div className="w-5 h-5 rounded-md bg-teal-700 text-white flex items-center justify-center flex-shrink-0">
               <Activity className="w-3 h-3" />
             </div>
             <span className="font-bold text-slate-800 dark:text-slate-200 font-heading">Cliniva OS</span>
-            <span>•</span>
-            <span>Hospital & Clinic Management System</span>
+            <span className="hidden sm:inline">•</span>
+            <span className="hidden sm:inline">Hospital & Clinic Management System</span>
           </div>
           <div>
-            © {new Date().getFullYear()} Cliniva OS. Designed for simplicity, clarity & speed.
+            © {new Date().getFullYear()} Cliniva OS. Built for simplicity & speed.
           </div>
         </div>
       </footer>
