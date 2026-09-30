@@ -37,12 +37,20 @@ const SAMPLE_EXPIRY = [
 ]
 
 export default function PharmacySubScreens({ slug, userName }: Props) {
-  const { setDispenseOpen } = useClinicRealtime()
+  const { setDispenseOpen, openDispenseModal, pharmacyRefreshKey } = useClinicRealtime()
   const [searchTerm, setSearchTerm] = useState('')
 
   // ── Real data hooks ──
   const inventory = useDrugInventory(slug === 'inventory' ? searchTerm : '')
   const dispenseQueue = useActivePrescriptions()
+
+  const dispenseQueueRefetch = dispenseQueue.refetch
+  const inventoryRefetch = inventory.refetch
+
+  React.useEffect(() => {
+    dispenseQueueRefetch()
+    inventoryRefetch()
+  }, [pharmacyRefreshKey, dispenseQueueRefetch, inventoryRefetch])
 
   return (
     <div className="flex flex-col w-full space-y-gutter-desktop">
@@ -87,7 +95,7 @@ export default function PharmacySubScreens({ slug, userName }: Props) {
                     }`}>
                       {order.status}
                     </span>
-                    <button onClick={() => setDispenseOpen(true)} className="btn-primary text-label-sm py-1.5 px-4">
+                    <button onClick={() => openDispenseModal(order.id)} className="btn-primary text-label-sm py-1.5 px-4">
                       Dispense
                     </button>
                   </div>
@@ -113,7 +121,7 @@ export default function PharmacySubScreens({ slug, userName }: Props) {
                     }`}>
                       {order.status}
                     </span>
-                    <button onClick={() => setDispenseOpen(true)} className="btn-primary text-label-sm py-1.5 px-4">
+                    <button onClick={() => openDispenseModal(order.id)} className="btn-primary text-label-sm py-1.5 px-4">
                       Dispense
                     </button>
                   </div>

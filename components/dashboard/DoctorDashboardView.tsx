@@ -76,7 +76,7 @@ export default function DoctorDashboardView({ userName }: Props) {
             </span>
             <span className="text-slate-300 dark:text-slate-700">•</span>
             <span className="text-label-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
+              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
               Room 304 – Exam B
             </span>
           </div>
@@ -89,7 +89,7 @@ export default function DoctorDashboardView({ userName }: Props) {
         </div>
         <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-space-sm w-full xl:w-auto">
           <div className="flex items-center gap-space-sm bg-slate-50 dark:bg-slate-950 px-space-md py-space-sm rounded-xl border border-slate-200 dark:border-slate-800">
-            <span className="material-symbols-outlined text-teal-600 dark:text-teal-400 text-[20px]">calendar_today</span>
+            <span className="material-symbols-outlined text-primary text-[20px]">calendar_today</span>
             <div className="flex flex-col">
               <span className="text-label-sm text-slate-500 dark:text-slate-400 uppercase font-medium">Clinic Date</span>
               <span className="text-label-md text-slate-900 dark:text-slate-50 font-semibold">
@@ -166,28 +166,30 @@ export default function DoctorDashboardView({ userName }: Props) {
       </section>
 
       {/* ── 3. Live Queue & Operational Cockpit Switcher ── */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700/80">
+      <div className="flex items-center justify-between overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700/80 w-full xs:w-auto">
           <button
             onClick={() => setQueueViewMode('cockpit')}
-            className={`px-3 py-1 rounded-lg text-label-sm font-medium transition-all ${
+            className={`flex-1 xs:flex-initial px-2.5 sm:px-3 py-1.5 sm:py-1 rounded-lg text-[11px] sm:text-label-sm font-medium transition-all whitespace-nowrap ${
               queueViewMode === 'cockpit'
-                ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-300 shadow-xs font-semibold'
+                ? 'bg-white dark:bg-slate-900 text-primary shadow-xs font-semibold'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
             }`}
           >
-            Clinical Cockpit & Vitals
+            <span className="hidden xs:inline">Clinical Cockpit & Vitals</span>
+            <span className="xs:hidden">Cockpit</span>
           </button>
           <button
             onClick={() => setQueueViewMode('predictor')}
-            className={`px-3 py-1 rounded-lg text-label-sm font-medium transition-all flex items-center gap-1.5 ${
+            className={`flex-1 xs:flex-initial px-2.5 sm:px-3 py-1.5 sm:py-1 rounded-lg text-[11px] sm:text-label-sm font-medium transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
               queueViewMode === 'predictor'
-                ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-300 shadow-xs font-semibold'
+                ? 'bg-white dark:bg-slate-900 text-primary shadow-xs font-semibold'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
             }`}
           >
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-            Live Queue & Time Predictor
+            <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
+            <span className="hidden xs:inline">Live Queue & Time Predictor</span>
+            <span className="xs:hidden">Live Queue</span>
           </button>
         </div>
       </div>
@@ -214,7 +216,7 @@ export default function DoctorDashboardView({ userName }: Props) {
 
           {/* Patient banner */}
           <div className="flex items-start gap-space-md p-space-md bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
-            <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400 border border-teal-100 dark:border-teal-900/40 flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center flex-shrink-0">
               <span className="material-symbols-outlined text-[28px]">person</span>
             </div>
             <div className="flex-1 min-w-0">
@@ -232,7 +234,7 @@ export default function DoctorDashboardView({ userName }: Props) {
                       title="Click to copy Patient MRN"
                     >
                       <span>00482910</span>
-                      <span className="material-symbols-outlined text-[13px] text-teal-600 dark:text-teal-400">
+                      <span className="material-symbols-outlined text-[13px] text-primary">
                         {copiedMRN ? 'check' : 'content_copy'}
                       </span>
                       {copiedMRN && <span className="text-[10px] text-emerald-600 font-sans font-medium">Copied</span>}
@@ -240,7 +242,7 @@ export default function DoctorDashboardView({ userName }: Props) {
                     <span>•</span>
                     <span>{activePatient?.age ?? '54M'}</span>
                     <span>•</span>
-                    <span className="font-semibold text-teal-700 dark:text-teal-400">Token #{activePatient?.token ?? 7}</span>
+                    <span className="font-semibold text-primary">Token #{activePatient?.token ?? 7}</span>
                     <span>•</span>
                     <span>Room 304</span>
                   </div>
@@ -269,11 +271,11 @@ export default function DoctorDashboardView({ userName }: Props) {
               <div
                 key={v.label}
                 onClick={() => setVitalsOpen(true)}
-                className="flex flex-col items-center justify-center p-3.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 gap-1 cursor-pointer hover:border-teal-500/50 hover:-translate-y-0.5 transition-all duration-150 group active:scale-[0.99]"
+                className="flex flex-col items-center justify-center p-3.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 gap-1 cursor-pointer hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-150 group active:scale-[0.99]"
                 title="Click to update physiological vitals telemetry"
               >
-                <div className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
-                  <span className="material-symbols-outlined text-[15px] text-teal-600 dark:text-teal-400">{v.icon}</span>
+                <div className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors">
+                  <span className="material-symbols-outlined text-[15px] text-primary">{v.icon}</span>
                   <span>{v.label}</span>
                 </div>
                 <span className="font-heading text-headline-sm text-slate-900 dark:text-slate-50 tabular-nums font-mono font-bold tracking-tight">
@@ -326,7 +328,7 @@ export default function DoctorDashboardView({ userName }: Props) {
                         e.stopPropagation()
                         callNextPatient()
                       }}
-                      className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 text-[12px] font-semibold opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity touch-tap flex items-center gap-0.5 mt-0.5"
+                      className="text-primary hover:text-primary-container text-[12px] font-semibold opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity touch-tap flex items-center gap-0.5 mt-0.5"
                     >
                       <span>Call Next</span>
                       <span className="material-symbols-outlined text-[14px]">chevron_right</span>
@@ -358,7 +360,7 @@ export default function DoctorDashboardView({ userName }: Props) {
                 onClick={() => setScheduleFilter(f)}
                 className={`px-space-md py-1 rounded-full text-label-sm whitespace-nowrap transition-all touch-tap ${
                   scheduleFilter === f
-                    ? 'bg-teal-600 text-white font-semibold shadow-xs'
+                    ? 'bg-primary text-white font-semibold shadow-xs'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                 }`}
               >
@@ -379,7 +381,7 @@ export default function DoctorDashboardView({ userName }: Props) {
               <div key={row.time} className="p-3 flex items-center justify-between gap-2">
                 <div>
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="font-bold text-teal-600 dark:text-teal-400 tabular-nums text-label-md">{row.time}</span>
+                    <span className="font-bold text-primary tabular-nums text-label-md">{row.time}</span>
                     <span className="text-slate-300 dark:text-slate-700">•</span>
                     <p className="text-body-md text-slate-900 dark:text-slate-50 font-semibold">{row.patient}</p>
                   </div>
@@ -457,7 +459,7 @@ export default function DoctorDashboardView({ userName }: Props) {
                     <td className="px-space-md py-space-sm text-right">
                       <button
                         onClick={() => setConsultOpen(true)}
-                        className="text-teal-600 dark:text-teal-400 text-label-md font-semibold hover:underline touch-tap"
+                        className="text-primary text-label-md font-semibold hover:underline touch-tap"
                       >
                         {row.status === 'completed' ? 'View Chart' : 'Start →'}
                       </button>
@@ -512,18 +514,19 @@ export default function DoctorDashboardView({ userName }: Props) {
           ].map((alert) => (
             <div
               key={alert.patient + alert.test}
-              className="flex items-center gap-space-md p-space-md hover:bg-slate-50 dark:hover:bg-slate-850/40 transition-colors"
+              className="flex items-start sm:items-center gap-space-sm sm:gap-space-md p-space-sm sm:p-space-md hover:bg-slate-50 dark:hover:bg-slate-850/40 transition-colors"
             >
               <div
-                className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                className={`w-2.5 h-2.5 rounded-full flex-shrink-0 mt-1.5 sm:mt-0 ${
                   alert.level === 'critical' ? 'bg-rose-500' : 'bg-amber-500'
                 }`}
               />
               <div className="flex-1 min-w-0">
-                <p className="text-label-lg text-slate-900 dark:text-slate-50 font-semibold">
-                  {alert.patient} — <span className="text-slate-500 dark:text-slate-400 font-normal">{alert.test}</span>
+                <p className="text-label-lg text-slate-900 dark:text-slate-50 font-semibold truncate">
+                  {alert.patient}
                 </p>
                 <p className="text-body-sm text-slate-500 dark:text-slate-400">
+                  <span className="text-slate-700 dark:text-slate-300">{alert.test}</span>{' '}•{' '}
                   <span
                     className={`font-bold tabular-nums ${
                       alert.level === 'critical' ? 'text-rose-700 dark:text-rose-400' : 'text-amber-700 dark:text-amber-400'
@@ -534,13 +537,15 @@ export default function DoctorDashboardView({ userName }: Props) {
                   • {alert.ref}
                 </p>
               </div>
-              <span className="text-label-sm text-slate-500 dark:text-slate-400 flex-shrink-0">{alert.time}</span>
-              <button
-                onClick={() => setConsultOpen(true)}
-                className="btn-urgent text-label-sm py-1 px-space-md flex-shrink-0"
-              >
-                Review
-              </button>
+              <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                <span className="text-label-sm text-slate-500 dark:text-slate-400">{alert.time}</span>
+                <button
+                  onClick={() => setConsultOpen(true)}
+                  className="btn-urgent text-label-sm py-1 px-2.5 sm:px-space-md flex-shrink-0 touch-tap"
+                >
+                  Review
+                </button>
+              </div>
             </div>
           ))}
         </div>

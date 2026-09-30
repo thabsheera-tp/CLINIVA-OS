@@ -22,6 +22,17 @@ CREATE INDEX profiles_role_idx ON profiles(role);
 -- RLS
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
+-- Helper functions to prevent recursive RLS evaluations on profiles
+CREATE OR REPLACE FUNCTION get_auth_tenant_id()
+RETURNS UUID AS $$
+  SELECT tenant_id FROM profiles WHERE id = auth.uid();
+$$ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public;
+
+CREATE OR REPLACE FUNCTION get_auth_role()
+RETURNS user_role AS $$
+  SELECT role FROM profiles WHERE id = auth.uid();
+$$ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public;
+
 -- Each user can read/update their own profile
 CREATE POLICY "profile_self_read" ON profiles
   FOR SELECT USING (id = auth.uid());
@@ -32,15 +43,15 @@ CREATE POLICY "profile_self_update" ON profiles
 -- Staff can read other staff profiles in their clinic (for directory, queue assignment)
 CREATE POLICY "tenant_staff_read_profiles" ON profiles
   FOR SELECT USING (
-    tenant_id = (SELECT tenant_id FROM profiles WHERE id = auth.uid())
-    AND (SELECT role FROM profiles WHERE id = auth.uid()) != 'patient'
+    tenant_id = get_auth_tenant_id()
+    AND get_auth_role() != 'patient'
   );
 
 -- Admin can manage all profiles in their clinic
 CREATE POLICY "admin_manage_profiles" ON profiles
   USING (
-    tenant_id = (SELECT tenant_id FROM profiles WHERE id = auth.uid())
-    AND (SELECT role FROM profiles WHERE id = auth.uid()) = 'admin'
+    tenant_id = get_auth_tenant_id()
+    AND get_auth_role() = 'admin'
   );
 
 -- Trigger: sync display_name into auth.users user_metadata on insert

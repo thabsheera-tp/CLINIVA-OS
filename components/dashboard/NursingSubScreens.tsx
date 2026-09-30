@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import SubScreenHeader from './SubScreenHeader'
 import StatusBadge from '@/components/ui/StatusBadge'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
-import RecordVitalsModal from '@/components/modals/RecordVitalsModal'
+import { fetchRecentVitals, type VitalsRow } from '@/lib/data'
 
 type Props = {
   slug: string
@@ -29,14 +29,85 @@ const SAMPLE_MAR = [
 ]
 
 export default function NursingSubScreens({ slug, userName }: Props) {
-  const { beds, vitals, setVitalsOpen, assignBed, releaseBed } = useClinicRealtime()
+  const { beds, vitals, setVitalsOpen, openAssignBedModal, releaseBed, isVitalsOpen } = useClinicRealtime()
   const [selectedWard, setSelectedWard] = useState<'all' | 'Ward A' | 'Ward B'>('all')
+  const [observations, setObservations] = useState<VitalsRow[]>([])
+  const [loadingObs, setLoadingObs] = useState(false)
+
+  useEffect(() => {
+    let isMounted = true
+    const loadObservations = () => {
+      setLoadingObs(true)
+      fetchRecentVitals(20)
+        .then((data) => {
+          if (isMounted) {
+            setObservations(data)
+            setLoadingObs(false)
+          }
+        })
+        .catch(() => {
+          if (isMounted) setLoadingObs(false)
+        })
+    }
+
+    loadObservations()
+
+    const handler = () => loadObservations()
+    if (typeof window !== 'undefined') {
+      window.addEventListener('cliniva:vitals-updated', handler)
+    }
+    return () => {
+      isMounted = false
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('cliniva:vitals-updated', handler)
+      }
+    }
+  }, [isVitalsOpen])
 
   const filteredBeds = selectedWard === 'all' ? beds : beds.filter(b => b.ward === selectedWard)
 
+  const computeNews2 = (v: {
+    respiratory_rate?: number | null
+    spo2?: number | null
+    bp_systolic?: number | null
+    heart_rate?: number | null
+    temperature?: number | null
+  }) => {
+    let score = 0
+    if (v.respiratory_rate) {
+      if (v.respiratory_rate <= 8 || v.respiratory_rate >= 25) score += 3
+      else if (v.respiratory_rate >= 21) score += 2
+      else if (v.respiratory_rate <= 11) score += 1
+    }
+    if (v.spo2) {
+      if (v.spo2 <= 91) score += 3
+      else if (v.spo2 <= 93) score += 2
+      else if (v.spo2 <= 94) score += 1
+    }
+    if (v.bp_systolic) {
+      if (v.bp_systolic <= 90 || v.bp_systolic >= 220) score += 3
+      else if (v.bp_systolic <= 100) score += 2
+      else if (v.bp_systolic <= 110) score += 1
+    }
+    if (v.heart_rate) {
+      if (v.heart_rate <= 40 || v.heart_rate >= 131) score += 3
+      else if (v.heart_rate >= 111) score += 2
+      else if (v.heart_rate <= 50 || v.heart_rate >= 91) score += 1
+    }
+    if (v.temperature) {
+      if (v.temperature <= 95.0) score += 3
+      else if (v.temperature >= 102.4) score += 2
+      else if (v.temperature <= 96.8 || v.temperature >= 100.5) score += 1
+    }
+
+    if (score >= 7) return { score, label: `${score} (High Alert)`, color: 'bg-red-100 text-red-800' }
+    if (score >= 5) return { score, label: `${score} (Medium)`, color: 'bg-amber-100 text-amber-800' }
+    if (score >= 1) return { score, label: `${score} (Low)`, color: 'bg-emerald-100 text-emerald-800' }
+    return { score, label: '0 (Normal)', color: 'bg-emerald-100 text-emerald-800' }
+  }
+
   return (
     <div className="flex flex-col w-full space-y-gutter-desktop">
-      <RecordVitalsModal />
 
       {/* ── 1. BED BOARD ── */}
       {slug === 'beds' && (
@@ -127,7 +198,7 @@ export default function NursingSubScreens({ slug, userName }: Props) {
                       </button>
                     ) : (
                       <button
-                        onClick={() => assignBed(bed.id, 'New Admission', '45M', 'Observation')}
+                        onClick={() => openAssignBedModal(bed.id)}
                         className="text-label-sm font-semibold text-primary hover:underline"
                       >
                         Assign Patient
@@ -198,26 +269,58 @@ export default function NursingSubScreens({ slug, userName }: Props) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant/20">
-                  <tr>
-                    <td className="px-4 py-3 font-mono text-outline">08:00 AM</td>
-                    <td className="px-4 py-3 font-semibold text-on-surface">Bed A-01 (Marcus Delacroix)</td>
-                    <td className="px-4 py-3 font-mono font-semibold">{vitals.bp}</td>
-                    <td className="px-4 py-3 font-mono">{vitals.heartRate}</td>
-                    <td className="px-4 py-3 font-mono">{vitals.spo2}</td>
-                    <td className="px-4 py-3 font-mono">{vitals.temperature}°F</td>
-                    <td className="px-4 py-3"><span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-label-sm font-bold">0 (Low)</span></td>
-                    <td className="px-4 py-3 text-on-surface-variant">P. Sharma, RN</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-mono text-outline">06:00 AM</td>
-                    <td className="px-4 py-3 font-semibold text-on-surface">Bed A-02 (Priya Mehta)</td>
-                    <td className="px-4 py-3 font-mono font-semibold">118/76</td>
-                    <td className="px-4 py-3 font-mono">92 bpm</td>
-                    <td className="px-4 py-3 font-mono">95%</td>
-                    <td className="px-4 py-3 font-mono text-amber-700 font-bold">100.2°F</td>
-                    <td className="px-4 py-3"><span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-label-sm font-bold">3 (Medium)</span></td>
-                    <td className="px-4 py-3 text-on-surface-variant">J. Doe, RN</td>
-                  </tr>
+                  {observations.length > 0 ? (
+                    observations.map((obs) => {
+                      const news = computeNews2(obs)
+                      const timeStr = obs.recorded_at
+                        ? new Date(obs.recorded_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        : 'Just now'
+                      return (
+                        <tr key={obs.id} className="hover:bg-surface-container-low/30 transition-colors">
+                          <td className="px-4 py-3 font-mono text-outline">{timeStr}</td>
+                          <td className="px-4 py-3 font-semibold text-on-surface">
+                            {obs.patient_name || 'Inpatient'}{' '}
+                            {obs.mrn ? <span className="font-mono text-xs text-on-surface-variant font-normal">({obs.mrn})</span> : null}
+                          </td>
+                          <td className="px-4 py-3 font-mono font-semibold">
+                            {obs.bp_systolic && obs.bp_diastolic ? `${obs.bp_systolic}/${obs.bp_diastolic}` : '-'}
+                          </td>
+                          <td className="px-4 py-3 font-mono">{obs.heart_rate ? `${obs.heart_rate} bpm` : '-'}</td>
+                          <td className="px-4 py-3 font-mono">{obs.spo2 ? `${obs.spo2}%` : '-'}</td>
+                          <td className="px-4 py-3 font-mono">{obs.temperature ? `${obs.temperature}°F` : '-'}</td>
+                          <td className="px-4 py-3">
+                            <span className={`px-2 py-0.5 rounded-full text-label-sm font-bold ${news.color}`}>
+                              {news.label}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-on-surface-variant">{obs.nurse_name || 'Staff Nurse'}</td>
+                        </tr>
+                      )
+                    })
+                  ) : (
+                    <>
+                      <tr>
+                        <td className="px-4 py-3 font-mono text-outline">08:00 AM</td>
+                        <td className="px-4 py-3 font-semibold text-on-surface">Bed A-01 (Marcus Delacroix)</td>
+                        <td className="px-4 py-3 font-mono font-semibold">{vitals.bp}</td>
+                        <td className="px-4 py-3 font-mono">{vitals.heartRate}</td>
+                        <td className="px-4 py-3 font-mono">{vitals.spo2}</td>
+                        <td className="px-4 py-3 font-mono">{vitals.temperature}°F</td>
+                        <td className="px-4 py-3"><span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-label-sm font-bold">0 (Low)</span></td>
+                        <td className="px-4 py-3 text-on-surface-variant">P. Sharma, RN</td>
+                      </tr>
+                      <tr>
+                        <td className="px-4 py-3 font-mono text-outline">06:00 AM</td>
+                        <td className="px-4 py-3 font-semibold text-on-surface">Bed A-02 (Priya Mehta)</td>
+                        <td className="px-4 py-3 font-mono font-semibold">118/76</td>
+                        <td className="px-4 py-3 font-mono">92 bpm</td>
+                        <td className="px-4 py-3 font-mono">95%</td>
+                        <td className="px-4 py-3 font-mono text-amber-700 font-bold">100.2°F</td>
+                        <td className="px-4 py-3"><span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-label-sm font-bold">3 (Medium)</span></td>
+                        <td className="px-4 py-3 text-on-surface-variant">J. Doe, RN</td>
+                      </tr>
+                    </>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -296,9 +399,9 @@ export default function NursingSubScreens({ slug, userName }: Props) {
             description="Structured inter-shift clinical clinical handover using the SBAR protocol."
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 shadow-sm space-y-4 max-w-3xl">
-            <div className="p-4 rounded-xl bg-surface-container-low/50 space-y-3">
-              <div className="flex items-center justify-between">
+          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-4 sm:p-6 shadow-sm space-y-4 max-w-3xl">
+            <div className="p-3 sm:p-4 rounded-xl bg-surface-container-low/50 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                 <span className="font-semibold text-on-surface text-body-md">Bed A-01: Marcus Delacroix (54M)</span>
                 <span className="text-label-sm font-mono text-outline">Attending: Dr. Sarah Jenkins</span>
               </div>
@@ -310,8 +413,8 @@ export default function NursingSubScreens({ slug, userName }: Props) {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-surface-container-low/50 space-y-3">
-              <div className="flex items-center justify-between">
+            <div className="p-3 sm:p-4 rounded-xl bg-surface-container-low/50 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                 <span className="font-semibold text-on-surface text-body-md">Bed A-02: Priya Mehta (41F)</span>
                 <span className="text-label-sm font-mono text-outline">Attending: Dr. Alan Bradley</span>
               </div>
@@ -338,7 +441,31 @@ export default function NursingSubScreens({ slug, userName }: Props) {
           />
 
           <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
+            {/* Mobile Card View */}
+            <div className="block sm:hidden divide-y divide-outline-variant/20">
+              {SAMPLE_INPATIENTS.map((p) => (
+                <div key={p.mrn} className="p-4 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <span className="font-mono font-bold text-primary text-label-md">{p.bed}</span>
+                      <span className="mx-2 text-outline">•</span>
+                      <span className="font-semibold text-on-surface">{p.name} <span className="text-on-surface-variant font-normal">({p.age})</span></span>
+                    </div>
+                    <span className={`px-2 py-0.5 rounded-full text-label-sm font-semibold flex-shrink-0 ${
+                      p.risk.includes('High') ? 'bg-red-100 text-red-800' : p.risk.includes('Moderate') ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+                    }`}>{p.risk.split(' ')[0]}</span>
+                  </div>
+                  <div className="text-body-sm text-on-surface font-medium">{p.diagnosis}</div>
+                  <div className="flex items-center justify-between gap-2 text-label-sm text-on-surface-variant">
+                    <span>{p.doc}</span>
+                    <span className="px-2 py-0.5 rounded-full text-label-sm font-medium bg-secondary-fixed/50 text-on-secondary-fixed-variant">{p.diet}</span>
+                  </div>
+                  <div className="text-label-sm text-outline font-mono">#{p.mrn}</div>
+                </div>
+              ))}
+            </div>
+            {/* Desktop Table View */}
+            <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-left text-body-sm">
                 <thead className="bg-surface-container-low/50 text-label-sm text-on-surface-variant uppercase border-b border-outline-variant/20">
                   <tr>

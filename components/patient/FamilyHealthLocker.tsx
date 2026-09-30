@@ -2,6 +2,238 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { createClientSideClient } from '@/lib/supabase/client'
+import { usePortalLang } from '@/context/PortalLanguageContext'
+
+const LOCKER_I18N = {
+  en: {
+    badge: 'Secure Document Vault',
+    title: 'Family Health Locker',
+    subtitle: 'Store and manage medical records, prescriptions, and immunizations for your entire household.',
+    uploadDoc: 'Upload Document',
+    membersTitle: (count: number) => `Household Members (${count})`,
+    addMember: '+ Add Member',
+    relationships: {
+      self: 'Self',
+      spouse: 'Spouse',
+      child: 'Child',
+      parent: 'Parent',
+      sibling: 'Sibling',
+      other: 'Other Dependent',
+    } as Record<string, string>,
+    dobLabel: 'DOB:',
+    genderLabel: 'Gender:',
+    bloodLabel: 'Blood Group:',
+    addRecordBtn: '+ Add Prescription / Record',
+    allergiesTitle: 'Known Drug / Environmental Allergies',
+    noAllergies: 'No known allergies documented.',
+    conditionsTitle: 'Active Diagnoses & Chronic Conditions',
+    noConditions: 'No chronic conditions on file.',
+    recordsTab: (count: number) => `Prescriptions & Records (${count})`,
+    vaxTab: (count: number) => `Vaccination History (${count})`,
+    catLabels: {
+      all: 'All Files',
+      prescription: 'Prescriptions',
+      lab_report: 'Lab Reports',
+      discharge_summary: 'Discharge Summaries',
+      vaccine_card: 'Vaccine Cards',
+      scan_imaging: 'Scans & Imaging',
+      insurance_doc: 'Insurance',
+      clinical_note: 'Clinical Notes',
+    } as Record<string, string>,
+    logImmunization: '+ Log Immunization',
+    viewFile: 'View File',
+    noRecordsTitle: 'No Prescriptions or Records Yet',
+    noRecordsSub: (name: string) => `Upload scanned prescriptions, lab panels, or discharge summaries for ${name}.`,
+    uploadFirst: 'Upload First Document',
+    vaxHeaderTitle: 'Immunization & Vaccine Record',
+    vaxHeaderSub: (name: string) => `Official vaccination history and booster schedules for ${name}.`,
+    logVaxBtn: '+ Log Vaccine',
+    vaxStatus: {
+      administered: '✓ Administered',
+      upcoming: '⏳ Scheduled',
+    } as Record<string, string>,
+    givenPrefix: 'Given:',
+    duePrefix: 'Due:',
+    uploadModal: {
+      title: 'Upload Health Document',
+      addingTo: 'Adding to:',
+      fileLabel: 'Prescription / Document File * (PDF or Image)',
+      filePrompt: 'Click to select or drag and drop prescription',
+      fileTypes: 'PDF, JPG, PNG up to 15MB • Encrypted via Supabase Storage',
+      titleLabel: 'Document Title *',
+      titlePh: 'e.g., Cardiology Prescription - Dr. Jenkins',
+      catLabel: 'Document Category',
+      dateLabel: 'Consultation Date',
+      doctorLabel: 'Physician / Doctor Name',
+      doctorPh: 'e.g., Dr. Sarah Jenkins',
+      hospitalLabel: 'Clinic / Hospital',
+      hospitalPh: 'e.g., Cliniva Heart Pavilion',
+      notesLabel: "Doctor's Instructions or Diagnosis",
+      notesPh: 'e.g., Take with meals, follow up in 30 days...',
+      cancel: 'Cancel',
+      uploading: 'Uploading to Supabase...',
+      uploadBtn: 'Upload & Encrypt File',
+    },
+    addMemberModal: {
+      title: 'Add Family Member Profile',
+      firstName: 'First Name *',
+      firstNamePh: 'e.g., Maya',
+      lastName: 'Last Name',
+      relLabel: 'Relationship',
+      dobLabel: 'Date of Birth',
+      genderLabel: 'Gender',
+      genderOptions: { Male: 'Male', Female: 'Female', Other: 'Other' } as Record<string, string>,
+      bloodLabel: 'Blood Group',
+      allergiesLabel: 'Known Allergies (Comma separated)',
+      allergiesPh: 'e.g., Penicillin, Peanuts, Pollen',
+      conditionsLabel: 'Chronic Health Conditions (Comma separated)',
+      conditionsPh: 'e.g., Asthma, Diabetes Type 1',
+      cancel: 'Cancel',
+      save: 'Save Member Profile',
+    },
+    addVaxModal: {
+      title: 'Log Immunization',
+      nameLabel: 'Vaccine Name *',
+      namePh: 'e.g., Influenza Quadrivalent, Hepatitis B',
+      doseLabel: 'Dose Sequence',
+      dosePh: 'e.g., Dose 1, Booster',
+      statusLabel: 'Status',
+      statusAdmin: 'Administered',
+      statusUpcoming: 'Upcoming / Due',
+      dateLabel: 'Date',
+      clinicLabel: 'Clinic Provider',
+      clinicPh: 'Cliniva Health',
+      cancel: 'Cancel',
+      save: 'Save Vaccine Record',
+    },
+    previewModal: {
+      profile: 'Patient Profile:',
+      doctor: 'Attending Doctor:',
+      hospital: 'Hospital / Facility:',
+      date: 'Consultation Date:',
+      fileName: 'File Name:',
+      encryption: 'Storage Encryption:',
+      notes: 'Clinical Notes:',
+      fileSize: 'File size:',
+      close: 'Close',
+      download: 'Download File',
+    },
+  },
+  ml: {
+    badge: 'സുരക്ഷിത രേഖാ ലോക്കർ',
+    title: 'കുടുംബ ആരോഗ്യ ലോക്കർ',
+    subtitle: 'കുടുംബാംഗങ്ങളുടെ മെഡിക്കൽ രേഖകൾ, കുറിപ്പടികൾ, പ്രതിരോധ കുത്തിവയ്പ്പുകൾ എന്നിവ ഒരിടത്ത് സൂക്ഷിക്കുക.',
+    uploadDoc: 'രേഖ അപ്‌ലോഡ് ചെയ്യുക',
+    membersTitle: (count: number) => `കുടുംബാംഗങ്ങൾ (${count})`,
+    addMember: '+ അംഗത്തെ ചേർക്കൂ',
+    relationships: {
+      self: 'സ്വന്തം',
+      spouse: 'പങ്കാളി',
+      child: 'കുട്ടി',
+      parent: 'മാതാപിതാക്കൾ',
+      sibling: 'സഹോദരൻ/സഹോദരി',
+      other: 'മറ്റുള്ളവർ',
+    } as Record<string, string>,
+    dobLabel: 'ജനനതീയതി:',
+    genderLabel: 'ലിംഗം:',
+    bloodLabel: 'രക്തഗ്രൂപ്പ്:',
+    addRecordBtn: '+ കുറിപ്പടി / രേഖ ചേർക്കൂ',
+    allergiesTitle: 'മരുന്ന് / ഭക്ഷണ അലർജികൾ',
+    noAllergies: 'അലർജികളൊന്നും രേഖപ്പെടുത്തിയിട്ടില്ല.',
+    conditionsTitle: 'ദീർഘകാല രോഗാവസ്ഥകൾ',
+    noConditions: 'രോഗാവസ്ഥകളൊന്നും രേഖപ്പെടുത്തിയിട്ടില്ല.',
+    recordsTab: (count: number) => `കുറിപ്പടികളും രേഖകളും (${count})`,
+    vaxTab: (count: number) => `വാക്സിനേഷൻ ചരിത്രം (${count})`,
+    catLabels: {
+      all: 'എല്ലാ ഫയലുകളും',
+      prescription: 'കുറിപ്പടികൾ',
+      lab_report: 'ലാബ് റിപ്പോർട്ടുകൾ',
+      discharge_summary: 'ഡിസ്ചാർജ് രേഖകൾ',
+      vaccine_card: 'വാക്സിൻ കാർഡുകൾ',
+      scan_imaging: 'സ്കാൻ & എക്സ്-റേ',
+      insurance_doc: 'ഇൻഷുറൻസ്',
+      clinical_note: 'ക്ലിനിക്കൽ കുറിപ്പുകൾ',
+    } as Record<string, string>,
+    logImmunization: '+ വാക്സിൻ ചേർക്കൂ',
+    viewFile: 'കാണുക',
+    noRecordsTitle: 'രേഖകളോ കുറിപ്പടികളോ ലഭ്യമല്ല',
+    noRecordsSub: (name: string) => `${name}-ന്റെ കുറിപ്പടികളോ ലാബ് റിപ്പോർട്ടുകളോ അപ്‌ലോഡ് ചെയ്യുക.`,
+    uploadFirst: 'ആദ്യ രേഖ അപ്‌ലോഡ് ചെയ്യുക',
+    vaxHeaderTitle: 'വാക്സിനേഷൻ വിവരങ്ങൾ',
+    vaxHeaderSub: (name: string) => `${name}-ന്റെ വാക്സിനേഷൻ വിവരങ്ങളും അടുത്ത തീയതികളും.`,
+    logVaxBtn: '+ വാക്സിൻ ചേർക്കൂ',
+    vaxStatus: {
+      administered: '✓ എടുത്തു',
+      upcoming: '⏳ നിശ്ചയിച്ചത്',
+    } as Record<string, string>,
+    givenPrefix: 'എടുത്ത തീയതി:',
+    duePrefix: 'അടുത്ത തീയതി:',
+    uploadModal: {
+      title: 'മെഡിക്കൽ രേഖ അപ്‌ലോഡ് ചെയ്യുക',
+      addingTo: 'അംഗം:',
+      fileLabel: 'കുറിപ്പടി / രേഖാ ഫയൽ * (PDF അല്ലെങ്കിൽ ഇമേജ്)',
+      filePrompt: 'ഫയൽ തിരഞ്ഞെടുക്കാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക',
+      fileTypes: 'PDF, JPG, PNG (15MB വരെ) • സുരക്ഷിത സംഭരണം',
+      titleLabel: 'രേഖയുടെ പേര് *',
+      titlePh: 'ഉദാ: കാർഡിയോളജി കുറിപ്പടി - ഡോ. ജെങ്കിൻസ്',
+      catLabel: 'രേഖാ വിഭാഗം',
+      dateLabel: 'സന്ദർശന തീയതി',
+      doctorLabel: 'ഡോക്ടറുടെ പേര്',
+      doctorPh: 'ഉദാ: ഡോ. സാറ ജെങ്കിൻസ്',
+      hospitalLabel: 'ആശുപത്രി / ക്ലിനിക്ക്',
+      hospitalPh: 'ഉദാ: ക്ലിനിവ ഹാർട്ട് പവിലിയൻ',
+      notesLabel: 'ഡോക്ടറുടെ നിർദ്ദേശങ്ങൾ / കുറിപ്പുകൾ',
+      notesPh: 'ഉദാ: ഭക്ഷണത്തിന് ശേഷം കഴിക്കുക...',
+      cancel: 'റദ്ദാക്കുക',
+      uploading: 'അപ്‌ലോഡ് ചെയ്യുന്നു...',
+      uploadBtn: 'രേഖ അപ്‌ലോഡ് ചെയ്യുക',
+    },
+    addMemberModal: {
+      title: 'പുതിയ കുടുംബാംഗത്തെ ചേർക്കൂ',
+      firstName: 'പേര് *',
+      firstNamePh: 'ഉദാ: മായ',
+      lastName: 'കുടുംബപ്പേര്',
+      relLabel: 'ബന്ധം',
+      dobLabel: 'ജനനതീയതി',
+      genderLabel: 'ലിംഗം',
+      genderOptions: { Male: 'പുരുഷൻ', Female: 'സ്ത്രീ', Other: 'മറ്റുള്ളവ' } as Record<string, string>,
+      bloodLabel: 'രക്തഗ്രൂപ്പ്',
+      allergiesLabel: 'അലർജികൾ (കോമ നൽകി വേർതിരിക്കുക)',
+      allergiesPh: 'ഉദാ: പെൻസിലിൻ, നിലക്കടല',
+      conditionsLabel: 'ദീർഘകാല രോഗങ്ങൾ (കോമ നൽകി വേർതിരിക്കുക)',
+      conditionsPh: 'ഉദാ: ആസ്ത്മ, പ്രമേഹം',
+      cancel: 'റദ്ദാക്കുക',
+      save: 'അംഗത്തെ സേവ് ചെയ്യുക',
+    },
+    addVaxModal: {
+      title: 'വാക്സിനേഷൻ രേഖപ്പെടുത്തൂ',
+      nameLabel: 'വാക്സിൻ പേര് *',
+      namePh: 'ഉദാ: ഇൻഫ്ലുവൻസ, ഹെപ്പറ്റൈറ്റിസ് ബി',
+      doseLabel: 'ഡോസ് ക്രമം',
+      dosePh: 'ഉദാ: ഡോസ് 1, ബൂസ്റ്റർ',
+      statusLabel: 'നില',
+      statusAdmin: 'എടുത്തു കഴിഞ്ഞു',
+      statusUpcoming: 'വരാനിരിക്കുന്നത്',
+      dateLabel: 'തീയതി',
+      clinicLabel: 'നൽകിയ ആശുപത്രി / കേന്ദ്രം',
+      clinicPh: 'ക്ലിനിവ ഹെൽത്ത്',
+      cancel: 'റദ്ദാക്കുക',
+      save: 'വാക്സിൻ വിവരങ്ങൾ സേവ് ചെയ്യുക',
+    },
+    previewModal: {
+      profile: 'രോഗിയുടെ പേര്:',
+      doctor: 'ഡോക്ടർ:',
+      hospital: 'ആശുപത്രി / കേന്ദ്രം:',
+      date: 'സന്ദർശന തീയതി:',
+      fileName: 'ഫയൽ പേര്:',
+      encryption: 'സുരക്ഷാ എൻക്രിപ്ഷൻ:',
+      notes: 'ക്ലിനിക്കൽ കുറിപ്പുകൾ:',
+      fileSize: 'ഫയൽ വലിപ്പം:',
+      close: 'അടയ്ക്കുക',
+      download: 'ഫയൽ ഡൗൺലോഡ് ചെയ്യുക',
+    },
+  },
+}
 
 export type FamilyRelationship = 'self' | 'spouse' | 'child' | 'parent' | 'sibling' | 'other'
 export type RecordCategory =
@@ -268,6 +500,9 @@ function formatBytes(bytes: number): string {
 }
 
 export default function FamilyHealthLocker({ className = '' }: { className?: string }) {
+  const { lang } = usePortalLang()
+  const i18n = LOCKER_I18N[lang] || LOCKER_I18N.en
+
   // State
   const [members, setMembers] = useState<FamilyMember[]>(INITIAL_MEMBERS)
   const [selectedMemberId, setSelectedMemberId] = useState<string>(INITIAL_MEMBERS[0].id)
@@ -447,7 +682,11 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
     setUploadNotes('')
 
     // Show toast
-    setUploadSuccessToast(`"${newRecord.title}" uploaded to ${currentMember.first_name}'s locker!`)
+    setUploadSuccessToast(
+      lang === 'ml'
+        ? `"${newRecord.title}" ${currentMember.first_name}-ന്റെ ലോക്കറിലേക്ക് വിജയകരമായി അപ്‌ലോഡ് ചെയ്തു!`
+        : `"${newRecord.title}" uploaded to ${currentMember.first_name}'s locker!`
+    )
     setTimeout(() => setUploadSuccessToast(null), 4000)
   }
 
@@ -559,14 +798,14 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               </svg>
             </span>
             <span className="text-label-xs font-bold uppercase tracking-wider text-primary">
-              Secure Document Vault
+              {i18n.badge}
             </span>
           </div>
           <h1 className="font-heading text-headline-sm sm:text-headline-md font-bold text-on-surface mt-1">
-            Family Health Locker
+            {i18n.title}
           </h1>
           <p className="text-body-sm text-on-surface-variant">
-            Store and manage medical records, prescriptions, and immunizations for your entire household.
+            {i18n.subtitle}
           </p>
         </div>
 
@@ -578,7 +817,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
           </svg>
-          <span>Upload Document</span>
+          <span>{i18n.uploadDoc}</span>
         </button>
       </div>
 
@@ -586,13 +825,13 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
       <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-4 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <span className="text-label-sm font-bold uppercase tracking-wider text-on-surface-variant">
-            Household Members ({members.length})
+            {i18n.membersTitle(members.length)}
           </span>
           <button
             onClick={() => setIsAddMemberOpen(true)}
             className="text-label-xs font-semibold text-primary hover:underline flex items-center gap-1"
           >
-            <span>+ Add Member</span>
+            <span>{i18n.addMember}</span>
           </button>
         </div>
 
@@ -627,12 +866,12 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                     </span>
                     {member.is_primary && (
                       <span className="px-1.5 py-0.2 bg-primary/20 text-primary text-[10px] rounded font-bold">
-                        Self
+                        {i18n.relationships.self}
                       </span>
                     )}
                   </div>
                   <div className="flex items-center gap-2 text-[11px] text-on-surface-variant capitalize">
-                    <span>{member.relationship}</span>
+                    <span>{i18n.relationships[member.relationship] || member.relationship}</span>
                     <span>•</span>
                     <span>{calculateAge(member.dob)}</span>
                   </div>
@@ -649,7 +888,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
             <span className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-label-lg font-bold">
               +
             </span>
-            <span>Add Member</span>
+            <span>{i18n.addMember}</span>
           </button>
         </div>
       </div>
@@ -669,16 +908,16 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                   {currentMember.first_name} {currentMember.last_name}
                 </h2>
                 <span className="px-2.5 py-0.5 rounded-full text-label-xs font-semibold capitalize bg-surface-container-high text-on-surface border border-outline-variant/30">
-                  {currentMember.relationship}
+                  {i18n.relationships[currentMember.relationship] || currentMember.relationship}
                 </span>
               </div>
               <div className="flex flex-wrap items-center gap-3 text-body-xs text-on-surface-variant mt-0.5">
-                <span>DOB: {currentMember.dob} ({calculateAge(currentMember.dob)})</span>
+                <span>{i18n.dobLabel} {currentMember.dob} ({calculateAge(currentMember.dob)})</span>
                 <span>•</span>
-                <span>Gender: {currentMember.gender}</span>
+                <span>{i18n.genderLabel} {currentMember.gender}</span>
                 <span>•</span>
                 <span className="font-semibold text-rose-600 dark:text-rose-400">
-                  Blood Group: {currentMember.blood_group}
+                  {i18n.bloodLabel} {currentMember.blood_group}
                 </span>
               </div>
             </div>
@@ -691,7 +930,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            <span>Add Prescription / Record</span>
+            <span>{i18n.addRecordBtn}</span>
           </button>
         </div>
 
@@ -699,7 +938,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
           <div className="p-3 bg-surface-container-low rounded-xl border border-outline-variant/20">
             <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant block mb-1">
-              Known Drug / Environmental Allergies
+              {i18n.allergiesTitle}
             </span>
             <div className="flex flex-wrap gap-1.5">
               {currentMember.allergies && currentMember.allergies.length > 0 ? (
@@ -712,14 +951,14 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                   </span>
                 ))
               ) : (
-                <span className="text-body-xs text-on-surface-variant">No known allergies documented.</span>
+                <span className="text-body-xs text-on-surface-variant">{i18n.noAllergies}</span>
               )}
             </div>
           </div>
 
           <div className="p-3 bg-surface-container-low rounded-xl border border-outline-variant/20">
             <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant block mb-1">
-              Active Diagnoses & Chronic Conditions
+              {i18n.conditionsTitle}
             </span>
             <div className="flex flex-wrap gap-1.5">
               {currentMember.chronic_conditions && currentMember.chronic_conditions.length > 0 ? (
@@ -732,7 +971,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                   </span>
                 ))
               ) : (
-                <span className="text-body-xs text-on-surface-variant">No chronic conditions on file.</span>
+                <span className="text-body-xs text-on-surface-variant">{i18n.noConditions}</span>
               )}
             </div>
           </div>
@@ -750,7 +989,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                 : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
-            Prescriptions & Records ({memberRecords.length})
+            {i18n.recordsTab(memberRecords.length)}
           </button>
           <button
             onClick={() => setActiveTab('vaccines')}
@@ -760,17 +999,17 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                 : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
-            Vaccination History ({memberVaccines.length})
+            {i18n.vaxTab(memberVaccines.length)}
           </button>
         </div>
 
         {activeTab === 'records' && (
           <div className="hidden sm:flex items-center gap-1.5">
             {[
-              { id: 'all', label: 'All Files' },
-              { id: 'prescription', label: 'Prescriptions' },
-              { id: 'lab_report', label: 'Lab Reports' },
-              { id: 'scan_imaging', label: 'Scans & Imaging' },
+              { id: 'all', label: i18n.catLabels.all },
+              { id: 'prescription', label: i18n.catLabels.prescription },
+              { id: 'lab_report', label: i18n.catLabels.lab_report },
+              { id: 'scan_imaging', label: i18n.catLabels.scan_imaging },
             ].map((cat) => (
               <button
                 key={cat.id}
@@ -792,7 +1031,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
             onClick={() => setIsAddVaccineOpen(true)}
             className="text-label-xs font-bold text-primary hover:underline flex items-center gap-1"
           >
-            <span>+ Log Immunization</span>
+            <span>{i18n.logImmunization}</span>
           </button>
         )}
       </div>
@@ -819,7 +1058,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                             : 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30'
                         }`}
                       >
-                        {record.category.replace('_', ' ')}
+                        {i18n.catLabels[record.category] || record.category.replace('_', ' ')}
                       </span>
                       <span className="text-body-xs text-on-surface-variant font-medium">
                         {record.record_date}
@@ -890,7 +1129,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
-                      <span>View File</span>
+                      <span>{i18n.viewFile}</span>
                     </button>
                   </div>
                 </div>
@@ -904,16 +1143,16 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                 </svg>
               </div>
               <h4 className="font-heading text-title-md font-bold text-on-surface">
-                No Prescriptions or Records Yet
+                {i18n.noRecordsTitle}
               </h4>
               <p className="text-body-sm text-on-surface-variant max-w-sm mx-auto">
-                Upload scanned prescriptions, lab panels, or discharge summaries for {currentMember.first_name}.
+                {i18n.noRecordsSub(currentMember.first_name)}
               </p>
               <button
                 onClick={() => setIsUploadOpen(true)}
                 className="btn-primary py-2 px-4 rounded-xl text-label-sm font-semibold inline-flex items-center gap-2"
               >
-                <span>Upload First Document</span>
+                <span>{i18n.uploadFirst}</span>
               </button>
             </div>
           )}
@@ -926,17 +1165,17 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
           <div className="flex items-center justify-between pb-2 border-b border-outline-variant/20">
             <div>
               <h3 className="font-heading text-title-sm font-bold text-on-surface">
-                Immunization & Vaccine Record
+                {i18n.vaxHeaderTitle}
               </h3>
               <p className="text-body-xs text-on-surface-variant">
-                Official vaccination history and booster schedules for {currentMember.first_name}.
+                {i18n.vaxHeaderSub(currentMember.first_name)}
               </p>
             </div>
             <button
               onClick={() => setIsAddVaccineOpen(true)}
               className="px-3 py-1.5 rounded-xl bg-primary text-on-primary text-label-xs font-semibold hover:bg-primary/90 transition-all flex items-center gap-1"
             >
-              <span>+ Log Vaccine</span>
+              <span>{i18n.logVaxBtn}</span>
             </button>
           </div>
 
@@ -972,8 +1211,8 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                     <div className="flex items-center gap-2 text-body-xs text-on-surface-variant mt-0.5">
                       <span>
                         {vax.status === 'administered'
-                          ? `Given: ${vax.administered_date}`
-                          : `Due: ${vax.due_date}`}
+                          ? `${i18n.givenPrefix} ${vax.administered_date}`
+                          : `${i18n.duePrefix} ${vax.due_date}`}
                       </span>
                       {vax.clinic_provider && (
                         <>
@@ -1003,7 +1242,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                       : 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30'
                   }`}
                 >
-                  {vax.status === 'administered' ? '✓ Administered' : '⏳ Scheduled'}
+                  {i18n.vaxStatus[vax.status] || (vax.status === 'administered' ? '✓ Administered' : '⏳ Scheduled')}
                 </span>
               </div>
             ))}
@@ -1024,10 +1263,10 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                 </div>
                 <div>
                   <h3 className="font-heading text-title-md font-bold text-on-surface">
-                    Upload Health Document
+                    {i18n.uploadModal.title}
                   </h3>
                   <p className="text-body-xs text-on-surface-variant">
-                    Adding to: <span className="font-bold text-primary">{currentMember.first_name} {currentMember.last_name}</span>
+                    {i18n.uploadModal.addingTo} <span className="font-bold text-primary">{currentMember.first_name} {currentMember.last_name}</span>
                   </p>
                 </div>
               </div>
@@ -1043,7 +1282,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               {/* File Dropzone */}
               <div>
                 <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                  Prescription / Document File * (PDF or Image)
+                  {i18n.uploadModal.fileLabel}
                 </label>
                 <div
                   onClick={() => fileInputRef.current?.click()}
@@ -1073,10 +1312,10 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                       </svg>
                       <p className="text-body-sm font-semibold text-on-surface">
-                        Click to select or drag and drop prescription
+                        {i18n.uploadModal.filePrompt}
                       </p>
                       <p className="text-[11px] text-on-surface-variant">
-                        PDF, JPG, PNG up to 15MB • Encrypted via Supabase Storage
+                        {i18n.uploadModal.fileTypes}
                       </p>
                     </div>
                   )}
@@ -1086,14 +1325,14 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               {/* Title */}
               <div>
                 <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                  Document Title *
+                  {i18n.uploadModal.titleLabel}
                 </label>
                 <input
                   type="text"
                   required
                   value={uploadTitle}
                   onChange={(e) => setUploadTitle(e.target.value)}
-                  placeholder="e.g., Cardiology Prescription - Dr. Jenkins"
+                  placeholder={i18n.uploadModal.titlePh}
                   className="input-field"
                 />
               </div>
@@ -1102,24 +1341,24 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Document Category
+                    {i18n.uploadModal.catLabel}
                   </label>
                   <select
                     value={uploadCategory}
                     onChange={(e) => setUploadCategory(e.target.value as RecordCategory)}
                     className="input-field"
                   >
-                    <option value="prescription">Prescription (Rx)</option>
-                    <option value="lab_report">Lab Report / Pathology</option>
-                    <option value="discharge_summary">Discharge Summary</option>
-                    <option value="vaccine_card">Vaccine Certificate</option>
-                    <option value="scan_imaging">Scan / X-Ray / MRI</option>
-                    <option value="insurance_doc">Insurance / Policy</option>
+                    <option value="prescription">{i18n.catLabels.prescription}</option>
+                    <option value="lab_report">{i18n.catLabels.lab_report}</option>
+                    <option value="discharge_summary">{i18n.catLabels.discharge_summary}</option>
+                    <option value="vaccine_card">{i18n.catLabels.vaccine_card}</option>
+                    <option value="scan_imaging">{i18n.catLabels.scan_imaging}</option>
+                    <option value="insurance_doc">{i18n.catLabels.insurance_doc}</option>
                   </select>
                 </div>
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Consultation Date
+                    {i18n.uploadModal.dateLabel}
                   </label>
                   <input
                     type="date"
@@ -1134,25 +1373,25 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Physician / Doctor Name
+                    {i18n.uploadModal.doctorLabel}
                   </label>
                   <input
                     type="text"
                     value={uploadDoctor}
                     onChange={(e) => setUploadDoctor(e.target.value)}
-                    placeholder="e.g., Dr. Sarah Jenkins"
+                    placeholder={i18n.uploadModal.doctorPh}
                     className="input-field"
                   />
                 </div>
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Clinic / Hospital
+                    {i18n.uploadModal.hospitalLabel}
                   </label>
                   <input
                     type="text"
                     value={uploadHospital}
                     onChange={(e) => setUploadHospital(e.target.value)}
-                    placeholder="e.g., Cliniva Heart Pavilion"
+                    placeholder={i18n.uploadModal.hospitalPh}
                     className="input-field"
                   />
                 </div>
@@ -1161,13 +1400,13 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               {/* Notes */}
               <div>
                 <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                  Doctor&apos;s Instructions or Diagnosis
+                  {i18n.uploadModal.notesLabel}
                 </label>
                 <textarea
                   rows={2}
                   value={uploadNotes}
                   onChange={(e) => setUploadNotes(e.target.value)}
-                  placeholder="e.g., Take with meals, follow up in 30 days..."
+                  placeholder={i18n.uploadModal.notesPh}
                   className="input-field"
                 />
               </div>
@@ -1178,7 +1417,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                   onClick={() => setIsUploadOpen(false)}
                   className="btn-secondary"
                 >
-                  Cancel
+                  {i18n.uploadModal.cancel}
                 </button>
                 <button
                   type="submit"
@@ -1188,14 +1427,14 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                   {isUploading ? (
                     <>
                       <span className="animate-spin text-sm">⏳</span>
-                      <span>Uploading to Supabase...</span>
+                      <span>{i18n.uploadModal.uploading}</span>
                     </>
                   ) : (
                     <>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      <span>Upload & Encrypt File</span>
+                      <span>{i18n.uploadModal.uploadBtn}</span>
                     </>
                   )}
                 </button>
@@ -1211,7 +1450,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
           <div className="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/40 shadow-2xl max-w-lg w-full">
             <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
               <h3 className="font-heading text-title-md font-bold text-on-surface">
-                Add Family Member Profile
+                {i18n.addMemberModal.title}
               </h3>
               <button
                 onClick={() => setIsAddMemberOpen(false)}
@@ -1225,20 +1464,20 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    First Name *
+                    {i18n.addMemberModal.firstName}
                   </label>
                   <input
                     type="text"
                     required
                     value={newMemberFirst}
                     onChange={(e) => setNewMemberFirst(e.target.value)}
-                    placeholder="e.g., Maya"
+                    placeholder={i18n.addMemberModal.firstNamePh}
                     className="input-field"
                   />
                 </div>
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Last Name
+                    {i18n.addMemberModal.lastName}
                   </label>
                   <input
                     type="text"
@@ -1253,23 +1492,23 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Relationship
+                    {i18n.addMemberModal.relLabel}
                   </label>
                   <select
                     value={newMemberRel}
                     onChange={(e) => setNewMemberRel(e.target.value as FamilyRelationship)}
                     className="input-field"
                   >
-                    <option value="spouse">Spouse</option>
-                    <option value="child">Child</option>
-                    <option value="parent">Parent</option>
-                    <option value="sibling">Sibling</option>
-                    <option value="other">Other Dependent</option>
+                    <option value="spouse">{i18n.relationships.spouse || 'Spouse'}</option>
+                    <option value="child">{i18n.relationships.child || 'Child'}</option>
+                    <option value="parent">{i18n.relationships.parent || 'Parent'}</option>
+                    <option value="sibling">{i18n.relationships.sibling || 'Sibling'}</option>
+                    <option value="other">{i18n.relationships.other || 'Other Dependent'}</option>
                   </select>
                 </div>
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Date of Birth
+                    {i18n.addMemberModal.dobLabel}
                   </label>
                   <input
                     type="date"
@@ -1284,21 +1523,21 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Gender
+                    {i18n.addMemberModal.genderLabel}
                   </label>
                   <select
                     value={newMemberGender}
                     onChange={(e) => setNewMemberGender(e.target.value)}
                     className="input-field"
                   >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
+                    <option value="Male">{i18n.addMemberModal.genderOptions?.Male || 'Male'}</option>
+                    <option value="Female">{i18n.addMemberModal.genderOptions?.Female || 'Female'}</option>
+                    <option value="Other">{i18n.addMemberModal.genderOptions?.Other || 'Other'}</option>
                   </select>
                 </div>
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Blood Group
+                    {i18n.addMemberModal.bloodLabel}
                   </label>
                   <select
                     value={newMemberBlood}
@@ -1316,26 +1555,26 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
 
               <div>
                 <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                  Known Allergies (Comma separated)
+                  {i18n.addMemberModal.allergiesLabel}
                 </label>
                 <input
                   type="text"
                   value={newMemberAllergies}
                   onChange={(e) => setNewMemberAllergies(e.target.value)}
-                  placeholder="e.g., Penicillin, Peanuts, Pollen"
+                  placeholder={i18n.addMemberModal.allergiesPh}
                   className="input-field"
                 />
               </div>
 
               <div>
                 <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                  Chronic Health Conditions (Comma separated)
+                  {i18n.addMemberModal.conditionsLabel}
                 </label>
                 <input
                   type="text"
                   value={newMemberConditions}
                   onChange={(e) => setNewMemberConditions(e.target.value)}
-                  placeholder="e.g., Asthma, Diabetes Type 1"
+                  placeholder={i18n.addMemberModal.conditionsPh}
                   className="input-field"
                 />
               </div>
@@ -1346,10 +1585,10 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                   onClick={() => setIsAddMemberOpen(false)}
                   className="btn-secondary"
                 >
-                  Cancel
+                  {i18n.addMemberModal.cancel}
                 </button>
                 <button type="submit" className="btn-primary">
-                  Save Member Profile
+                  {i18n.addMemberModal.save}
                 </button>
               </div>
             </form>
@@ -1363,7 +1602,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
           <div className="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/40 shadow-2xl max-w-md w-full">
             <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
               <h3 className="font-heading text-title-md font-bold text-on-surface">
-                Log Immunization
+                {i18n.addVaxModal.title}
               </h3>
               <button
                 onClick={() => setIsAddVaccineOpen(false)}
@@ -1376,14 +1615,14 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
             <form onSubmit={handleAddVaccine} className="space-y-3.5 mt-4">
               <div>
                 <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                  Vaccine Name *
+                  {i18n.addVaxModal.nameLabel}
                 </label>
                 <input
                   type="text"
                   required
                   value={newVaxName}
                   onChange={(e) => setNewVaxName(e.target.value)}
-                  placeholder="e.g., Influenza Quadrivalent, Hepatitis B"
+                  placeholder={i18n.addVaxModal.namePh}
                   className="input-field"
                 />
               </div>
@@ -1391,27 +1630,27 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Dose Sequence
+                    {i18n.addVaxModal.doseLabel}
                   </label>
                   <input
                     type="text"
                     value={newVaxDose}
                     onChange={(e) => setNewVaxDose(e.target.value)}
-                    placeholder="e.g., Dose 1, Booster"
+                    placeholder={i18n.addVaxModal.dosePh}
                     className="input-field"
                   />
                 </div>
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Status
+                    {i18n.addVaxModal.statusLabel}
                   </label>
                   <select
                     value={newVaxStatus}
                     onChange={(e) => setNewVaxStatus(e.target.value as any)}
                     className="input-field"
                   >
-                    <option value="administered">Administered</option>
-                    <option value="upcoming">Upcoming / Due</option>
+                    <option value="administered">{i18n.addVaxModal.statusAdmin}</option>
+                    <option value="upcoming">{i18n.addVaxModal.statusUpcoming}</option>
                   </select>
                 </div>
               </div>
@@ -1419,7 +1658,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Date
+                    {i18n.addVaxModal.dateLabel}
                   </label>
                   <input
                     type="date"
@@ -1430,13 +1669,13 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                 </div>
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Clinic Provider
+                    {i18n.addVaxModal.clinicLabel}
                   </label>
                   <input
                     type="text"
                     value={newVaxProvider}
                     onChange={(e) => setNewVaxProvider(e.target.value)}
-                    placeholder="Cliniva Health"
+                    placeholder={i18n.addVaxModal.clinicPh}
                     className="input-field"
                   />
                 </div>
@@ -1448,10 +1687,10 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                   onClick={() => setIsAddVaccineOpen(false)}
                   className="btn-secondary"
                 >
-                  Cancel
+                  {i18n.addVaxModal.cancel}
                 </button>
                 <button type="submit" className="btn-primary">
-                  Save Vaccine Record
+                  {i18n.addVaxModal.save}
                 </button>
               </div>
             </form>
@@ -1466,7 +1705,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
             <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
-                  {previewDoc.category.replace('_', ' ')}
+                  {i18n.catLabels[previewDoc.category] || previewDoc.category.replace('_', ' ')}
                 </span>
                 <h3 className="font-heading text-title-md font-bold text-on-surface">
                   {previewDoc.title}
@@ -1482,34 +1721,34 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
 
             <div className="p-4 bg-surface-container-low rounded-xl space-y-2 text-body-sm">
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Patient Profile:</span>
+                <span className="text-on-surface-variant">{i18n.previewModal.profile}</span>
                 <span className="font-semibold text-on-surface">{currentMember.first_name} {currentMember.last_name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Attending Doctor:</span>
+                <span className="text-on-surface-variant">{i18n.previewModal.doctor}</span>
                 <span className="font-semibold text-on-surface">{previewDoc.doctor_name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Hospital / Facility:</span>
+                <span className="text-on-surface-variant">{i18n.previewModal.hospital}</span>
                 <span className="font-semibold text-on-surface">{previewDoc.clinic_hospital}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Consultation Date:</span>
+                <span className="text-on-surface-variant">{i18n.previewModal.date}</span>
                 <span className="font-semibold text-on-surface">{previewDoc.record_date}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">File Name:</span>
+                <span className="text-on-surface-variant">{i18n.previewModal.fileName}</span>
                 <span className="font-mono text-body-xs text-on-surface">{previewDoc.file_name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Storage Encryption:</span>
+                <span className="text-on-surface-variant">{i18n.previewModal.encryption}</span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                   <span>🔒 AES-256 (Supabase Storage RLS)</span>
                 </span>
               </div>
               {previewDoc.notes && (
                 <div className="pt-2 border-t border-outline-variant/20">
-                  <span className="text-on-surface-variant block mb-0.5">Clinical Notes:</span>
+                  <span className="text-on-surface-variant block mb-0.5">{i18n.previewModal.notes}</span>
                   <p className="text-on-surface bg-surface-container-lowest p-2 rounded-lg italic">
                     {previewDoc.notes}
                   </p>
@@ -1519,14 +1758,14 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
 
             <div className="flex items-center justify-between pt-2">
               <span className="text-[11px] text-on-surface-variant">
-                File size: {formatBytes(previewDoc.file_size_bytes)}
+                {i18n.previewModal.fileSize} {formatBytes(previewDoc.file_size_bytes)}
               </span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPreviewDoc(null)}
                   className="btn-secondary py-1.5 px-3"
                 >
-                  Close
+                  {i18n.previewModal.close}
                 </button>
                 <button
                   onClick={() => {
@@ -1537,7 +1776,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
-                  <span>Download File</span>
+                  <span>{i18n.previewModal.download}</span>
                 </button>
               </div>
             </div>

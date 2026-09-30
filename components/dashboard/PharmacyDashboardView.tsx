@@ -7,13 +7,24 @@ import StatusBadge from '@/components/ui/StatusBadge'
 import LiveIndicator from '@/components/ui/LiveIndicator'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import DispenseMedicationModal from '@/components/modals/DispenseMedicationModal'
+import { useActivePrescriptions, useDrugInventory } from '@/hooks/useClinicData'
 
 type Props = {
   userName: string
 }
 
 export default function PharmacyDashboardView({ userName }: Props) {
-  const { setDispenseOpen } = useClinicRealtime()
+  const { setDispenseOpen, openDispenseModal, pharmacyRefreshKey } = useClinicRealtime()
+  const rxList = useActivePrescriptions()
+  const inventoryList = useDrugInventory()
+
+  const rxListRefetch = rxList.refetch
+  const inventoryListRefetch = inventoryList.refetch
+
+  React.useEffect(() => {
+    rxListRefetch()
+    inventoryListRefetch()
+  }, [pharmacyRefreshKey, rxListRefetch, inventoryListRefetch])
 
   return (
     <div className="flex flex-col space-y-gutter-desktop">
@@ -133,7 +144,7 @@ export default function PharmacyDashboardView({ userName }: Props) {
                   <p className="text-body-sm text-on-surface-variant">Prescribed by {row.doc}</p>
                 </div>
                 <button
-                  onClick={() => setDispenseOpen(true)}
+                  onClick={() => openDispenseModal(row.id)}
                   className="btn-primary w-full justify-center py-2 text-label-md touch-tap"
                 >
                   <span className="material-symbols-outlined text-[18px]">medication</span>
@@ -190,7 +201,7 @@ export default function PharmacyDashboardView({ userName }: Props) {
                     </td>
                     <td className="px-space-md py-space-sm text-right">
                       <button
-                        onClick={() => setDispenseOpen(true)}
+                        onClick={() => openDispenseModal(row.id)}
                         className="btn-primary py-1 px-space-md text-label-sm touch-tap"
                       >
                         Dispense →

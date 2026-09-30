@@ -50,7 +50,7 @@ export default function QuickActionBar({ className = '' }: QuickActionBarProps) 
       className={`flex items-center gap-2 p-1.5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-x-auto smooth-touch-scroll ${className}`}
     >
         <div className="flex items-center gap-1.5 px-2.5 py-1 text-label-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex-shrink-0">
-          <span className="material-symbols-outlined text-teal-600 dark:text-teal-400 text-[18px]">bolt</span>
+          <span className="material-symbols-outlined text-primary text-[18px]">bolt</span>
           <span>Quick Actions</span>
         </div>
 
@@ -59,7 +59,7 @@ export default function QuickActionBar({ className = '' }: QuickActionBarProps) 
           className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap flex-shrink-0"
           title="Instant Book (⌘B)"
         >
-          <span className="material-symbols-outlined text-[16px] text-teal-600 dark:text-teal-400">event_available</span>
+          <span className="material-symbols-outlined text-[16px] text-primary">event_available</span>
           <span>Book Appt</span>
           <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
             ⌘B
@@ -71,7 +71,7 @@ export default function QuickActionBar({ className = '' }: QuickActionBarProps) 
           className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap flex-shrink-0"
           title="Write Prescription (⌘P)"
         >
-          <span className="material-symbols-outlined text-[16px] text-teal-600 dark:text-teal-400">prescriptions</span>
+          <span className="material-symbols-outlined text-[16px] text-primary">prescriptions</span>
           <span>e-Prescription</span>
           <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
             ⌘P

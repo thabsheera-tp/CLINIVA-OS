@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS patient_queue (
   priority VARCHAR(20) NOT NULL DEFAULT 'routine' 
     CHECK (priority IN ('routine', 'urgent', 'emergency')),
   department VARCHAR(100) NOT NULL DEFAULT 'General Medicine',
-  doctor_id UUID REFERENCES auth_profiles(id) ON DELETE SET NULL,
+  doctor_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
   chief_complaint TEXT,
   
   -- Time prediction & tracking fields
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS patient_queue (
   consultation_completed_at TIMESTAMPTZ,
   
   -- Multi-tenancy & audit
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
+  tenant_id UUID REFERENCES clinics(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -62,11 +62,11 @@ CREATE POLICY "patient_queue_tenant_isolation"
   FOR ALL
   USING (
     tenant_id IS NULL OR 
-    tenant_id = (SELECT tenant_id FROM auth_profiles WHERE id = auth.uid())
+    tenant_id = (SELECT tenant_id FROM profiles WHERE id = auth.uid())
   )
   WITH CHECK (
     tenant_id IS NULL OR 
-    tenant_id = (SELECT tenant_id FROM auth_profiles WHERE id = auth.uid())
+    tenant_id = (SELECT tenant_id FROM profiles WHERE id = auth.uid())
   );
 
 -- Anonymous / Demo Read Access (for public queue display boards and demo mode)

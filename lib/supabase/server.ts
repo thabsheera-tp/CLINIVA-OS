@@ -4,14 +4,24 @@ import { cookies } from 'next/headers'
 export type Database = {
   public: {
     Tables: {
-      clinics: { Row: { id: string; name: string; slug: string; plan_tier: string; created_at: string } }
-      clinic_settings: { Row: { clinic_id: string; key: string; value: string | boolean | number } }
-      profiles: { Row: { id: string; tenant_id: string; role: string; display_name: string; avatar_url: string | null } }
-      patients: { Row: { id: string; tenant_id: string; mrn: string; first_name: string; last_name: string; dob: string; gender: string; phone: string; email: string | null } }
-      appointments: { Row: { id: string; tenant_id: string; patient_id: string; doctor_id: string; scheduled_at: string; status: string; queue_token: number; chief_complaint: string | null } }
-      patient_vitals: { Row: { id: string; tenant_id: string; patient_id: string; appointment_id: string; bp_systolic: number | null; bp_diastolic: number | null; heart_rate: number | null; spo2: number | null; temperature: number | null; recorded_at: string } }
-      beds: { Row: { id: string; tenant_id: string; ward_id: string; bed_number: string; status: string; current_patient_id: string | null } }
-      wards: { Row: { id: string; tenant_id: string; name: string; floor: string } }
+      clinics: { Row: { id: string; name: string; slug: string; plan_tier: string; created_at: string }; Insert: Record<string, any>; Update?: Record<string, any> }
+      clinic_settings: { Row: { clinic_id: string; key: string; value: string | boolean | number }; Insert: Record<string, any>; Update?: Record<string, any> }
+      profiles: { Row: { id: string; tenant_id: string; role: string; display_name: string; avatar_url: string | null }; Insert: Record<string, any>; Update?: Record<string, any> }
+      patients: { Row: { id: string; tenant_id: string; mrn: string; first_name: string; last_name: string; dob: string; gender: string; phone: string; email: string | null }; Insert: Record<string, any>; Update?: Record<string, any> }
+      appointments: { Row: { id: string; tenant_id: string; patient_id: string; doctor_id: string; scheduled_at: string; status: string; queue_token: number; chief_complaint: string | null }; Insert: Record<string, any>; Update?: Record<string, any> }
+      patient_vitals: { Row: { id: string; tenant_id: string; patient_id: string; appointment_id: string; bp_systolic: number | null; bp_diastolic: number | null; heart_rate: number | null; spo2: number | null; temperature: number | null; recorded_at: string }; Insert: Record<string, any>; Update?: Record<string, any> }
+      beds: { Row: { id: string; tenant_id: string; ward_id: string; bed_number: string; status: string; current_patient_id: string | null }; Insert: Record<string, any>; Update?: Record<string, any> }
+      wards: { Row: { id: string; tenant_id: string; name: string; floor: string }; Insert: Record<string, any>; Update?: Record<string, any> }
+      medications: { Row: { id: string; tenant_id: string; generic_name: string; brand_name: string | null; strength: string | null; form: string | null; is_controlled: boolean; is_active: boolean }; Insert: Record<string, any>; Update?: Record<string, any> }
+      prescriptions: { Row: { id: string; tenant_id: string; consultation_id: string | null; appointment_id: string | null; patient_id: string; prescribed_by: string; dispensed_by: string | null; status: 'pending' | 'verified' | 'dispensed' | 'cancelled'; is_ip_order: boolean; notes: string | null; prescribed_at: string; dispensed_at: string | null }; Insert: Record<string, any>; Update?: Record<string, any> }
+      prescription_items: { Row: { id: string; prescription_id: string; medication_id: string; dosage: string; route: string; frequency: string; duration_days: number | null; quantity: number | null; instructions: string | null; drug_interaction_flag: boolean }; Insert: Record<string, any>; Update?: Record<string, any> }
+      pharmacy_inventory: { Row: { id: string; tenant_id: string; medication_id: string; batch_number: string | null; manufacturer: string | null; quantity_in_stock: number; reorder_level: number; unit_price: number | null; expiry_date: string | null; received_at: string; location: string | null }; Insert: Record<string, any>; Update?: Record<string, any> }
+      invoices: { Row: { id: string; tenant_id: string; patient_id: string; appointment_id: string | null; invoice_number: string; subtotal: number; tax_amount: number; discount_amount: number; total_amount: number; paid_amount: number; balance_due: number; payment_status: 'pending' | 'partial' | 'paid' | 'refunded' | 'waived' | 'insurance_pending'; due_date: string | null; insurance_provider: string | null; insurance_claim_id: string | null; insurance_approved_amount: number | null; created_by: string | null; created_at: string; updated_at: string }; Insert: Record<string, any>; Update?: Record<string, any> }
+      patient_queue: { Row: { id: string; tenant_id: string; patient_id: string | null; patient_name: string; token_number: number; status: string; priority: string; department: string; doctor_id: string | null; chief_complaint: string | null; estimated_wait_minutes: number; estimated_consultation_time: string | null; consultation_started_at: string | null; consultation_completed_at: string | null; created_at: string; updated_at: string }; Insert: Record<string, any>; Update?: Record<string, any> }
+      consultations: { Row: { id: string; tenant_id: string; appointment_id: string; patient_id: string; doctor_id: string; subjective: string | null; objective: string | null; assessment: string | null; plan: string | null; icd10_codes: string[] | null; is_emergency: boolean; follow_up_in: number | null; started_at: string | null; signed_at: string | null; created_at: string; updated_at: string }; Insert: Record<string, any>; Update?: Record<string, any> }
+      lab_orders: { Row: { id: string; tenant_id: string; patient_id: string; appointment_id: string | null; ordered_by: string; collected_by: string | null; resulted_by: string | null; status: string; is_stat: boolean; sample_collected_at: string | null; resulted_at: string | null; reported_at: string | null; clinical_info: string | null; ordered_at: string }; Insert: Record<string, any>; Update?: Record<string, any> }
+      lab_tests: { Row: { id: string; tenant_id: string; test_code: string; test_name: string; sample_type: string; turnaround_hrs: number | null; is_active: boolean }; Insert: Record<string, any>; Update?: Record<string, any> }
+      lab_results: { Row: { id: string; lab_order_id: string; lab_test_id: string; result_value: string; result_unit: string | null; ref_range_low: string | null; ref_range_high: string | null; severity: string; is_critical: boolean; critical_notified_at: string | null; resulted_at: string }; Insert: Record<string, any>; Update?: Record<string, any> }
     }
   }
 }
@@ -33,13 +43,14 @@ const DEMO_USERS: Record<string, { role: string; display_name: string; email: st
  * Reads/writes cookies for session management.
  * Includes seamless demo-session fallback when exploring in preview mode.
  */
-const SUPABASE_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL ||
-  'https://fospnuhjxebcfoinzlsw.supabase.co'
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key'
 
-const SUPABASE_ANON_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvc3BudWhqeGViY2ZvaW56bHN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3MTk0MzYsImV4cCI6MjEwNTI5NTQzNn0.7_PMUD4OSUI3xhVRQJJUUdRWccGLPRyPYKrt0NSp7FM'
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn('[Supabase Server] NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY is missing.')
+  }
+}
 
 export function createServerClient() {
   const cookieStore = cookies()

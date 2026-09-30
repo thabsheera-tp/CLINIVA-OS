@@ -8,19 +8,27 @@ const config: Config = {
     './lib/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    screens: {
+      xs: '384px',
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+      xl: '1280px',
+      '2xl': '1536px',
+    },
     extend: {
       // ─── Cliniva Soft Clinical Color Palette (from design-system/tokens.json) ───
       colors: {
-        // Primary teal palette
-        primary: '#00685f',
+        // Primary: Forest Teal — deeper, more authoritative
+        primary: '#0c7a6e',
         'on-primary': '#ffffff',
-        'primary-container': '#008378',
-        'on-primary-container': '#f4fffc',
-        'primary-fixed': '#89f5e7',
-        'primary-fixed-dim': '#6bd8cb',
+        'primary-container': '#0a6860',
+        'on-primary-container': '#f0fffc',
+        'primary-fixed': '#7de8d8',
+        'primary-fixed-dim': '#5ccabc',
         'on-primary-fixed': '#00201d',
-        'on-primary-fixed-variant': '#005049',
-        'inverse-primary': '#6bd8cb',
+        'on-primary-fixed-variant': '#00524a',
+        'inverse-primary': '#5ccabc',
 
         // Secondary teal
         secondary: '#006b5f',
@@ -48,31 +56,31 @@ const config: Config = {
         'error-container': '#ffdad6',
         'on-error-container': '#93000a',
 
-        // Surfaces (canvas, cards, layers)
-        surface: 'var(--color-surface, #f8f9ff)',
-        'surface-dim': 'var(--color-surface-dim, #cbdbf5)',
-        'surface-bright': 'var(--color-surface-bright, #f8f9ff)',
+        // Surfaces (canvas, cards, layers) — CSS-var-driven for light/dark switching
+        surface: 'var(--color-surface, #f5f7f9)',
+        'surface-dim': 'var(--color-surface-dim, #edf0f4)',
+        'surface-bright': 'var(--color-surface-bright, #ffffff)',
         'surface-container-lowest': 'var(--color-surface-container-lowest, #ffffff)',
-        'surface-container-low': 'var(--color-surface-container-low, #eff4ff)',
-        'surface-container': 'var(--color-surface-container, #e5eeff)',
-        'surface-container-high': 'var(--color-surface-container-high, #dce9ff)',
-        'surface-container-highest': 'var(--color-surface-container-highest, #d3e4fe)',
-        'surface-variant': 'var(--color-surface-container, #d3e4fe)',
-        'surface-tint': '#006a61',
+        'surface-container-low': 'var(--color-surface-container-low, #f2f5f8)',
+        'surface-container': 'var(--color-surface-container, #e9edf3)',
+        'surface-container-high': 'var(--color-surface-container-high, #dde3ea)',
+        'surface-container-highest': 'var(--color-surface-container-highest, #cfd8e3)',
+        'surface-variant': 'var(--color-surface-container, #e9edf3)',
+        'surface-tint': '#0c7a6e',
 
         // On-surfaces (text, icons)
-        'on-surface': 'var(--color-on-surface, #0f172a)',
-        'on-surface-variant': 'var(--color-on-surface-variant, #334155)',
-        'on-background': 'var(--color-on-surface, #0f172a)',
-        background: 'var(--color-surface, #f8f9ff)',
+        'on-surface': 'var(--color-on-surface, #1b2a3b)',
+        'on-surface-variant': 'var(--color-on-surface-variant, #4e6478)',
+        'on-background': 'var(--color-on-surface, #1b2a3b)',
+        background: 'var(--color-surface, #f5f7f9)',
 
         // Inverse
-        'inverse-surface': '#213145',
-        'inverse-on-surface': '#eaf1ff',
+        'inverse-surface': '#1b3350',
+        'inverse-on-surface': '#e6f0f8',
 
         // Borders
-        outline: 'var(--color-outline, #64748b)',
-        'outline-variant': 'var(--color-outline-variant, #cbd5e1)',
+        outline: 'var(--color-outline, #7d96a8)',
+        'outline-variant': 'var(--color-outline-variant, #dae0e8)',
 
         // Semantic status colors (design-system spec)
         'status-success': '#27AE60',
@@ -130,13 +138,13 @@ const config: Config = {
         'margin-desktop': '2rem',
       },
 
-      // ─── Shadows (Soft Layered Depth) ───
+      // ─── Shadows (Warm-toned, professional depth) ───
       boxShadow: {
-        card: '0px 2px 4px rgba(15, 23, 42, 0.03), 0px 8px 16px -4px rgba(13, 148, 136, 0.04)',
-        'card-hover': '0px 6px 12px -2px rgba(15, 23, 42, 0.05), 0px 16px 24px -4px rgba(13, 148, 136, 0.06)',
-        modal: '0px 20px 32px -8px rgba(15, 23, 42, 0.08), 0px 32px 48px -12px rgba(15, 23, 42, 0.06)',
-        sidebar: '0_1px_8px_rgba(0,0,0,0.02)',
-        'focus-ring': '0 0 0 3px rgba(20, 184, 166, 0.15)',
+        card: '0px 1px 3px rgba(27, 42, 59, 0.05), 0px 1px 2px -1px rgba(27, 42, 59, 0.03)',
+        'card-hover': '0px 4px 8px -2px rgba(27, 42, 59, 0.07), 0px 2px 4px -2px rgba(27, 42, 59, 0.04)',
+        modal: '0px 12px 28px -6px rgba(27, 42, 59, 0.12), 0px 6px 12px -4px rgba(27, 42, 59, 0.06)',
+        sidebar: '0_1px_8px_rgba(27,42,59,0.03)',
+        'focus-ring': '0 0 0 3px rgba(12, 122, 110, 0.15)',
       },
 
       // ─── Animation ───

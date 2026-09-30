@@ -10,6 +10,7 @@ import {
   fetchPatients,
   fetchTodayAppointments,
   fetchPatientVitals,
+  fetchRecentVitals,
   fetchActivePrescriptions,
   fetchPendingLabOrders,
   fetchCriticalLabResults,
@@ -102,6 +103,10 @@ export function useCriticalLabResults() {
 
 export function useBeds() {
   return useAsync<BedRow[]>(fetchBeds, [])
+}
+
+export function useRecentVitals(limit = 20) {
+  return useAsync<VitalsRow[]>(() => fetchRecentVitals(limit), [], [limit])
 }
 
 export function useRecentInvoices(limit = 20) {

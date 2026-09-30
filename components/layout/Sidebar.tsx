@@ -70,7 +70,7 @@ export default function Sidebar({
                   className={clsx(
                     'flex items-center justify-between px-space-md py-2.5 rounded-xl transition-all duration-150 group touch-tap relative',
                     isActive
-                      ? 'bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 font-semibold border-l-4 border-teal-600 dark:border-teal-400'
+                      ? 'bg-primary/10 text-primary font-semibold border-l-4 border-primary'
                       : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
                   )}
                 >
@@ -78,7 +78,7 @@ export default function Sidebar({
                     <span
                       className={clsx(
                         'material-symbols-outlined text-[20px] transition-colors flex-shrink-0',
-                        isActive ? 'text-teal-600 dark:text-teal-400' : 'text-slate-400 group-hover:text-teal-600 dark:group-hover:text-teal-400'
+                        isActive ? 'text-primary' : 'text-slate-400 group-hover:text-primary'
                       )}
                     >
                       {item.icon}
@@ -91,7 +91,7 @@ export default function Sidebar({
                       className={clsx(
                         'text-[11px] px-2 py-0.5 rounded-full font-bold flex-shrink-0 ml-1',
                         item.badgeVariant === 'live'
-                          ? 'inline-flex items-center gap-1 bg-teal-50 text-teal-800 border border-teal-200 dark:bg-teal-950/50 dark:text-teal-300 dark:border-teal-800/50'
+                          ? 'inline-flex items-center gap-1 bg-primary/10 text-primary border border-primary/20'
                           : item.badgeVariant === 'alert'
                           ? 'bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800/50'
                           : 'bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
@@ -99,8 +99,8 @@ export default function Sidebar({
                     >
                       {item.badgeVariant === 'live' && (
                         <span className="relative flex h-1.5 w-1.5">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-500 opacity-75" />
-                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-teal-500" />
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary" />
                         </span>
                       )}
                       {item.badge}
@@ -126,7 +126,7 @@ export default function Sidebar({
               </span>
               <span className="text-body-sm text-slate-500 dark:text-slate-400 truncate">{roleLabel}</span>
             </div>
-            <span className="material-symbols-outlined text-teal-600 dark:text-teal-400 text-[20px] flex-shrink-0">
+            <span className="material-symbols-outlined text-primary text-[20px] flex-shrink-0">
               {contextIcon}
             </span>
           </div>
@@ -151,7 +151,7 @@ export default function Sidebar({
         {/* Logo + Brand */}
         <div className="flex flex-col flex-1 min-h-0">
           <div className="h-16 px-gutter flex items-center gap-space-sm border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center text-white flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white flex-shrink-0 shadow-xs">
               <span className="material-symbols-outlined text-[18px]">medical_services</span>
             </div>
             <div className="flex flex-col min-w-0">
@@ -185,7 +185,7 @@ export default function Sidebar({
             {/* Header with Close button */}
             <div className="h-16 px-gutter flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex-shrink-0">
               <div className="flex items-center gap-space-sm min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center text-white flex-shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white flex-shrink-0 shadow-xs">
                   <span className="material-symbols-outlined text-[18px]">medical_services</span>
                 </div>
                 <div className="flex flex-col min-w-0">
@@ -214,7 +214,10 @@ export default function Sidebar({
       )}
 
       {/* 3. Mobile Bottom Tab Bar */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex items-center justify-around px-1 py-1.5 safe-area-pb">
+      <nav
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex items-stretch justify-around px-1"
+        style={{ paddingBottom: 'max(0.375rem, env(safe-area-inset-bottom))' }}
+      >
         {/* Top 4 primary actions */}
         {sections[0]?.items.slice(0, 4).map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
@@ -223,7 +226,7 @@ export default function Sidebar({
               key={item.href}
               href={item.href}
               className={clsx(
-                'flex flex-col items-center justify-center py-1 px-2 rounded-xl transition-all min-w-[56px] min-h-[44px] touch-tap',
+                'flex flex-col items-center justify-center py-2 px-2 rounded-xl transition-all min-w-[52px] min-h-[48px] touch-tap',
                 isActive
                   ? 'text-primary font-semibold'
                   : 'text-on-surface-variant hover:text-on-surface'
@@ -246,7 +249,7 @@ export default function Sidebar({
         <button
           onClick={onMobileOpen}
           className={clsx(
-            'flex flex-col items-center justify-center py-1 px-2 rounded-xl transition-all min-w-[56px] min-h-[44px] touch-tap',
+            'flex flex-col items-center justify-center py-2 px-2 rounded-xl transition-all min-w-[52px] min-h-[48px] touch-tap',
             mobileOpen ? 'text-primary font-semibold' : 'text-on-surface-variant hover:text-on-surface'
           )}
           aria-label="More navigation options"

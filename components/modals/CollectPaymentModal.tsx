@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import ModalBackdrop from './ModalBackdrop'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
+import { recordInvoicePayment } from '@/lib/data'
 
 export default function CollectPaymentModal() {
   const { isPaymentOpen, setPaymentOpen } = useClinicRealtime()
@@ -11,6 +12,8 @@ export default function CollectPaymentModal() {
   const [tendered, setTendered] = useState('173.25')
   const [processing, setProcessing] = useState(false)
   const [paid, setPaid] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [settledResult, setSettledResult] = useState<{ amount: number; paymentId: string; status: string } | null>(null)
 
   const items = [
     { desc: 'Cardiology Specialist Consultation', code: 'CPT-99214', amount: 120.00 },
@@ -19,23 +22,53 @@ export default function CollectPaymentModal() {
   ]
   const total = items.reduce((acc, i) => acc + i.amount, 0)
 
-  const handlePay = (e: React.FormEvent) => {
+  const handlePay = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (processing) return
     setProcessing(true)
+    setErrorMsg(null)
+
+    const tenderAmount = parseFloat(tendered) || total
+
+    const result = await recordInvoicePayment({
+      invoice_number: 'INV-2026-0842',
+      amount: tenderAmount,
+      method: paymentMethod,
+      reference_id: `POS-${Date.now().toString().slice(-6)}`,
+      notes: `Collected via Cashier Station (${paymentMethod.toUpperCase()})`,
+    })
+
+    setProcessing(false)
+
+    if (!result.ok) {
+      setErrorMsg(result.error)
+      return
+    }
+
+    setSettledResult({
+      amount: result.amount,
+      paymentId: result.payment_id,
+      status: result.payment_status,
+    })
+    setPaid(true)
+
     setTimeout(() => {
-      setProcessing(false)
-      setPaid(true)
-      setTimeout(() => {
-        setPaid(false)
-        setPaymentOpen(false)
-      }, 1500)
-    }, 1000)
+      setPaid(false)
+      setSettledResult(null)
+      setErrorMsg(null)
+      setPaymentOpen(false)
+    }, 2000)
   }
 
   return (
     <ModalBackdrop
       isOpen={isPaymentOpen}
-      onClose={() => setPaymentOpen(false)}
+      onClose={() => {
+        if (!processing) {
+          setErrorMsg(null)
+          setPaymentOpen(false)
+        }
+      }}
       title="Process Invoice & Collect Payment"
       subtitle="Invoice #INV-2026-0842 • Marcus Delacroix"
       icon="receipt_long"
@@ -46,17 +79,23 @@ export default function CollectPaymentModal() {
             <span className="material-symbols-outlined text-[36px]">paid</span>
           </div>
           <h3 className="font-heading text-headline-md text-on-surface font-bold">
-            Payment Settled — ${total.toFixed(2)}
+            Payment Settled — ${(settledResult?.amount ?? total).toFixed(2)}
           </h3>
           <p className="text-body-md text-on-surface-variant max-w-sm">
-            Digital receipt issued and dispatched to Patient Portal. Invoice marked PAID.
+            Digital receipt issued and dispatched to Patient Portal. Invoice marked {settledResult?.status?.toUpperCase() ?? 'PAID'}.
           </p>
           <span className="px-3 py-1 bg-secondary-fixed/50 text-on-secondary-fixed text-label-sm rounded-full font-semibold uppercase tracking-wider">
-            Ledger Balanced Live
+            Ref: {settledResult?.paymentId ?? 'LIVE-SYNCED'}
           </span>
         </div>
       ) : (
         <form onSubmit={handlePay} className="space-y-space-md">
+          {errorMsg && (
+            <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-body-sm flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]">error</span>
+              <span>{errorMsg}</span>
+            </div>
+          )}
           {/* Bill Line Items Table */}
           <div className="border border-outline-variant/30 rounded-xl overflow-hidden">
             <table className="w-full text-left">

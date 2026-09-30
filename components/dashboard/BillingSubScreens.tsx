@@ -62,7 +62,7 @@ export default function BillingSubScreens({ slug, userName }: Props) {
 
           <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 overflow-hidden shadow-sm">
             <div className="p-4 border-b border-outline-variant/20 flex items-center justify-between gap-3">
-              <div className="relative w-72">
+              <div className="relative w-full sm:w-72">
                 <span className="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[20px]">search</span>
                 <input
                   type="text"

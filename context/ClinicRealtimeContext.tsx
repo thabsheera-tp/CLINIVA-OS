@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { createClientSideClient } from '@/lib/supabase/client'
+import { fetchBeds, assignBedToPatient, dischargePatientFromBed } from '@/lib/data'
 
 export type QueuePatient = {
   id: string
@@ -47,8 +48,22 @@ type ClinicContextType = {
 
   // Bed Board
   beds: BedItem[]
-  assignBed: (bedId: string, patientName: string, age: string, condition: string) => void
-  releaseBed: (bedId: string) => void
+  assignBed: (
+    bedId: string,
+    patientName: string,
+    age: string,
+    condition: string,
+    expectedDischargeAt?: string,
+    patientId?: string
+  ) => Promise<boolean> | void
+  releaseBed: (bedId: string) => Promise<boolean> | void
+  bedRefreshKey: number
+  triggerBedRefresh: () => void
+  isAssignBedOpen: boolean
+  setAssignBedOpen: (open: boolean) => void
+  activeAssignBedId: string | null
+  setActiveAssignBedId: (id: string | null) => void
+  openAssignBedModal: (bedId?: string) => void
 
   // Modals state
   isRegisterOpen: boolean
@@ -61,10 +76,22 @@ type ClinicContextType = {
   setPaymentOpen: (open: boolean) => void
   isDispenseOpen: boolean
   setDispenseOpen: (open: boolean) => void
+  dispensePrescriptionId: string | null
+  setDispensePrescriptionId: (id: string | null) => void
+  openDispenseModal: (prescriptionId?: string) => void
+  pharmacyRefreshKey: number
+  triggerPharmacyRefresh: () => void
   isPrescriptionOpen: boolean
   setPrescriptionOpen: (open: boolean) => void
   isBookingOpen: boolean
   setBookingOpen: (open: boolean) => void
+  isLabResultOpen: boolean
+  setLabResultOpen: (open: boolean) => void
+  activeLabOrderId: string | null
+  setActiveLabOrderId: (id: string | null) => void
+  openLabResultModal: (orderId?: string) => void
+  labRefreshKey: number
+  triggerLabRefresh: () => void
   bookingPrefill: { department?: string; doctor?: string; complaint?: string } | null
   setBookingPrefill: (prefill: { department?: string; doctor?: string; complaint?: string } | null) => void
   openBookingWithPrefill: (prefill: { department?: string; doctor?: string; complaint?: string }) => void
@@ -107,6 +134,18 @@ export function ClinicRealtimeProvider({ children }: { children: React.ReactNode
   const [activePatient, setActivePatient] = useState<QueuePatient | null>(INITIAL_QUEUE[0])
   const [vitals, setVitals] = useState<VitalsData>(INITIAL_VITALS)
   const [beds, setBeds] = useState<BedItem[]>(INITIAL_BEDS)
+  const [isAssignBedOpen, setAssignBedOpen] = useState(false)
+  const [activeAssignBedId, setActiveAssignBedId] = useState<string | null>(null)
+  const [bedRefreshKey, setBedRefreshKey] = useState<number>(0)
+
+  const triggerBedRefresh = useCallback(() => {
+    setBedRefreshKey((prev) => prev + 1)
+  }, [])
+
+  const openAssignBedModal = useCallback((bedId?: string) => {
+    setActiveAssignBedId(bedId ?? null)
+    setAssignBedOpen(true)
+  }, [])
 
   // Modal dialog states
   const [isRegisterOpen, setRegisterOpen] = useState(false)
@@ -114,9 +153,58 @@ export function ClinicRealtimeProvider({ children }: { children: React.ReactNode
   const [isConsultOpen, setConsultOpen] = useState(false)
   const [isPaymentOpen, setPaymentOpen] = useState(false)
   const [isDispenseOpen, setDispenseOpen] = useState(false)
+  const [dispensePrescriptionId, setDispensePrescriptionId] = useState<string | null>(null)
+  const [pharmacyRefreshKey, setPharmacyRefreshKey] = useState<number>(0)
   const [isPrescriptionOpen, setPrescriptionOpen] = useState(false)
   const [isBookingOpen, setBookingOpen] = useState(false)
+  const [isLabResultOpen, setLabResultOpen] = useState(false)
+  const [activeLabOrderId, setActiveLabOrderId] = useState<string | null>(null)
+  const [labRefreshKey, setLabRefreshKey] = useState<number>(0)
   const [bookingPrefill, setBookingPrefill] = useState<{ department?: string; doctor?: string; complaint?: string } | null>(null)
+
+  // Fetch initial beds from database and re-fetch on bedRefreshKey
+  useEffect(() => {
+    let isMounted = true
+    fetchBeds()
+      .then((dbBeds) => {
+        if (!isMounted || !dbBeds || dbBeds.length === 0) return
+        setBeds(
+          dbBeds.map((b) => ({
+            id: b.bed_number || b.id,
+            patient: b.patient_name || null,
+            age: b.age || null,
+            condition: b.condition || (b.status === 'occupied' ? 'Inpatient' : null),
+            status: (b.status as any) || 'available',
+            ward: b.ward_name || (b.bed_number?.startsWith('A') ? 'Ward A' : 'Ward B'),
+          }))
+        )
+      })
+      .catch((err) => {
+        console.warn('[ClinicRealtime] fetchBeds error:', err)
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [bedRefreshKey])
+
+  const triggerLabRefresh = useCallback(() => {
+    setLabRefreshKey((prev) => prev + 1)
+  }, [])
+
+  const openLabResultModal = useCallback((orderId?: string) => {
+    setActiveLabOrderId(orderId ?? null)
+    setLabResultOpen(true)
+  }, [])
+
+  const triggerPharmacyRefresh = useCallback(() => {
+    setPharmacyRefreshKey((prev) => prev + 1)
+  }, [])
+
+  const openDispenseModal = useCallback((prescriptionId?: string) => {
+    setDispensePrescriptionId(prescriptionId ?? null)
+    setDispenseOpen(true)
+  }, [])
 
   const openBookingWithPrefill = useCallback((prefill: { department?: string; doctor?: string; complaint?: string }) => {
     setBookingPrefill(prefill)
@@ -155,7 +243,7 @@ export function ClinicRealtimeProvider({ children }: { children: React.ReactNode
       )
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'vitals' },
+        { event: 'INSERT', schema: 'public', table: 'patient_vitals' },
         (payload) => {
           const row = payload.new as any
           setVitals((prev) => ({
@@ -166,6 +254,13 @@ export function ClinicRealtimeProvider({ children }: { children: React.ReactNode
             temperature: row.temperature ? `${row.temperature}` : prev.temperature,
             recordedAt: 'Just now',
           }))
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'beds' },
+        () => {
+          setBedRefreshKey((k) => k + 1)
         }
       )
       .subscribe()
@@ -199,6 +294,13 @@ export function ClinicRealtimeProvider({ children }: { children: React.ReactNode
         setBeds((prev) =>
           prev.map((b) => (b.id === payload.bedId ? { ...b, ...payload } : b))
         )
+        setBedRefreshKey((k) => k + 1)
+      } else if (type === 'BED_UPDATED') {
+        setBedRefreshKey((k) => k + 1)
+      } else if (type === 'DISPENSE_MEDICATION') {
+        setPharmacyRefreshKey((k) => k + 1)
+      } else if (type === 'LAB_RESULTS_UPDATED') {
+        setLabRefreshKey((k) => k + 1)
       }
     }
 
@@ -273,7 +375,14 @@ export function ClinicRealtimeProvider({ children }: { children: React.ReactNode
   )
 
   const assignBed = useCallback(
-    (bedId: string, patientName: string, age: string, condition: string) => {
+    async (
+      bedId: string,
+      patientName: string,
+      age: string,
+      condition: string,
+      expectedDischargeAt?: string,
+      patientId?: string
+    ) => {
       setBeds((prev) =>
         prev.map((b) =>
           b.id === bedId
@@ -282,12 +391,29 @@ export function ClinicRealtimeProvider({ children }: { children: React.ReactNode
         )
       )
       broadcast('ASSIGN_BED', { bedId, patient: patientName, age, condition, status: 'occupied' })
+
+      try {
+        const res = await assignBedToPatient({
+          bed_id: bedId,
+          patient_name: patientName,
+          age,
+          condition,
+          expected_discharge_at: expectedDischargeAt,
+          patient_id: patientId,
+        })
+        triggerBedRefresh()
+        return res.success
+      } catch (err) {
+        console.error('[ClinicRealtime] assignBed error:', err)
+        triggerBedRefresh()
+        return false
+      }
     },
-    [broadcast]
+    [broadcast, triggerBedRefresh]
   )
 
   const releaseBed = useCallback(
-    (bedId: string) => {
+    async (bedId: string) => {
       setBeds((prev) =>
         prev.map((b) =>
           b.id === bedId
@@ -296,8 +422,18 @@ export function ClinicRealtimeProvider({ children }: { children: React.ReactNode
         )
       )
       broadcast('ASSIGN_BED', { bedId, patient: null, age: null, condition: null, status: 'available' })
+
+      try {
+        const res = await dischargePatientFromBed(bedId)
+        triggerBedRefresh()
+        return res.success
+      } catch (err) {
+        console.error('[ClinicRealtime] releaseBed error:', err)
+        triggerBedRefresh()
+        return false
+      }
     },
-    [broadcast]
+    [broadcast, triggerBedRefresh]
   )
 
   return (
@@ -313,6 +449,13 @@ export function ClinicRealtimeProvider({ children }: { children: React.ReactNode
         beds,
         assignBed,
         releaseBed,
+        bedRefreshKey,
+        triggerBedRefresh,
+        isAssignBedOpen,
+        setAssignBedOpen,
+        activeAssignBedId,
+        setActiveAssignBedId,
+        openAssignBedModal,
         isRegisterOpen,
         setRegisterOpen,
         isVitalsOpen,
@@ -323,10 +466,22 @@ export function ClinicRealtimeProvider({ children }: { children: React.ReactNode
         setPaymentOpen,
         isDispenseOpen,
         setDispenseOpen,
+        dispensePrescriptionId,
+        setDispensePrescriptionId,
+        openDispenseModal,
+        pharmacyRefreshKey,
+        triggerPharmacyRefresh,
         isPrescriptionOpen,
         setPrescriptionOpen,
         isBookingOpen,
         setBookingOpen,
+        isLabResultOpen,
+        setLabResultOpen,
+        activeLabOrderId,
+        setActiveLabOrderId,
+        openLabResultModal,
+        labRefreshKey,
+        triggerLabRefresh,
         bookingPrefill,
         setBookingPrefill,
         openBookingWithPrefill,

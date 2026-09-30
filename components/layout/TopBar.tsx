@@ -129,7 +129,7 @@ export default function TopBar({
               onClick={() => setClinicMenuOpen(!clinicMenuOpen)}
               className="hidden lg:flex items-center gap-space-xs px-space-md py-space-xs bg-slate-50 dark:bg-slate-950 rounded-lg border border-slate-200 dark:border-slate-800 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex-shrink-0 touch-tap"
             >
-              <span className="material-symbols-outlined text-teal-600 dark:text-teal-400 text-[18px]">{clinicIcon}</span>
+              <span className="material-symbols-outlined text-primary text-[18px]">{clinicIcon}</span>
               <span className="text-label-md text-slate-900 dark:text-slate-100 truncate max-w-[180px] xl:max-w-[220px] font-medium">{selectedClinic}</span>
               <span className="material-symbols-outlined text-slate-400 text-[16px]">expand_more</span>
             </button>
@@ -145,11 +145,11 @@ export default function TopBar({
                       setClinicMenuOpen(false)
                     }}
                     className={`w-full text-left px-3 py-2 text-label-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-between ${
-                      selectedClinic === campus ? 'text-teal-600 dark:text-teal-400 font-semibold bg-slate-50 dark:bg-slate-800/60' : 'text-slate-700 dark:text-slate-300'
+                      selectedClinic === campus ? 'text-primary font-semibold bg-primary/10' : 'text-slate-700 dark:text-slate-300'
                     }`}
                   >
                     <span className="truncate">{campus}</span>
-                    {selectedClinic === campus && <span className="material-symbols-outlined text-teal-600 dark:text-teal-400 text-[18px]">check</span>}
+                    {selectedClinic === campus && <span className="material-symbols-outlined text-primary text-[18px]">check</span>}
                   </button>
                 ))}
               </div>
@@ -158,7 +158,7 @@ export default function TopBar({
 
           {/* Mobile: logo wordmark */}
           <div className="lg:hidden flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 rounded-lg bg-teal-600 flex items-center justify-center text-white flex-shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-white flex-shrink-0 shadow-xs">
               <span className="material-symbols-outlined text-[16px]">medical_services</span>
             </div>
             <span className="font-heading font-semibold text-slate-900 dark:text-slate-50 text-headline-sm truncate">
@@ -211,7 +211,7 @@ export default function TopBar({
             </button>
 
             {notificationsOpen && (
-              <div className="absolute right-0 top-12 w-80 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="absolute right-0 top-12 w-[calc(100vw-1.5rem)] max-w-[20rem] bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 mb-2">
                   <span className="text-label-md font-bold text-slate-900 dark:text-slate-100">Clinical Alerts</span>
                   <span className="text-[11px] bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-900/40 px-2 py-0.5 rounded-full font-semibold">3 Unread</span>
@@ -226,7 +226,7 @@ export default function TopBar({
                     </div>
                   </div>
                   <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex gap-2.5 items-start">
-                    <span className="material-symbols-outlined text-teal-600 dark:text-teal-400 text-[18px] flex-shrink-0 mt-0.5">prescriptions</span>
+                    <span className="material-symbols-outlined text-primary text-[18px] flex-shrink-0 mt-0.5">prescriptions</span>
                     <div>
                       <p className="text-label-sm font-semibold text-slate-900 dark:text-slate-100">Rx Verification Needed</p>
                       <p className="text-[12px] text-slate-500 dark:text-slate-400">Central Pharmacy flagged Lisinopril interaction</p>
@@ -258,7 +258,7 @@ export default function TopBar({
               </button>
               <button
                 onClick={handlePrimaryAction}
-                className="sm:hidden p-2 rounded-xl bg-teal-600 text-white shadow-xs touch-tap flex items-center justify-center"
+                className="sm:hidden p-2 rounded-xl bg-primary hover:bg-primary-container text-white shadow-xs touch-tap flex items-center justify-center transition-colors"
                 title={primaryAction.label}
                 aria-label={primaryAction.label}
               >
@@ -280,7 +280,7 @@ export default function TopBar({
                   alt="Profile"
                   width={32}
                   height={32}
-                  className="w-8 h-8 rounded-full object-cover ring-2 ring-teal-500/20"
+                  className="w-8 h-8 rounded-full object-cover ring-2 ring-primary/25"
                 />
               ) : (
                 <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-800 dark:text-slate-200 font-semibold text-label-md">
@@ -289,7 +289,7 @@ export default function TopBar({
               )}
               <div className="flex-col text-left hidden lg:flex">
                 <div className="flex items-center gap-1">
-                  <span className="text-label-md text-slate-900 dark:text-slate-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors truncate max-w-[120px] font-medium">
+                  <span className="text-label-md text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors truncate max-w-[120px] font-medium">
                     {userName}
                   </span>
                   <span className="material-symbols-outlined text-slate-400 text-[16px]">expand_more</span>
@@ -303,7 +303,7 @@ export default function TopBar({
 
             {/* Dropdown menu */}
             {dropdownOpen && (
-              <div className="absolute right-0 top-12 w-64 max-w-[calc(100vw-1.5rem)] bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="absolute right-0 top-12 w-[calc(100vw-1.5rem)] max-w-[16rem] bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
                 <div className="px-space-md py-1 border-b border-slate-100 dark:border-slate-800 mb-1">
                   <p className="text-label-sm text-slate-400 dark:text-slate-500 uppercase font-semibold">Switch Workspace</p>
                 </div>
@@ -314,7 +314,7 @@ export default function TopBar({
                       onClick={() => handleRoleSwitch(ws.role, ws.path)}
                       className={`w-full flex items-center gap-space-sm px-space-md py-2 text-left text-label-md transition-colors touch-tap ${
                         userRole?.toLowerCase().includes(ws.role) || (ws.role === 'nurse' && userRole?.toLowerCase().includes('nurs'))
-                          ? 'bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 font-semibold'
+                          ? 'bg-primary/10 text-primary font-semibold'
                           : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
                       }`}
                     >

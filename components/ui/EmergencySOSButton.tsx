@@ -21,38 +21,35 @@ export default function EmergencySOSButton({
   return (
     <>
       {variant === 'floating' && (
-        <div className={`fixed bottom-20 right-4 z-40 sm:bottom-6 sm:right-6 ${className}`}>
-          {/* Pulsating Glowing Ring Behind Button */}
-          <div className="relative group">
-            <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-rose-600 to-red-600 opacity-75 blur-sm animate-pulse group-hover:opacity-100 transition duration-300" />
-            <span className="absolute -top-1 -right-1 flex h-4 w-4">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-rose-500 text-[9px] font-black text-white items-center justify-center">
-                !
-              </span>
+        <div className={`relative group ${className}`}>
+          <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-rose-600 to-red-600 opacity-75 blur-sm animate-pulse group-hover:opacity-100 transition duration-300" />
+          <span className="absolute -top-1 -right-1 flex h-4 w-4">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-4 w-4 bg-rose-500 text-[9px] font-black text-white items-center justify-center">
+              !
             </span>
+          </span>
 
-            <button
-              onClick={() => setIsSOSOpen(true)}
-              type="button"
-              aria-label="Emergency SOS & Ambulance Dispatch"
-              className="relative flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 hover:from-rose-500 hover:to-red-600 text-white rounded-full font-black shadow-xl shadow-rose-600/40 border-2 border-white/30 transition-all transform hover:scale-105 active:scale-95 touch-tap"
-            >
-              <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center animate-bounce">
-                <span className="material-symbols-outlined text-[20px] text-white">
-                  e911_emergency
-                </span>
-              </div>
-              <div className="text-left leading-tight pr-1">
-                <span className="block text-[11px] font-black tracking-widest uppercase text-white/90">
-                  One-Tap
-                </span>
-                <span className="block text-label-md font-extrabold tracking-wider text-white">
-                  SOS EMERGENCY
-                </span>
-              </div>
-            </button>
-          </div>
+          <button
+            onClick={() => setIsSOSOpen(true)}
+            type="button"
+            aria-label="Emergency SOS & Ambulance Dispatch"
+            className="relative flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 hover:from-rose-500 hover:to-red-600 text-white rounded-full font-black shadow-xl shadow-rose-600/40 border-2 border-white/30 transition-all transform hover:scale-105 active:scale-95 touch-tap"
+          >
+            <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center animate-bounce">
+              <span className="material-symbols-outlined text-[20px] text-white">
+                e911_emergency
+              </span>
+            </div>
+            <div className="text-left leading-tight pr-1">
+              <span className="block text-[11px] font-black tracking-widest uppercase text-white/90">
+                One-Tap
+              </span>
+              <span className="block text-label-md font-extrabold tracking-wider text-white">
+                SOS EMERGENCY
+              </span>
+            </div>
+          </button>
         </div>
       )}
 

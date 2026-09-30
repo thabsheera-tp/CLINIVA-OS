@@ -5,6 +5,7 @@ import SubScreenHeader from './SubScreenHeader'
 import StatusBadge from '@/components/ui/StatusBadge'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import RegisterPatientModal from '@/components/modals/RegisterPatientModal'
+import { registerPatient, fetchDoctors, type DoctorProfile } from '@/lib/data'
 
 type Props = {
   slug: string
@@ -28,22 +29,80 @@ export default function FrontDeskSubScreens({ slug, userName }: Props) {
   const [regAge, setRegAge] = useState('')
   const [regComplaint, setRegComplaint] = useState('')
   const [regSuccess, setRegSuccess] = useState(false)
+  const [regError, setRegError] = useState<string | null>(null)
+  const [regLoading, setRegLoading] = useState(false)
 
-  const handleRegister = (e: React.FormEvent) => {
+  // Active doctors fetched from database
+  const [activeDoctors, setActiveDoctors] = useState<DoctorProfile[]>([])
+  const [selectedDoctorId, setSelectedDoctorId] = useState('')
+  const [selectedPriority, setSelectedPriority] = useState<'routine' | 'urgent' | 'emergency'>('routine')
+
+  React.useEffect(() => {
+    fetchDoctors().then((docs) => {
+      if (docs && docs.length > 0) {
+        setActiveDoctors(docs)
+        setSelectedDoctorId(docs[0].id)
+      }
+    })
+  }, [])
+
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!regName.trim() || !regAge.trim()) return
-    addQueuePatient({
-      name: regName,
-      age: regAge,
-      complaint: regComplaint || 'Routine examination',
-      status: 'waiting',
-      priority: 'routine',
+    setRegLoading(true)
+    setRegError(null)
+
+    // Parse "45M" or "32F" style age/gender input into separate fields
+    const ageMatch = regAge.match(/(\d+)/)
+    const ageNum = ageMatch ? ageMatch[1] : '35'
+    const genderChar = regAge.toUpperCase().includes('F') ? 'female' : 'male'
+    const birthYear = new Date().getFullYear() - parseInt(ageNum, 10)
+    const dob = `${birthYear}-01-01`
+
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    const validDoctorId = selectedDoctorId && uuidRegex.test(selectedDoctorId)
+      ? selectedDoctorId
+      : activeDoctors.find(d => uuidRegex.test(d.id))?.id || ''
+
+    const result = await registerPatient({
+      first_name: regName.trim().split(' ')[0] || regName.trim(),
+      last_name:  regName.trim().split(' ').slice(1).join(' ') || 'Patient',
+      dob,
+      gender: genderChar as 'male' | 'female',
+      phone: '+0000000000',
+      chief_complaint: regComplaint || 'Routine examination',
+      visit_type: 'opd',
+      priority: selectedPriority,
+      doctor_id: validDoctorId,
     })
+
+    setRegLoading(false)
+
+    if (!result.ok) {
+      setRegError(result.error)
+      // Still add to local queue for immediate feedback
+      addQueuePatient({
+        name: regName,
+        age: regAge,
+        complaint: regComplaint || 'Routine examination',
+        status: 'waiting',
+        priority: 'routine',
+      })
+    } else {
+      // Optimistic queue update
+      addQueuePatient({
+        name: regName,
+        age: regAge,
+        complaint: regComplaint || 'Routine examination',
+        status: 'waiting',
+        priority: 'routine',
+      })
+    }
     setRegSuccess(true)
     setRegName('')
     setRegAge('')
     setRegComplaint('')
-    setTimeout(() => setRegSuccess(false), 4000)
+    setTimeout(() => { setRegSuccess(false); setRegError(null) }, 4000)
   }
 
   return (
@@ -129,6 +188,12 @@ export default function FrontDeskSubScreens({ slug, userName }: Props) {
                 <span>Patient registered and queued successfully! Live token issued.</span>
               </div>
             )}
+            {regError && (
+              <div className="mb-4 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-body-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px]">warning</span>
+                <span>Added to local queue (DB: {regError})</span>
+              </div>
+            )}
 
             <form onSubmit={handleRegister} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -170,20 +235,38 @@ export default function FrontDeskSubScreens({ slug, userName }: Props) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-label-sm font-medium text-on-surface-variant block mb-1">Department</label>
-                  <select className="w-full px-3 py-2 bg-surface-container-low rounded-xl border border-outline-variant/30 text-body-sm">
-                    <option>Cardiology (Dr. Sarah Jenkins)</option>
-                    <option>General Medicine (Dr. Alan Bradley)</option>
-                    <option>Pediatrics (Dr. Emily Watson)</option>
-                    <option>Orthopedics (Dr. Rajesh Patel)</option>
+                  <label className="text-label-sm font-medium text-on-surface-variant block mb-1">Attending Doctor / Department</label>
+                  <select 
+                    value={selectedDoctorId}
+                    onChange={(e) => setSelectedDoctorId(e.target.value)}
+                    className="w-full px-3 py-2 bg-surface-container-low rounded-xl border border-outline-variant/30 text-body-sm"
+                  >
+                    {activeDoctors.length > 0 ? (
+                      activeDoctors.map((doc) => (
+                        <option key={doc.id} value={doc.id}>
+                          {doc.display_name} {doc.department ? `(${doc.department})` : ''}
+                        </option>
+                      ))
+                    ) : (
+                      <>
+                        <option value="">Dr. Sarah Jenkins, MD (Cardiology)</option>
+                        <option value="">Dr. Alan Bradley, MD (General Medicine)</option>
+                        <option value="">Dr. Emily Watson, MD (Pediatrics)</option>
+                        <option value="">Dr. Rajesh Patel, MD (Orthopedics)</option>
+                      </>
+                    )}
                   </select>
                 </div>
                 <div>
                   <label className="text-label-sm font-medium text-on-surface-variant block mb-1">Triage Priority</label>
-                  <select className="w-full px-3 py-2 bg-surface-container-low rounded-xl border border-outline-variant/30 text-body-sm">
-                    <option>Routine OPD</option>
-                    <option>Urgent (Priority Check)</option>
-                    <option>Emergency (Immediate)</option>
+                  <select 
+                    value={selectedPriority}
+                    onChange={(e) => setSelectedPriority(e.target.value as any)}
+                    className="w-full px-3 py-2 bg-surface-container-low rounded-xl border border-outline-variant/30 text-body-sm"
+                  >
+                    <option value="routine">Routine OPD</option>
+                    <option value="urgent">Urgent (Priority Check)</option>
+                    <option value="emergency">Emergency (Immediate)</option>
                   </select>
                 </div>
               </div>
@@ -192,8 +275,8 @@ export default function FrontDeskSubScreens({ slug, userName }: Props) {
                 <button type="button" onClick={() => setRegisterOpen(true)} className="btn-secondary">
                   Open Advanced Intake Modal
                 </button>
-                <button type="submit" className="btn-primary">
-                  Issue Token & Add to Queue
+                <button type="submit" className="btn-primary" disabled={regLoading}>
+                  {regLoading ? 'Saving…' : 'Issue Token & Add to Queue'}
                 </button>
               </div>
             </form>

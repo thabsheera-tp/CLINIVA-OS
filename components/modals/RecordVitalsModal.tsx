@@ -1,41 +1,101 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import ModalBackdrop from './ModalBackdrop'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
+import { recordPatientVitals } from '@/lib/data'
 
 export default function RecordVitalsModal() {
-  const { isVitalsOpen, setVitalsOpen, updateVitals, activePatient } = useClinicRealtime()
+  const { isVitalsOpen, setVitalsOpen, updateVitals, activePatient, queue, beds } = useClinicRealtime()
 
+  const [selectedPatientName, setSelectedPatientName] = useState('')
   const [systolic, setSystolic] = useState('128')
   const [diastolic, setDiastolic] = useState('82')
   const [heartRate, setHeartRate] = useState('74')
   const [spo2, setSpo2] = useState('98')
   const [temp, setTemp] = useState('98.4')
   const [respRate, setRespRate] = useState('16')
+  const [weight, setWeight] = useState('')
+  const [height, setHeight] = useState('')
+  const [notes, setNotes] = useState('')
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
 
-  const patientName = activePatient?.name ?? 'Marcus Delacroix'
+  // Initialize patient name when modal opens
+  useEffect(() => {
+    if (!isVitalsOpen) {
+      setErrorMsg(null)
+      setSaved(false)
+      setIsSubmitting(false)
+      return
+    }
+
+    if (activePatient?.name) {
+      setSelectedPatientName(activePatient.name)
+    } else {
+      const occupiedBed = beds.find((b) => b.status === 'occupied' && b.patient)
+      if (occupiedBed?.patient) {
+        setSelectedPatientName(occupiedBed.patient)
+      } else if (queue[0]?.name) {
+        setSelectedPatientName(queue[0].name)
+      } else {
+        setSelectedPatientName('Marcus Delacroix')
+      }
+    }
+  }, [isVitalsOpen, activePatient, beds, queue])
+
+  const patientName = selectedPatientName || 'Marcus Delacroix'
   const isHighBp = Number(systolic) >= 140 || Number(diastolic) >= 90
   const isLowSpo2 = Number(spo2) < 95
   const isFever = Number(temp) > 99.5
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    updateVitals({
-      patientName,
-      mrn: '00482910',
-      bp: `${systolic}/${diastolic}`,
-      heartRate,
-      spo2: `${spo2}%`,
-      temperature: temp,
-    })
+    setIsSubmitting(true)
+    setErrorMsg(null)
 
-    setSaved(true)
-    setTimeout(() => {
-      setSaved(false)
-      setVitalsOpen(false)
-    }, 1200)
+    try {
+      const res = await recordPatientVitals({
+        patient_name: patientName,
+        bp_systolic: Number(systolic),
+        bp_diastolic: Number(diastolic),
+        heart_rate: Number(heartRate),
+        spo2: Number(spo2),
+        temperature: Number(temp),
+        respiratory_rate: respRate ? Number(respRate) : undefined,
+        weight_kg: weight ? Number(weight) : undefined,
+        height_cm: height ? Number(height) : undefined,
+        notes: notes.trim() || undefined,
+      })
+
+      if (!res.success) {
+        setErrorMsg(res.error || 'Failed to save patient vitals.')
+        setIsSubmitting(false)
+        return
+      }
+
+      // Stream to local realtime state and telemetry components
+      updateVitals({
+        patientName,
+        mrn: '00482910',
+        bp: `${systolic}/${diastolic}`,
+        heartRate,
+        spo2: `${spo2}%`,
+        temperature: temp,
+      })
+
+      setSaved(true)
+      setTimeout(() => {
+        setSaved(false)
+        setIsSubmitting(false)
+        setVitalsOpen(false)
+      }, 1300)
+    } catch (err: any) {
+      setErrorMsg(err?.message || 'Unexpected error occurred while saving vitals.')
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -48,32 +108,72 @@ export default function RecordVitalsModal() {
     >
       {saved ? (
         <div className="py-8 flex flex-col items-center justify-center text-center space-y-3">
-          <div className="w-16 h-16 rounded-full bg-secondary-fixed flex items-center justify-center text-primary animate-pulse">
+          <div className="w-16 h-16 rounded-full bg-status-success/20 flex items-center justify-center text-status-success animate-bounce">
             <span className="material-symbols-outlined text-[36px]">check_circle</span>
           </div>
           <h3 className="font-heading text-headline-md text-on-surface font-bold">
-            Vitals Telemetry Synced!
+            Vitals Saved & Telemetry Streamed!
           </h3>
           <p className="text-body-md text-on-surface-variant max-w-sm">
-            Telemetry streamed live to Doctor Workspace, Nursing Ward, and Patient Chart.
+            Observation for <span className="font-semibold text-on-surface">{patientName}</span> saved to clinical record and streamed to Ward telemetry.
           </p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-space-md">
-          {/* Patient Banner */}
-          <div className="flex items-center justify-between p-space-md bg-surface-container-low rounded-xl border border-outline-variant/30">
-            <div className="flex items-center gap-space-sm">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold">
-                {patientName.charAt(0)}
-              </div>
-              <div>
-                <p className="text-label-lg font-heading text-on-surface font-semibold">{patientName}</p>
-                <p className="text-body-sm text-on-surface-variant">MRN: 00482910 • Room 304 - Exam B</p>
-              </div>
+          {errorMsg && (
+            <div className="p-3 rounded-xl bg-status-critical/10 border border-status-critical/30 text-status-critical text-body-sm flex items-start gap-2">
+              <span className="material-symbols-outlined text-[18px] flex-shrink-0 mt-0.5">error</span>
+              <span>{errorMsg}</span>
             </div>
-            <span className="px-2.5 py-1 rounded-full bg-secondary-fixed/50 text-on-secondary-fixed text-label-sm font-semibold">
-              In Examination
-            </span>
+          )}
+
+          {/* Patient Selection Banner */}
+          <div className="p-space-md bg-surface-container-low rounded-xl border border-outline-variant/30 space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-label-md text-on-surface font-semibold flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-primary text-[18px]">person</span>
+                Patient
+              </label>
+              <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-label-sm font-semibold">
+                Clinical Observation
+              </span>
+            </div>
+
+            <div className="flex gap-2">
+              <input
+                type="text"
+                required
+                value={selectedPatientName}
+                onChange={(e) => setSelectedPatientName(e.target.value)}
+                placeholder="Patient Full Name"
+                className="input-field font-semibold text-body-lg flex-1"
+              />
+              {(queue.length > 0 || beds.some((b) => b.patient)) && (
+                <select
+                  onChange={(e) => {
+                    if (e.target.value) setSelectedPatientName(e.target.value)
+                  }}
+                  defaultValue=""
+                  className="input-field text-body-sm w-44"
+                >
+                  <option value="" disabled>
+                    Pick Patient...
+                  </option>
+                  {beds
+                    .filter((b) => b.patient)
+                    .map((b) => (
+                      <option key={b.id} value={b.patient!}>
+                        Bed {b.id}: {b.patient}
+                      </option>
+                    ))}
+                  {queue.map((p) => (
+                    <option key={p.id} value={p.name}>
+                      OPD #{p.token}: {p.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
           </div>
 
           {/* Blood Pressure Input */}
@@ -81,10 +181,10 @@ export default function RecordVitalsModal() {
             <div className="flex items-center justify-between">
               <label className="text-label-md text-on-surface font-semibold flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-primary text-[18px]">favorite</span>
-                Blood Pressure (mmHg)
+                Blood Pressure (mmHg) *
               </label>
               {isHighBp && (
-                <span className="px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary text-label-sm font-bold animate-pulse">
+                <span className="px-2 py-0.5 rounded-full bg-status-critical/10 text-status-critical text-label-sm font-bold animate-pulse">
                   Stage 1/2 Hypertension
                 </span>
               )}
@@ -95,6 +195,8 @@ export default function RecordVitalsModal() {
                 <input
                   type="number"
                   required
+                  min="50"
+                  max="260"
                   value={systolic}
                   onChange={(e) => setSystolic(e.target.value)}
                   placeholder="120"
@@ -106,6 +208,8 @@ export default function RecordVitalsModal() {
                 <input
                   type="number"
                   required
+                  min="30"
+                  max="160"
                   value={diastolic}
                   onChange={(e) => setDiastolic(e.target.value)}
                   placeholder="80"
@@ -120,11 +224,13 @@ export default function RecordVitalsModal() {
             <div>
               <label className="text-label-md text-on-surface font-semibold flex items-center gap-1.5 mb-1">
                 <span className="material-symbols-outlined text-primary text-[18px]">ecg_heart</span>
-                Heart Rate (bpm)
+                Heart Rate (bpm) *
               </label>
               <input
                 type="number"
                 required
+                min="30"
+                max="240"
                 value={heartRate}
                 onChange={(e) => setHeartRate(e.target.value)}
                 placeholder="72"
@@ -136,11 +242,11 @@ export default function RecordVitalsModal() {
               <div className="flex items-center justify-between mb-1">
                 <label className="text-label-md text-on-surface font-semibold flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-primary text-[18px]">air</span>
-                  Oxygen Saturation SpO₂ (%)
+                  Oxygen Saturation SpO₂ (%) *
                 </label>
                 {isLowSpo2 && (
-                  <span className="px-1.5 py-0.5 rounded bg-tertiary/10 text-tertiary text-label-sm font-bold">
-                    Low SpO2
+                  <span className="px-1.5 py-0.5 rounded bg-status-critical/10 text-status-critical text-label-sm font-bold">
+                    Hypoxemia Risk
                   </span>
                 )}
               </div>
@@ -150,7 +256,7 @@ export default function RecordVitalsModal() {
                 value={spo2}
                 onChange={(e) => setSpo2(e.target.value)}
                 placeholder="98"
-                min="70"
+                min="50"
                 max="100"
                 className="input-field text-headline-sm font-semibold tabular-nums"
               />
@@ -164,11 +270,11 @@ export default function RecordVitalsModal() {
               <div className="flex items-center justify-between mb-1">
                 <label className="text-label-md text-on-surface font-semibold flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-primary text-[18px]">thermometer</span>
-                  Body Temperature (°F)
+                  Body Temperature (°F) *
                 </label>
                 {isFever && (
                   <span className="px-1.5 py-0.5 rounded bg-status-warning/10 text-status-warning text-label-sm font-bold">
-                    Elevated
+                    Pyrexia / Fever
                   </span>
                 )}
               </div>
@@ -176,6 +282,8 @@ export default function RecordVitalsModal() {
                 type="number"
                 step="0.1"
                 required
+                min="80"
+                max="115"
                 value={temp}
                 onChange={(e) => setTemp(e.target.value)}
                 placeholder="98.6"
@@ -190,6 +298,8 @@ export default function RecordVitalsModal() {
               </label>
               <input
                 type="number"
+                min="6"
+                max="60"
                 value={respRate}
                 onChange={(e) => setRespRate(e.target.value)}
                 placeholder="16"
@@ -199,18 +309,80 @@ export default function RecordVitalsModal() {
             </div>
           </div>
 
+          {/* Optional Weight & Height */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+            <div>
+              <label className="text-label-md text-on-surface font-semibold block mb-1">
+                Weight (kg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                min="1"
+                max="400"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+                placeholder="70.5"
+                className="input-field"
+              />
+            </div>
+            <div>
+              <label className="text-label-md text-on-surface font-semibold block mb-1">
+                Height (cm)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                min="30"
+                max="250"
+                value={height}
+                onChange={(e) => setHeight(e.target.value)}
+                placeholder="175"
+                className="input-field"
+              />
+            </div>
+          </div>
+
+          {/* Clinical Observation Notes */}
+          <div>
+            <label className="text-label-md text-on-surface font-semibold block mb-1">
+              Nursing Notes & Telemetry Observations
+            </label>
+            <textarea
+              rows={2}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="e.g. Patient resting comfortably, regular sinus rhythm, denies chest pain."
+              className="input-field text-body-sm"
+            />
+          </div>
+
           {/* Actions */}
           <div className="pt-space-md border-t border-outline-variant/20 flex items-center justify-end gap-space-sm">
             <button
               type="button"
               onClick={() => setVitalsOpen(false)}
               className="btn-ghost"
+              disabled={isSubmitting}
             >
               Cancel
             </button>
-            <button type="submit" className="btn-primary">
-              <span className="material-symbols-outlined text-[18px]">sync_saved_locally</span>
-              <span>Sync & Stream Vitals</span>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="btn-primary flex items-center gap-2"
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+                  <span>Saving Vitals...</span>
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-[18px]">sync_saved_locally</span>
+                  <span>Sync & Save Vitals</span>
+                </>
+              )}
             </button>
           </div>
         </form>

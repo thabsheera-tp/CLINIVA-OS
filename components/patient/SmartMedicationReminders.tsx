@@ -2,6 +2,166 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import { createClientSideClient } from '@/lib/supabase/client'
+import { usePortalLang } from '@/context/PortalLanguageContext'
+
+const REMINDERS_I18N = {
+  en: {
+    badge: 'Smart Adherence Engine',
+    title: 'Medication & Health Reminders',
+    subtitle: 'Set custom schedules, receive browser alerts, and track daily dose adherence.',
+    testAlarm: '🔔 Test Alarm',
+    setReminder: '+ Set Reminder',
+    alertsTitle: 'Browser Audio-Visual Alerts',
+    activeBadge: 'Active',
+    reqBadge: 'Permission Required',
+    alertsActive: 'Native desktop chime and toast notifications are active.',
+    alertsReq: 'Enable browser permission to receive alarms even when the app is in the background.',
+    enableAlerts: 'Enable Browser Alerts',
+    adherenceTitle: "Today's Medication Adherence",
+    takenRatio: (taken: number, total: number, pct: number) => `${taken} of ${total} taken (${pct}%)`,
+    timelineTitle: "Today's Medication Timeline",
+    timelineSub: 'Chronological schedule of morning, afternoon, and evening prescription doses.',
+    alarmTriggered: 'Medication Alarm Triggered Now',
+    timeToTake: (med: string, dose: string) => `Time to take ${med} (${dose})`,
+    schedFor: (time: string) => `Scheduled for ${time} • Please take with water`,
+    markTaken: '✓ Mark as Taken',
+    snooze: 'Snooze 15m',
+    takeDose: 'Take Dose',
+    completed: '✓ Completed',
+    takenAt: (time: string) => `✓ Taken at ${time}`,
+    rxTitle: 'Active Prescriptions & Pill Inventory',
+    rxSub: 'Manage custom dosage frequency and refill stock count.',
+    addRx: '+ Add Prescription',
+    pillsLeft: (count: number) => `${count} pills left`,
+    refillRx: 'Refill Rx',
+    slots: {
+      morning: 'morning',
+      afternoon: 'afternoon',
+      evening: 'evening',
+      bedtime: 'bedtime',
+    } as Record<string, string>,
+    mealTiming: {
+      after_meal: 'after meal',
+      before_meal: 'before meal',
+      with_meal: 'with meal',
+      empty_stomach: 'empty stomach',
+    } as Record<string, string>,
+    frequencies: {
+      once_daily: 'Once Daily',
+      twice_daily: 'Twice Daily',
+      three_times_daily: 'Three Times Daily',
+      as_needed: 'As Needed',
+    } as Record<string, string>,
+    modal: {
+      title: 'Set Custom Medication Reminder',
+      nameLabel: 'Medicine / Prescription Name *',
+      namePh: 'e.g., Metformin, Lisinopril, Amoxicillin',
+      dosageLabel: 'Dosage *',
+      dosagePh: 'e.g., 500mg (1 tablet)',
+      classLabel: 'Therapeutic Class',
+      freqLabel: 'Dose Frequency',
+      freqOnce: 'Once Daily (1x)',
+      freqTwice: 'Twice Daily (2x - Morning & Evening)',
+      freqThree: 'Three Times Daily (3x - TID)',
+      freqAsNeeded: 'As Needed (PRN)',
+      timingLabel: 'Alarm Timing(s)',
+      mealLabel: 'Meal Timing',
+      afterMeal: 'After Meal',
+      beforeMeal: 'Before Meal',
+      withMeal: 'With Meal',
+      emptyStomach: 'Empty Stomach',
+      pillsLabel: 'Total Pills / Pack',
+      notesLabel: 'Special Instructions',
+      notesPh: 'e.g., Take with full glass of water, avoid grapefruit',
+      cancel: 'Cancel',
+      save: 'Save Reminder Schedule',
+    },
+    medInstructions: {
+      'rem-1': 'Take in the morning with a glass of water for blood pressure management.',
+      'rem-2': 'Take with food to prevent gastric irritation.',
+      'rem-3': 'Take at bedtime for optimal cholesterol regulation.',
+      'rem-4': 'Dietary heart supplement with breakfast & dinner.',
+    } as Record<string, string>,
+  },
+  ml: {
+    badge: 'സ്മാർട്ട് മരുന്ന് ട്രാക്കർ',
+    title: 'മരുന്ന് & ആരോഗ്യ ഓർക്കാം',
+    subtitle: 'കൃത്യസമയത്ത് മരുന്ന് കഴിക്കാൻ സമയക്രമവും ബ്രൗസർ അലാറങ്ങളും സജ്ജമാക്കുക.',
+    testAlarm: '🔔 അലാറം പരിശോധിക്കൂ',
+    setReminder: '+ ഓർമ്മപ്പെടുത്തൽ ചേർക്കൂ',
+    alertsTitle: 'ബ്രൗസർ അലാറം മുന്നറിയിപ്പുകൾ',
+    activeBadge: 'പ്രവർത്തനക്ഷമം',
+    reqBadge: 'അനുമതി ആവശ്യമാണ്',
+    alertsActive: 'ഡെസ്ക്ടോപ്പ് ശബ്ദ അലാറവും അറിയിപ്പുകളും സജീവമാണ്.',
+    alertsReq: 'ആപ്പ് തുറക്കാത്തപ്പോഴും അലാറം ലഭിക്കാൻ ബ്രൗസർ അനുമതി നൽകുക.',
+    enableAlerts: 'അലാറം അനുമതി നൽകുക',
+    adherenceTitle: 'ഇന്നത്തെ മരുന്ന് കഴിച്ച നിരക്ക്',
+    takenRatio: (taken: number, total: number, pct: number) => `${total}-ൽ ${taken} കഴിച്ചു (${pct}%)`,
+    timelineTitle: 'ഇന്നത്തെ മരുന്ന് സമയക്രമം',
+    timelineSub: 'രാവിലെ, ഉച്ചയ്ക്ക്, രാത്രി കഴിക്കേണ്ട മരുന്നുകളുടെ സമയക്രമം.',
+    alarmTriggered: 'മരുന്ന് കഴിക്കാനുള്ള സമയം!',
+    timeToTake: (med: string, dose: string) => `${med} (${dose}) കഴിക്കാനുള്ള സമയം`,
+    schedFor: (time: string) => `സമയക്രമം: ${time} • വെള്ളത്തോടൊപ്പം കഴിക്കുക`,
+    markTaken: '✓ കഴിച്ചതായി അടയാളപ്പെടുത്തൂ',
+    snooze: '15 മി. മാറ്റിവെക്കൂ',
+    takeDose: 'മരുന്ന് കഴിച്ചു',
+    completed: '✓ പൂർത്തിയായി',
+    takenAt: (time: string) => `✓ സമയം: ${time}`,
+    rxTitle: 'നിലവിലെ മരുന്നുകളും ബാക്കി ഗുളികകളും',
+    rxSub: 'മരുന്നിന്റെ അളവും ബാക്കി സ്റ്റോക്കും പരിശോധിക്കുക.',
+    addRx: '+ മരുന്ന് ചേർക്കൂ',
+    pillsLeft: (count: number) => `${count} ഗുളികകൾ ബാക്കി`,
+    refillRx: 'വാങ്ങുക',
+    slots: {
+      morning: 'രാവിലെ',
+      afternoon: 'ഉച്ചയ്ക്ക്',
+      evening: 'വൈകുന്നേരം',
+      bedtime: 'രാത്രി',
+    } as Record<string, string>,
+    mealTiming: {
+      after_meal: 'ഭക്ഷണത്തിന് ശേഷം',
+      before_meal: 'ഭക്ഷണത്തിന് മുൻപ്',
+      with_meal: 'ഭക്ഷണത്തോടൊപ്പം',
+      empty_stomach: 'വെറുംവയറ്റിൽ',
+    } as Record<string, string>,
+    frequencies: {
+      once_daily: 'ദിവസത്തിൽ 1 തവണ',
+      twice_daily: 'ദിവസത്തിൽ 2 തവണ',
+      three_times_daily: 'ദിവസത്തിൽ 3 തവണ',
+      as_needed: 'ആവശ്യാനുസരണം',
+    } as Record<string, string>,
+    modal: {
+      title: 'പുതിയ മരുന്ന് സമയക്രമം ചേർക്കൂ',
+      nameLabel: 'മരുന്നിന്റെ പേര് *',
+      namePh: 'ഉദാ: മെറ്റ്ഫോർമിൻ, ലിസിനോപ്രിൽ',
+      dosageLabel: 'അളവ് (Dosage) *',
+      dosagePh: 'ഉദാ: 500mg (1 ഗുളിക)',
+      classLabel: 'വിഭാഗം',
+      freqLabel: 'കഴിക്കേണ്ട തവണ',
+      freqOnce: 'ദിവസത്തിൽ 1 തവണ (1x)',
+      freqTwice: 'ദിവസത്തിൽ 2 തവണ (രാവിലെ & രാത്രി)',
+      freqThree: 'ദിവസത്തിൽ 3 തവണ (3x)',
+      freqAsNeeded: 'ആവശ്യാനുസരണം (PRN)',
+      timingLabel: 'അലാറം സമയം(കൾ)',
+      mealLabel: 'ഭക്ഷണ ക്രമം',
+      afterMeal: 'ഭക്ഷണത്തിന് ശേഷം',
+      beforeMeal: 'ഭക്ഷണത്തിന് മുൻപ്',
+      withMeal: 'ഭക്ഷണത്തോടൊപ്പം',
+      emptyStomach: 'വെറുംവയറ്റിൽ',
+      pillsLabel: 'ആകെ ഗുളികകളുടെ എണ്ണം',
+      notesLabel: 'പ്രത്യേക നിർദ്ദേശങ്ങൾ',
+      notesPh: 'ഉദാ: ധാരാളം വെള്ളത്തോടൊപ്പം കഴിക്കുക',
+      cancel: 'റദ്ദാക്കുക',
+      save: 'സേവ് ചെയ്യുക',
+    },
+    medInstructions: {
+      'rem-1': 'രക്തസമ്മർദ്ദം നിയന്ത്രിക്കാൻ രാവിലെ ഒരു ഗ്ലാസ് വെള്ളത്തോടൊപ്പം കഴിക്കുക.',
+      'rem-2': 'വയറെരിച്ചിൽ ഒഴിവാക്കാൻ ഭക്ഷണത്തോടൊപ്പം കഴിക്കുക.',
+      'rem-3': 'കൊളസ്ട്രോൾ നിയന്ത്രണത്തിനായി രാത്രി ഉറങ്ങുന്നതിനുമുമ്പ് കഴിക്കുക.',
+      'rem-4': 'പ്രഭാതഭക്ഷണത്തോടും അത്താഴത്തോടും ഒപ്പം കഴിക്കുക.',
+    } as Record<string, string>,
+  },
+}
 
 export type MedicationReminder = {
   id: string
@@ -146,6 +306,9 @@ function playGentleMedicationChime() {
 }
 
 export default function SmartMedicationReminders({ className = '' }: { className?: string }) {
+  const { lang } = usePortalLang()
+  const i18n = REMINDERS_I18N[lang] || REMINDERS_I18N.en
+
   // Reminders state
   const [reminders, setReminders] = useState<MedicationReminder[]>(() => {
     if (typeof window !== 'undefined') {
@@ -438,13 +601,13 @@ export default function SmartMedicationReminders({ className = '' }: { className
             </div>
             <div>
               <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
-                Medication Alarm Triggered Now
+                {i18n.alarmTriggered}
               </span>
               <h3 className="font-heading text-title-md font-extrabold text-on-surface">
-                Time to take {isAlertActive.medicine} ({isAlertActive.dosage})
+                {i18n.timeToTake(isAlertActive.medicine, isAlertActive.dosage)}
               </h3>
               <p className="text-body-xs text-on-surface-variant">
-                Scheduled for {formatTimeDisplay(isAlertActive.time)} • Please take with water
+                {i18n.schedFor(formatTimeDisplay(isAlertActive.time))}
               </p>
             </div>
           </div>
@@ -458,7 +621,7 @@ export default function SmartMedicationReminders({ className = '' }: { className
               }}
               className="py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-label-sm transition-all flex items-center gap-1.5 shadow-sm"
             >
-              <span>✓ Mark as Taken</span>
+              <span>{i18n.markTaken}</span>
             </button>
             <button
               onClick={() => {
@@ -468,7 +631,7 @@ export default function SmartMedicationReminders({ className = '' }: { className
               }}
               className="btn-secondary py-2 px-3 text-label-sm"
             >
-              Snooze 15m
+              {i18n.snooze}
             </button>
           </div>
         </div>
@@ -489,14 +652,14 @@ export default function SmartMedicationReminders({ className = '' }: { className
               </svg>
             </span>
             <span className="text-label-xs font-bold uppercase tracking-wider text-primary">
-              Smart Adherence Engine
+              {i18n.badge}
             </span>
           </div>
           <h1 className="font-heading text-headline-sm sm:text-headline-md font-bold text-on-surface mt-1">
-            Medication & Health Reminders
+            {i18n.title}
           </h1>
           <p className="text-body-sm text-on-surface-variant">
-            Set custom schedules, receive browser alerts, and track daily dose adherence.
+            {i18n.subtitle}
           </p>
         </div>
 
@@ -514,7 +677,7 @@ export default function SmartMedicationReminders({ className = '' }: { className
             title="Test notification sound and banner alert"
             className="btn-secondary py-2 px-3 rounded-xl text-label-xs font-semibold flex items-center gap-1.5"
           >
-            <span>🔔 Test Alarm</span>
+            <span>{i18n.testAlarm}</span>
           </button>
 
           {/* Add Reminder CTA */}
@@ -522,7 +685,7 @@ export default function SmartMedicationReminders({ className = '' }: { className
             onClick={() => setIsAddModalOpen(true)}
             className="btn-primary py-2 px-4 rounded-xl text-label-sm font-semibold flex items-center gap-1.5 shadow-sm"
           >
-            <span>+ Set Reminder</span>
+            <span>{i18n.setReminder}</span>
           </button>
         </div>
       </div>
@@ -551,7 +714,7 @@ export default function SmartMedicationReminders({ className = '' }: { className
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-heading font-bold text-label-md text-on-surface">
-                  Browser Audio-Visual Alerts
+                  {i18n.alertsTitle}
                 </span>
                 <span
                   className={`px-2 py-0.2 rounded-md text-[11px] font-bold uppercase tracking-wider ${
@@ -560,13 +723,13 @@ export default function SmartMedicationReminders({ className = '' }: { className
                       : 'bg-amber-500/15 text-amber-700 dark:text-amber-300'
                   }`}
                 >
-                  {notificationPermission === 'granted' ? 'Active' : 'Permission Required'}
+                  {notificationPermission === 'granted' ? i18n.activeBadge : i18n.reqBadge}
                 </span>
               </div>
               <p className="text-body-xs text-on-surface-variant">
                 {notificationPermission === 'granted'
-                  ? 'Native desktop chime and toast notifications are active.'
-                  : 'Enable browser permission to receive alarms even when the app is in the background.'}
+                  ? i18n.alertsActive
+                  : i18n.alertsReq}
               </p>
             </div>
           </div>
@@ -576,7 +739,7 @@ export default function SmartMedicationReminders({ className = '' }: { className
               onClick={requestNotificationAccess}
               className="py-1.5 px-3.5 bg-primary text-on-primary rounded-xl text-label-xs font-bold hover:bg-primary/90 transition-all self-start sm:self-auto"
             >
-              Enable Browser Alerts
+              {i18n.enableAlerts}
             </button>
           )}
         </div>
@@ -585,10 +748,10 @@ export default function SmartMedicationReminders({ className = '' }: { className
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-label-sm font-bold text-on-surface">
-              Today&apos;s Medication Adherence
+              {i18n.adherenceTitle}
             </span>
             <span className="text-label-sm font-bold font-mono text-primary">
-              {takenDosesToday} of {totalDosesToday} taken ({adherencePercent}%)
+              {i18n.takenRatio(takenDosesToday, totalDosesToday, adherencePercent)}
             </span>
           </div>
           <div className="w-full h-2.5 bg-surface-container-high rounded-full overflow-hidden">
@@ -611,14 +774,14 @@ export default function SmartMedicationReminders({ className = '' }: { className
         <div className="flex items-center justify-between pb-2 border-b border-outline-variant/20">
           <div>
             <h2 className="font-heading text-title-md font-bold text-on-surface">
-              Today&apos;s Medication Timeline
+              {i18n.timelineTitle}
             </h2>
             <p className="text-body-xs text-on-surface-variant">
-              Chronological schedule of morning, afternoon, and evening prescription doses.
+              {i18n.timelineSub}
             </p>
           </div>
           <span className="px-3 py-1 rounded-full text-label-xs font-bold bg-surface-container-high text-on-surface">
-            {new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+            {new Date().toLocaleDateString(lang === 'ml' ? 'ml-IN' : undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
           </span>
         </div>
 
@@ -668,10 +831,10 @@ export default function SmartMedicationReminders({ className = '' }: { className
                           {dose.display_time}
                         </span>
                         <span className="px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-surface-container-high text-on-surface">
-                          {dose.slot}
+                          {i18n.slots[dose.slot] || dose.slot}
                         </span>
                         <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-secondary-fixed/40 text-on-secondary-fixed capitalize">
-                          {dose.meal_timing}
+                          {i18n.mealTiming[dose.meal_timing.replace(' ', '_')] || dose.meal_timing}
                         </span>
                       </div>
 
@@ -687,12 +850,12 @@ export default function SmartMedicationReminders({ className = '' }: { className
                       </h3>
 
                       <p className="text-body-xs text-on-surface-variant mt-0.5">
-                        {dose.instructions}
+                        {i18n.medInstructions[dose.reminder_id] || dose.instructions}
                       </p>
 
                       {isTaken && dose.taken_at && (
                         <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold mt-1 flex items-center gap-1">
-                          <span>✓ Taken at {dose.taken_at}</span>
+                          <span>{i18n.takenAt(dose.taken_at)}</span>
                         </p>
                       )}
                     </div>
@@ -701,7 +864,7 @@ export default function SmartMedicationReminders({ className = '' }: { className
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {isTaken ? (
                         <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold text-label-sm border border-emerald-500/30">
-                          ✓ Completed
+                          {i18n.completed}
                         </span>
                       ) : (
                         <>
@@ -709,7 +872,7 @@ export default function SmartMedicationReminders({ className = '' }: { className
                             onClick={() => handleSnoozeDose(dose.id)}
                             className="btn-secondary py-2 px-3 text-label-xs rounded-xl"
                           >
-                            Snooze 15m
+                            {i18n.snooze}
                           </button>
                           <button
                             onClick={() => handleMarkDoseTaken(dose.id)}
@@ -718,7 +881,7 @@ export default function SmartMedicationReminders({ className = '' }: { className
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
-                            <span>Take Dose</span>
+                            <span>{i18n.takeDose}</span>
                           </button>
                         </>
                       )}
@@ -736,17 +899,17 @@ export default function SmartMedicationReminders({ className = '' }: { className
         <div className="flex items-center justify-between pb-2 border-b border-outline-variant/20">
           <div>
             <h3 className="font-heading text-title-md font-bold text-on-surface">
-              Active Prescriptions & Pill Inventory
+              {i18n.rxTitle}
             </h3>
             <p className="text-body-xs text-on-surface-variant">
-              Manage custom dosage frequency and refill stock count.
+              {i18n.rxSub}
             </p>
           </div>
           <button
             onClick={() => setIsAddModalOpen(true)}
             className="text-label-xs font-bold text-primary hover:underline flex items-center gap-1"
           >
-            <span>+ Add Prescription</span>
+            <span>{i18n.addRx}</span>
           </button>
         </div>
 
@@ -768,11 +931,11 @@ export default function SmartMedicationReminders({ className = '' }: { className
                         : 'bg-surface-container-high text-on-surface'
                     }`}
                   >
-                    {rem.pills_remaining} pills left
+                    {i18n.pillsLeft(rem.pills_remaining)}
                   </span>
                 </div>
                 <p className="text-body-xs text-on-surface-variant font-medium">
-                  {rem.dosage} • {rem.frequency.replace('_', ' ')}
+                  {rem.dosage} • {i18n.frequencies[rem.frequency] || rem.frequency.replace('_', ' ')}
                 </p>
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {rem.schedule_times.map((t) => (
@@ -788,10 +951,10 @@ export default function SmartMedicationReminders({ className = '' }: { className
 
               <div className="mt-3 pt-2.5 border-t border-outline-variant/20 flex items-center justify-between text-body-xs">
                 <span className="text-on-surface-variant capitalize">
-                  {rem.meal_timing.replace('_', ' ')}
+                  {i18n.mealTiming[rem.meal_timing] || rem.meal_timing.replace('_', ' ')}
                 </span>
                 <span className="text-primary font-semibold hover:underline cursor-pointer">
-                  Refill Rx
+                  {i18n.refillRx}
                 </span>
               </div>
             </div>
@@ -811,7 +974,7 @@ export default function SmartMedicationReminders({ className = '' }: { className
                   </svg>
                 </div>
                 <h3 className="font-heading text-title-md font-bold text-on-surface">
-                  Set Custom Medication Reminder
+                  {i18n.modal.title}
                 </h3>
               </div>
               <button
@@ -826,14 +989,14 @@ export default function SmartMedicationReminders({ className = '' }: { className
               {/* Medicine Name */}
               <div>
                 <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                  Medicine / Prescription Name *
+                  {i18n.modal.nameLabel}
                 </label>
                 <input
                   type="text"
                   required
                   value={newMedName}
                   onChange={(e) => setNewMedName(e.target.value)}
-                  placeholder="e.g., Metformin, Lisinopril, Amoxicillin"
+                  placeholder={i18n.modal.namePh}
                   className="input-field"
                 />
               </div>
@@ -842,20 +1005,20 @@ export default function SmartMedicationReminders({ className = '' }: { className
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Dosage *
+                    {i18n.modal.dosageLabel}
                   </label>
                   <input
                     type="text"
                     required
                     value={newDosage}
                     onChange={(e) => setNewDosage(e.target.value)}
-                    placeholder="e.g., 500mg (1 tablet)"
+                    placeholder={i18n.modal.dosagePh}
                     className="input-field"
                   />
                 </div>
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Therapeutic Class
+                    {i18n.modal.classLabel}
                   </label>
                   <select
                     value={newCategory}
@@ -874,24 +1037,24 @@ export default function SmartMedicationReminders({ className = '' }: { className
               {/* Frequency */}
               <div>
                 <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                  Dose Frequency
+                  {i18n.modal.freqLabel}
                 </label>
                 <select
                   value={newFrequency}
                   onChange={(e) => handleFrequencyChange(e.target.value as any)}
                   className="input-field"
                 >
-                  <option value="once_daily">Once Daily (1x)</option>
-                  <option value="twice_daily">Twice Daily (2x - Morning & Evening)</option>
-                  <option value="three_times_daily">Three Times Daily (3x - TID)</option>
-                  <option value="as_needed">As Needed (PRN)</option>
+                  <option value="once_daily">{i18n.modal.freqOnce}</option>
+                  <option value="twice_daily">{i18n.modal.freqTwice}</option>
+                  <option value="three_times_daily">{i18n.modal.freqThree}</option>
+                  <option value="as_needed">{i18n.modal.freqAsNeeded}</option>
                 </select>
               </div>
 
               {/* Schedule Times */}
               <div>
                 <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                  Alarm Timing(s)
+                  {i18n.modal.timingLabel}
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {newTimes.map((time, idx) => (
@@ -914,22 +1077,22 @@ export default function SmartMedicationReminders({ className = '' }: { className
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Meal Timing
+                    {i18n.modal.mealLabel}
                   </label>
                   <select
                     value={newMeal}
                     onChange={(e) => setNewMeal(e.target.value as any)}
                     className="input-field"
                   >
-                    <option value="after_meal">After Meal</option>
-                    <option value="before_meal">Before Meal</option>
-                    <option value="with_meal">With Meal</option>
-                    <option value="empty_stomach">Empty Stomach</option>
+                    <option value="after_meal">{i18n.modal.afterMeal}</option>
+                    <option value="before_meal">{i18n.modal.beforeMeal}</option>
+                    <option value="with_meal">{i18n.modal.withMeal}</option>
+                    <option value="empty_stomach">{i18n.modal.emptyStomach}</option>
                   </select>
                 </div>
                 <div>
                   <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                    Total Pills / Pack
+                    {i18n.modal.pillsLabel}
                   </label>
                   <input
                     type="number"
@@ -944,13 +1107,13 @@ export default function SmartMedicationReminders({ className = '' }: { className
               {/* Instructions */}
               <div>
                 <label className="text-label-sm font-semibold text-on-surface block mb-1">
-                  Special Instructions
+                  {i18n.modal.notesLabel}
                 </label>
                 <input
                   type="text"
                   value={newInstructions}
                   onChange={(e) => setNewInstructions(e.target.value)}
-                  placeholder="e.g., Take with full glass of water, avoid grapefruit"
+                  placeholder={i18n.modal.notesPh}
                   className="input-field"
                 />
               </div>
@@ -961,10 +1124,10 @@ export default function SmartMedicationReminders({ className = '' }: { className
                   onClick={() => setIsAddModalOpen(false)}
                   className="btn-secondary"
                 >
-                  Cancel
+                  {i18n.modal.cancel}
                 </button>
                 <button type="submit" className="btn-primary">
-                  Save Reminder Schedule
+                  {i18n.modal.save}
                 </button>
               </div>
             </form>

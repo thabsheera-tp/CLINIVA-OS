@@ -24,10 +24,10 @@ export default function SubScreenHeader({
 }: SubScreenHeaderProps) {
   return (
     <section
-      className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-2xl border border-outline-variant/30"
+      className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-3 sm:gap-space-md bg-surface-container-lowest p-4 sm:p-space-lg rounded-2xl border border-outline-variant/30"
       style={{ boxShadow: 'var(--shadow-card)' }}
     >
-      <div className="flex flex-col space-y-1">
+      <div className="flex flex-col space-y-1 min-w-0">
         {/* Breadcrumbs */}
         <div className="flex items-center gap-2 text-label-sm text-on-surface-variant flex-wrap">
           <Link
@@ -38,10 +38,10 @@ export default function SubScreenHeader({
             {parentLabel}
           </Link>
           <span className="text-outline-variant">/</span>
-          <span className="text-on-surface font-semibold">{title}</span>
+          <span className="text-on-surface font-semibold truncate">{title}</span>
           {badge && (
             <span
-              className={`text-label-sm px-2 py-0.5 rounded-full font-bold ml-1 ${
+              className={`text-label-sm px-2 py-0.5 rounded-full font-bold ml-1 flex-shrink-0 ${
                 badgeVariant === 'live'
                   ? 'bg-primary-fixed text-on-primary-fixed inline-flex items-center gap-1'
                   : badgeVariant === 'alert'
@@ -57,7 +57,7 @@ export default function SubScreenHeader({
           )}
         </div>
 
-        <h1 className="font-heading text-headline-md text-on-surface font-semibold tracking-tight">
+        <h1 className="font-heading text-headline-sm sm:text-headline-md text-on-surface font-semibold tracking-tight">
           {title}
         </h1>
 
@@ -69,7 +69,7 @@ export default function SubScreenHeader({
       </div>
 
       {actions && (
-        <div className="flex items-center gap-2 flex-wrap w-full xl:w-auto">
+        <div className="flex items-center gap-2 flex-wrap w-full xl:w-auto xl:flex-shrink-0">
           {actions}
         </div>
       )}

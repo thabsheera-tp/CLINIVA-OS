@@ -1,77 +1,157 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import ModalBackdrop from './ModalBackdrop'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
+import {
+  registerPatient,
+  fetchDoctors,
+  type DoctorProfile,
+  type RegisterPatientPayload,
+} from '@/lib/data'
+
+// Demo-mode fallback doctors when DB returns nothing (e.g. no real auth session)
+const DEMO_DOCTORS: DoctorProfile[] = [
+  { id: 'demo-doctor-id', display_name: 'Dr. Sarah Jenkins, MD', department: 'Cardiology' },
+  { id: 'demo-alan-id',   display_name: 'Dr. Alan Bradley, MD',  department: 'Internal Medicine' },
+  { id: 'demo-emily-id', display_name: 'Dr. Emily Watson, MD',  department: 'Pediatrics' },
+  { id: 'demo-rajesh-id',display_name: 'Dr. Rajesh Patel, MD',  department: 'Orthopedics' },
+]
+
+/** Convert an age in years to a rough ISO birth-date (Jan 1 of birth year). */
+function ageToISODate(ageStr: string): string {
+  const n = parseInt(ageStr, 10)
+  if (isNaN(n) || n < 0 || n > 150) return '1990-01-01'
+  return `${new Date().getFullYear() - n}-01-01`
+}
 
 export default function RegisterPatientModal() {
   const { isRegisterOpen, setRegisterOpen, addQueuePatient, queue } = useClinicRealtime()
 
   const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [age, setAge] = useState('')
-  const [gender, setGender] = useState<'M' | 'F' | 'Other'>('M')
-  const [phone, setPhone] = useState('')
+  const [lastName,  setLastName]  = useState('')
+  const [age,       setAge]       = useState('')
+  const [gender,    setGender]    = useState<'male' | 'female' | 'other'>('male')
+  const [phone,     setPhone]     = useState('')
+  const [email,     setEmail]     = useState('')
   const [complaint, setComplaint] = useState('')
-  const [priority, setPriority] = useState<'routine' | 'urgent' | 'emergency'>('routine')
-  const [visitType, setVisitType] = useState('opd')
-  const [successToken, setSuccessToken] = useState<number | null>(null)
+  const [priority,  setPriority]  = useState<'routine' | 'urgent' | 'emergency'>('routine')
+  const [visitType, setVisitType] = useState<RegisterPatientPayload['visit_type']>('opd')
+
+  // Doctor selector
+  const [doctors,          setDoctors]          = useState<DoctorProfile[]>([])
+  const [selectedDoctorId, setSelectedDoctorId] = useState('')
+
+  // UI states
+  const [isSubmitting,  setIsSubmitting]  = useState(false)
+  const [errorMsg,      setErrorMsg]      = useState<string | null>(null)
+  const [successResult, setSuccessResult] = useState<{ token: number; mrn: string; name: string } | null>(null)
 
   const nextToken = (queue[queue.length - 1]?.token ?? 12) + 1
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Load doctors each time the modal opens
+  useEffect(() => {
+    if (!isRegisterOpen) return
+    fetchDoctors().then((rows) => {
+      const list = rows.length > 0 ? rows : DEMO_DOCTORS
+      setDoctors(list)
+      setSelectedDoctorId((prev) => prev || (list[0]?.id ?? ''))
+    })
+  }, [isRegisterOpen]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const resetForm = useCallback(() => {
+    setFirstName(''); setLastName(''); setAge(''); setPhone(''); setEmail('')
+    setComplaint(''); setPriority('routine'); setVisitType('opd')
+    setSuccessResult(null); setErrorMsg(null)
+  }, [])
+
+  const handleClose = useCallback(() => { resetForm(); setRegisterOpen(false) }, [resetForm, setRegisterOpen])
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!firstName || !lastName || !complaint) return
+    if (!firstName.trim() || !lastName.trim() || !complaint.trim()) return
+    if (!selectedDoctorId) { setErrorMsg('Please select an attending doctor.'); return }
 
-    const fullName = `${firstName.trim()} ${lastName.trim()}`
-    const ageStr = `${age || '35'}${gender === 'M' ? 'M' : gender === 'F' ? 'F' : ''}`
+    setIsSubmitting(true)
+    setErrorMsg(null)
 
-    const newPatient = addQueuePatient({
-      name: fullName,
-      age: ageStr,
-      complaint,
+    const genderMap: Record<string, RegisterPatientPayload['gender']> = {
+      male: 'male', female: 'female', other: 'other',
+    }
+
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    const validDoctorId = selectedDoctorId && uuidRegex.test(selectedDoctorId)
+      ? selectedDoctorId
+      : doctors.find(d => uuidRegex.test(d.id))?.id || selectedDoctorId
+
+    const result = await registerPatient({
+      first_name:      firstName.trim(),
+      last_name:       lastName.trim(),
+      dob:             ageToISODate(age),
+      gender:          genderMap[gender] ?? 'other',
+      phone:           phone.trim() || '+0000000000',
+      email:           email.trim() || undefined,
+      chief_complaint: complaint.trim(),
+      visit_type:      visitType,
       priority,
-      status: 'waiting',
+      doctor_id:       validDoctorId,
     })
 
-    setSuccessToken(newPatient.token)
-    setTimeout(() => {
-      setSuccessToken(null)
-      setFirstName('')
-      setLastName('')
-      setAge('')
-      setPhone('')
-      setComplaint('')
-      setPriority('routine')
-      setRegisterOpen(false)
-    }, 1800)
+    setIsSubmitting(false)
+
+    if (!result.ok) {
+      setErrorMsg(result.error)
+      return
+    }
+
+    // Optimistic local queue update (instant cross-tab broadcast)
+    addQueuePatient({
+      name:      `${firstName.trim()} ${lastName.trim()}`,
+      age:       `${age || '?'}${gender === 'male' ? 'M' : gender === 'female' ? 'F' : ''}`,
+      complaint: complaint.trim(),
+      priority,
+      status:    'waiting',
+    })
+
+    setSuccessResult({ token: result.queue_token, mrn: result.mrn, name: `${firstName.trim()} ${lastName.trim()}` })
+    setTimeout(() => { resetForm(); setRegisterOpen(false) }, 2400)
   }
 
   return (
     <ModalBackdrop
       isOpen={isRegisterOpen}
-      onClose={() => setRegisterOpen(false)}
+      onClose={handleClose}
       title="Register & Issue OPD Token"
       subtitle="St. Jude Medical Center — Front Desk Registration"
       icon="person_add"
     >
-      {successToken !== null ? (
+      {successResult !== null ? (
         <div className="py-8 flex flex-col items-center justify-center text-center space-y-3">
           <div className="w-16 h-16 rounded-full bg-secondary-fixed flex items-center justify-center text-primary animate-bounce">
             <span className="material-symbols-outlined text-[36px]">confirmation_number</span>
           </div>
           <h3 className="font-heading text-headline-md text-on-surface font-bold">
-            Token #{successToken} Issued!
+            Token #{successResult.token} Issued!
           </h3>
           <p className="text-body-md text-on-surface-variant max-w-sm">
-            Patient registered successfully and queued in Doctor Workspace.
+            <strong>{successResult.name}</strong> registered and queued in Doctor Workspace.
           </p>
+          <span className="px-3 py-1 bg-primary/10 text-primary text-label-sm rounded-full font-semibold uppercase tracking-wider font-mono">
+            MRN #{successResult.mrn}
+          </span>
           <span className="px-3 py-1 bg-secondary-fixed/50 text-on-secondary-fixed text-label-sm rounded-full font-semibold uppercase tracking-wider">
-            Realtime Synced Across Clinics
+            Saved to Database · Realtime Synced
           </span>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-space-md">
+          {/* Error banner */}
+          {errorMsg && (
+            <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-body-sm">
+              <span className="material-symbols-outlined text-[18px] mt-0.5 flex-shrink-0">error</span>
+              <span>{errorMsg}</span>
+            </div>
+          )}
           {/* Token issuance banner */}
           <div className="flex items-center justify-between p-space-md bg-secondary-fixed/30 rounded-xl border border-primary/20">
             <div className="flex items-center gap-space-sm">
@@ -131,16 +211,16 @@ export default function RegisterPatientModal() {
                 onChange={(e) => setGender(e.target.value as any)}
                 className="input-field bg-white"
               >
-                <option value="M">Male</option>
-                <option value="F">Female</option>
-                <option value="Other">Other</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
               </select>
             </div>
             <div>
               <label className="text-label-md text-on-surface-variant block mb-1">Visit Type</label>
               <select
                 value={visitType}
-                onChange={(e) => setVisitType(e.target.value)}
+                onChange={(e) => setVisitType(e.target.value as RegisterPatientPayload['visit_type'])}
                 className="input-field bg-white"
               >
                 <option value="opd">OPD</option>
@@ -160,6 +240,24 @@ export default function RegisterPatientModal() {
               placeholder="+1 (555) 000-0000"
               className="input-field"
             />
+          </div>
+
+          {/* Attending Doctor */}
+          <div>
+            <label className="text-label-md text-on-surface-variant block mb-1">Attending Doctor *</label>
+            <select
+              required
+              value={selectedDoctorId}
+              onChange={(e) => setSelectedDoctorId(e.target.value)}
+              className="input-field bg-white"
+            >
+              {doctors.length === 0 && <option value="">Loading doctors…</option>}
+              {doctors.map((doc) => (
+                <option key={doc.id} value={doc.id}>
+                  {doc.display_name}{doc.department ? ` — ${doc.department}` : ''}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -185,7 +283,7 @@ export default function RegisterPatientModal() {
                 <button
                   type="button"
                   key={t.level}
-                  onClick={() => setPriority(t.level as any)}
+                  onClick={() => setPriority(t.level as 'routine' | 'urgent' | 'emergency')}
                   className={`flex flex-col items-center justify-center p-space-sm rounded-xl border-2 transition-all ${
                     priority === t.level
                       ? 'bg-secondary-fixed/40 border-primary font-bold shadow-sm'
@@ -202,14 +300,24 @@ export default function RegisterPatientModal() {
           <div className="pt-space-md border-t border-outline-variant/20 flex items-center justify-end gap-space-sm">
             <button
               type="button"
-              onClick={() => setRegisterOpen(false)}
+              onClick={handleClose}
               className="btn-ghost"
+              disabled={isSubmitting}
             >
               Cancel
             </button>
-            <button type="submit" className="btn-primary">
-              <span className="material-symbols-outlined text-[18px]">add_circle</span>
-              <span>Register & Issue Token #{nextToken}</span>
+            <button type="submit" className="btn-primary" disabled={isSubmitting || !selectedDoctorId}>
+              {isSubmitting ? (
+                <>
+                  <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+                  <span>Registering…</span>
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-[18px]">add_circle</span>
+                  <span>Register &amp; Issue Token #{nextToken}</span>
+                </>
+              )}
             </button>
           </div>
         </form>

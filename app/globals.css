@@ -5,78 +5,99 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── CSS Custom Properties (Accessible Enterprise Clinical Tokens) ─── */
+/* ─── CSS Custom Properties — Clinical Slate Design System ─── */
+/* Philosophy: Warm neutrals · Deep ink text · Refined forest-teal · Rich navy dark mode */
 :root {
-  --color-primary: #0d9488; /* Teal 600 - focused interactive accent */
-  --color-primary-container: #0f766e; /* Teal 700 */
-  --color-secondary: #0284c7; /* Sky 600 */
-  --color-tertiary: #e11d48; /* Rose 600 */
+  /* Primary: Forest Teal — deeper, more authoritative than standard teal */
+  --color-primary: #0c7a6e;         /* Refined forest teal — calm, trustworthy */
+  --color-primary-container: #0a6860; /* Slightly deeper shade */
+  --color-secondary: #1a6fa3;       /* Muted steel blue — secondary actions */
+  --color-tertiary: #c0284a;        /* Muted rose — reserved for critical alerts */
 
-  /* Light Mode Surfaces: Pure white cards on clean off-white slate-50 canvas */
-  --color-surface: #f8fafc; /* bg-slate-50 */
-  --color-surface-dim: #f1f5f9; /* bg-slate-100 */
-  --color-surface-bright: #ffffff; /* pure white */
-  --color-surface-container-lowest: #ffffff; /* Card backgrounds: pure bg-white */
-  --color-surface-container-low: #f8fafc; /* bg-slate-50 */
-  --color-surface-container: #f1f5f9; /* bg-slate-100 */
-  --color-surface-container-high: #e2e8f0; /* bg-slate-200 */
-  --color-surface-container-highest: #cbd5e1; /* bg-slate-300 */
+  /* Light Mode Surfaces: Warm off-white — removes the cold blue-gray cast */
+  --color-surface: #f5f7f9;                  /* Warm canvas — not slate-50's blue cast */
+  --color-surface-dim: #edf0f4;             /* Slightly deeper warm gray */
+  --color-surface-bright: #ffffff;           /* Pure white for focused content */
+  --color-surface-container-lowest: #ffffff; /* Card backgrounds */
+  --color-surface-container-low: #f2f5f8;   /* Subtle card differentiation */
+  --color-surface-container: #e9edf3;       /* Container backgrounds */
+  --color-surface-container-high: #dde3ea;  /* Dividers, high-contrast containers */
+  --color-surface-container-highest: #cfd8e3; /* Strongest separation */
 
-  /* High-Contrast Light Mode Typography */
-  --color-on-surface: #0f172a; /* text-slate-900: sharp primary data */
-  --color-on-surface-variant: #64748b; /* text-slate-500: readable secondary labels */
-  --color-outline: #94a3b8; /* text-slate-400 */
-  --color-outline-variant: #e2e8f0; /* border-slate-200: subtle 1px border */
+  /* Typography: Deep ink navy — softer than pure #000, harder than gray */
+  --color-on-surface: #1b2a3b;           /* Deep ink navy — primary text */
+  --color-on-surface-variant: #4e6478;   /* Muted steel — secondary/label text */
+  --color-outline: #7d96a8;              /* Soft steel — placeholder, icons */
+  --color-outline-variant: #dae0e8;      /* Warm border — subtle separators */
 
-  /* Shadows: Clean & subtle 1px borders; remove heavy drop-shadows */
-  --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
-  --shadow-card-hover: 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-modal: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  /* Shadows: Warm-toned, very subtle depth */
+  --shadow-card: 0 1px 3px 0 rgba(27, 42, 59, 0.05), 0 1px 2px -1px rgba(27, 42, 59, 0.03);
+  --shadow-card-hover: 0 4px 8px -2px rgba(27, 42, 59, 0.07), 0 2px 4px -2px rgba(27, 42, 59, 0.04);
+  --shadow-modal: 0 12px 28px -6px rgba(27, 42, 59, 0.12), 0 6px 12px -4px rgba(27, 42, 59, 0.06);
 }
 
 .dark {
-  --color-primary: #14b8a6; /* Teal 500 */
-  --color-primary-container: #0d9488; /* Teal 600 */
-  --color-secondary: #38bdf8; /* Sky 400 */
-  --color-tertiary: #f43f5e; /* Rose 500 */
+  /* Primary: Soft aqua-teal — visible without being harsh in low light */
+  --color-primary: #2ebdab;         /* Softer than teal-500, not too bright */
+  --color-primary-container: #1fa898; /* Slightly deeper for containers */
+  --color-secondary: #5ba3cc;       /* Muted sky blue */
+  --color-tertiary: #e06280;        /* Muted rose */
 
-  /* Dark Mode Surfaces: Pure slate-900 cards on deep slate-950 canvas (No monochromatic blue wash!) */
-  --color-surface: #020617; /* Main Background: bg-slate-950 */
-  --color-surface-dim: #020617; /* bg-slate-950 */
-  --color-surface-bright: #0f172a; /* bg-slate-900 */
-  --color-surface-container-lowest: #0f172a; /* Card Backgrounds: bg-slate-900 */
-  --color-surface-container-low: #0f172a; /* bg-slate-900 */
-  --color-surface-container: #1e293b; /* bg-slate-800 */
-  --color-surface-container-high: #334155; /* bg-slate-700 */
-  --color-surface-container-highest: #475569; /* bg-slate-600 */
+  /* Dark Mode Surfaces: Rich deep navy — warm & sophisticated, not pure black */
+  --color-surface: #111923;                  /* Rich navy — main canvas */
+  --color-surface-dim: #0d1520;              /* Deepest dark — behind everything */
+  --color-surface-bright: #1a2636;           /* Brightest dark surface */
+  --color-surface-container-lowest: #19263a; /* Card backgrounds */
+  --color-surface-container-low: #1f2f44;   /* Elevated cards */
+  --color-surface-container: #253850;       /* Containers */
+  --color-surface-container-high: #2c4260;  /* High containers */
+  --color-surface-container-highest: #334e72; /* Highest contrast containers */
 
-  /* High-Contrast Dark Mode Typography */
-  --color-on-surface: #f8fafc; /* text-slate-50: sharp primary data */
-  --color-on-surface-variant: #94a3b8; /* text-slate-400: readable secondary labels */
-  --color-outline: #64748b; /* text-slate-500 */
-  --color-outline-variant: #1e293b; /* border-slate-800: subtle 1px border */
+  /* Typography: Warm off-white — not glaring pure white on dark */
+  --color-on-surface: #e0e8f0;           /* Warm off-white — primary text */
+  --color-on-surface-variant: #8aaabb;   /* Muted steel-blue — secondary text */
+  --color-outline: #4e6880;              /* Soft dark outline */
+  --color-outline-variant: #1e3048;      /* Subtle dark border */
 
-  /* Dark mode: crisp 1px borders, subtle depth without heavy shadows */
+  /* Dark mode shadows: depth without harshness */
   --shadow-card: none;
-  --shadow-card-hover: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
-  --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+  --shadow-card-hover: 0 4px 12px 0 rgba(0, 0, 0, 0.35);
+  --shadow-modal: 0 20px 40px -8px rgba(0, 0, 0, 0.55);
 }
 
 /* ─── Base Resets ─── */
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   html,
   body {
     margin: 0;
     padding: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    overscroll-behavior: none;
+    overscroll-behavior-y: none;
     background-color: var(--color-surface);
     color: var(--color-on-surface);
     font-family: 'Inter', sans-serif;
+    /* Prevent content from being hidden under virtual keyboard on iOS */
+    min-height: 100dvh;
+    position: relative;
+  }
+
+  /* Ensure full viewport height support on mobile browsers */
+  html {
+    height: 100%;
+    height: -webkit-fill-available;
   }
 
   /* Tabular figures on numeric data — enforced for vitals, lab values, billing amounts */
@@ -102,17 +123,17 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: #c8d3de;
     border-radius: 9999px;
   }
   .dark ::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: #2c4260;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: #9aafbf;
   }
   .dark ::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: #3a5470;
   }
 }
 
@@ -120,24 +141,24 @@
 @layer components {
   /* Sidebar navigation link */
   .nav-link {
-    @apply flex items-center justify-between px-space-md py-space-sm rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-slate-100 transition-all duration-150 cursor-pointer;
+    @apply flex items-center justify-between px-space-md py-space-sm rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200 transition-all duration-150 cursor-pointer;
   }
 
   .nav-link-active {
-    @apply bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 font-semibold border-l-4 border-teal-600 dark:border-teal-400;
+    @apply bg-teal-50/80 dark:bg-teal-900/20 text-teal-900 dark:text-teal-300 font-semibold border-l-[3px] border-teal-600 dark:border-teal-400;
   }
 
   /* KPI stat card */
   .stat-card {
-    @apply relative overflow-hidden bg-white dark:bg-slate-900 p-space-md rounded-2xl flex flex-col justify-between transition-all duration-150 border border-slate-200 dark:border-slate-800 shadow-sm;
+    @apply relative overflow-hidden bg-white dark:bg-[#19263a] p-space-md rounded-2xl flex flex-col justify-between transition-all duration-150 border border-[#dae0e8] dark:border-white/[0.07] shadow-sm;
   }
   .stat-card:hover {
-    @apply border-slate-300 dark:border-slate-700;
+    @apply border-[#c8d3de] dark:border-white/[0.11];
   }
 
   /* Clinical data card */
   .clinical-card {
-    @apply bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm;
+    @apply bg-white dark:bg-[#19263a] rounded-2xl border border-[#dae0e8] dark:border-white/[0.07] shadow-sm;
   }
 
   /* Status badge variants — accessible semantic contrast */
@@ -162,43 +183,38 @@
     @apply w-2 h-2 rounded-full bg-teal-500 animate-pulse;
   }
 
-  /* Primary button */
+  /* Primary button — forest teal, professional weight */
   .btn-primary {
-    @apply inline-flex items-center gap-space-xs px-4 py-2 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-medium text-label-md rounded-xl transition-all duration-150 shadow-sm touch-tap;
+    @apply inline-flex items-center gap-space-xs px-4 py-2 bg-[#0c7a6e] hover:bg-[#0a6860] active:bg-[#095c54] text-white font-semibold text-label-md rounded-xl transition-all duration-150 shadow-sm touch-tap;
   }
 
   /* Secondary button */
   .btn-secondary {
-    @apply inline-flex items-center gap-space-xs px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-medium text-label-md rounded-xl transition-all duration-150 shadow-sm touch-tap;
+    @apply inline-flex items-center gap-space-xs px-3.5 py-2 bg-white dark:bg-white/[0.06] hover:bg-[#f2f5f8] dark:hover:bg-white/[0.09] text-[#2d4456] dark:text-[#c8d8e8] border border-[#dae0e8] dark:border-white/[0.1] font-medium text-label-md rounded-xl transition-all duration-150 shadow-sm touch-tap;
   }
 
   /* Ghost / outline button */
   .btn-ghost {
-    @apply inline-flex items-center gap-space-xs px-3 py-1.5 bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 font-medium text-label-md rounded-xl transition-all duration-150 touch-tap;
+    @apply inline-flex items-center gap-space-xs px-3 py-1.5 bg-transparent text-[#4e6478] dark:text-[#8aaabb] hover:text-[#1b2a3b] dark:hover:text-[#e0e8f0] hover:bg-[#edf0f4] dark:hover:bg-white/[0.06] border border-[#dae0e8] dark:border-white/[0.09] font-medium text-label-md rounded-xl transition-all duration-150 touch-tap;
   }
 
   /* Urgent / destructive button */
   .btn-urgent {
-    @apply inline-flex items-center gap-space-xs px-3 py-1.5 font-medium text-label-md rounded-xl transition-all duration-150 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900/50 touch-tap;
+    @apply inline-flex items-center gap-space-xs px-3 py-1.5 font-medium text-label-md rounded-xl transition-all duration-150 bg-rose-50 text-rose-800 border border-rose-200/80 hover:bg-rose-100 dark:bg-rose-950/30 dark:text-rose-300 dark:border-rose-900/40 touch-tap;
   }
 
   /* Input field */
   .input-field {
-    @apply w-full px-3.5 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-[15px] md:text-body-md text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all duration-150;
+    @apply w-full px-3.5 py-2 bg-white dark:bg-[#1a2636] border border-[#dae0e8] dark:border-white/[0.1] rounded-xl text-[15px] md:text-body-md text-[#1b2a3b] dark:text-[#e0e8f0] placeholder:text-[#7d96a8] dark:placeholder:text-[#4e6880] transition-all duration-150;
     outline: none;
     touch-action: manipulation;
   }
   .input-field:focus {
-    border-color: #0d9488;
-    box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.15);
+    border-color: #0c7a6e;
+    box-shadow: 0 0 0 3px rgba(12, 122, 110, 0.12);
   }
   .input-field::placeholder {
-    color: var(--color-on-surface-variant);
-    opacity: 0.65;
-  }
-  .input-field:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(0, 104, 95, 0.12);
+    opacity: 0.8;
   }
 
   /* Loading skeleton shimmer */
@@ -214,6 +230,23 @@
   /* Mobile-first patient portal container */
   .patient-shell {
     @apply max-w-md mx-auto min-h-screen bg-surface relative;
+  }
+
+  /* Mobile card: reduce padding on xs screens */
+  .card-mobile {
+    @apply p-3 sm:p-5;
+  }
+
+  /* Responsive table wrapper with horizontal scroll */
+  .table-scroll {
+    @apply w-full overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Bottom nav safe area helper — important for modern iOS */
+  .bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 z-40;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
 
@@ -283,116 +316,186 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Snap scroll container for mobile carousels */
+  .snap-scroll-x {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .snap-scroll-x::-webkit-scrollbar { display: none; }
+  .snap-scroll-x > * {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  /* Full viewport height that accounts for mobile browser chrome */
+  .h-dvh { height: 100dvh; }
+  .min-h-dvh { min-height: 100dvh; }
+
+  /* Mobile-safe max width for modals / popovers */
+  .max-w-mobile { max-width: min(100vw - 1.5rem, 24rem); }
 }
 
-/* ─── Dark Mode Theme Tokens & Overrides ─── */
+/* ─── Dark Mode Overrides — Rich Deep Navy Theme ─── */
+/* Replaces harsh pure-black slate with warm, sophisticated deep navy */
 .dark {
-  --color-surface: #0a111a;
-  --color-surface-container-lowest: #0f1926;
-  --color-surface-container-low: #142233;
-  --color-surface-container: #1a2b40;
-  --color-surface-container-high: #21354e;
-  --color-surface-container-highest: #2a415e;
-  --color-on-surface: #f1f5f9;
-  --color-on-surface-variant: #94a3b8;
-  --color-outline: #475569;
-  --color-outline-variant: #1e293b;
+  /* Re-declare full dark surface tokens for CSS var resolution */
+  --color-surface: #111923;
+  --color-surface-dim: #0d1520;
+  --color-surface-bright: #1a2636;
+  --color-surface-container-lowest: #19263a;
+  --color-surface-container-low: #1f2f44;
+  --color-surface-container: #253850;
+  --color-surface-container-high: #2c4260;
+  --color-surface-container-highest: #334e72;
+  --color-on-surface: #e0e8f0;
+  --color-on-surface-variant: #8aaabb;
+  --color-outline: #4e6880;
+  --color-outline-variant: #1e3048;
   color-scheme: dark;
 }
 
+/* ── Body & main canvas ── */
 .dark body {
-  background-color: #0b131f !important;
-  color: #f1f5f9 !important;
+  background-color: #111923 !important;
+  color: #e0e8f0 !important;
 }
 
 .dark .bg-surface,
 .dark .dashboard-shell,
 .dark .patient-shell {
-  background-color: #0b131f !important;
+  background-color: #111923 !important;
 }
 
+/* ── Surface token overrides ── */
 .dark .bg-surface-container-lowest {
-  background-color: #0f1926 !important;
+  background-color: #19263a !important;
 }
 
 .dark .bg-surface-container-low {
-  background-color: #142233 !important;
+  background-color: #1f2f44 !important;
 }
 
 .dark .bg-surface-container {
-  background-color: #1a2b40 !important;
+  background-color: #253850 !important;
 }
 
 .dark .bg-surface-container-high {
-  background-color: #21354e !important;
+  background-color: #2c4260 !important;
 }
 
+/* ── White elements become navy cards ── */
 .dark .bg-white {
-  background-color: #0f1926 !important;
+  background-color: #19263a !important;
 }
 
+/* ── Typography ── */
 .dark .text-on-surface {
-  color: #f8fafc !important;
+  color: #e0e8f0 !important;
 }
 
 .dark .text-on-surface-variant {
-  color: #94a3b8 !important;
+  color: #8aaabb !important;
 }
 
 .dark .text-outline {
-  color: #64748b !important;
+  color: #4e6880 !important;
 }
 
+/* ── Cards & Clinical components ── */
 .dark .clinical-card,
 .dark .stat-card {
-  background-color: #0f1926 !important;
-  border-color: rgba(51, 65, 85, 0.45) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+  background-color: #19263a !important;
+  border-color: rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3) !important;
 }
 
+/* ── Navigation chrome ── */
 .dark aside,
 .dark header,
 .dark nav {
-  background-color: #0f1926 !important;
-  border-color: rgba(51, 65, 85, 0.4) !important;
+  background-color: #19263a !important;
+  border-color: rgba(255, 255, 255, 0.07) !important;
 }
 
+/* ── Tables ── */
 .dark thead {
-  background-color: #142233 !important;
-  border-color: rgba(51, 65, 85, 0.4) !important;
+  background-color: #1f2f44 !important;
+  border-color: rgba(255, 255, 255, 0.07) !important;
 }
 
 .dark tr:hover {
-  background-color: rgba(20, 34, 51, 0.6) !important;
+  background-color: rgba(255, 255, 255, 0.03) !important;
 }
 
+/* ── Form elements ── */
 .dark input,
 .dark textarea,
 .dark select {
-  background-color: #142233 !important;
-  color: #f8fafc !important;
-  border-color: rgba(51, 65, 85, 0.6) !important;
+  background-color: #1f2f44 !important;
+  color: #e0e8f0 !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
 }
 
 .dark input::placeholder,
 .dark textarea::placeholder {
-  color: #64748b !important;
+  color: #4e6880 !important;
 }
 
+/* ── Borders ── */
 .dark .border-outline-variant\/20,
 .dark .border-outline-variant\/30,
 .dark .border-outline-variant\/40,
 .dark .border-outline-variant\/50,
 .dark .border-outline-variant {
-  border-color: rgba(51, 65, 85, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .dark .divide-outline-variant\/10 > :not([hidden]) ~ :not([hidden]),
 .dark .divide-outline-variant\/20 > :not([hidden]) ~ :not([hidden]),
 .dark .divide-outline-variant\/30 > :not([hidden]) ~ :not([hidden]) {
-  border-color: rgba(51, 65, 85, 0.35) !important;
+  border-color: rgba(255, 255, 255, 0.07) !important;
 }
 
+/* ── Slate-800/900 color overrides → deep navy equivalents ── */
+.dark .bg-slate-900\/80,
+.dark .bg-slate-900\/95 {
+  background-color: rgba(25, 38, 58, 0.95) !important;
+}
+
+.dark .bg-slate-900 {
+  background-color: #19263a !important;
+}
+
+.dark .bg-slate-950 {
+  background-color: #111923 !important;
+}
+
+.dark .border-slate-800 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .border-slate-700 {
+  border-color: rgba(255, 255, 255, 0.11) !important;
+}
+
+.dark .hover\:bg-slate-800\/50:hover,
+.dark .hover\:bg-slate-850\/40:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+.dark .bg-slate-800\/80 {
+  background-color: rgba(37, 56, 80, 0.8) !important;
+}
+
+.dark .bg-slate-800 {
+  background-color: #253850 !important;
+}
+
+/* ── Skeleton loading ── */
 .dark .skeleton {
-  background-color: #1a2b40 !important;
+  background-color: #253850 !important;
 }

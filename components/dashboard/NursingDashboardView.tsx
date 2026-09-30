@@ -6,7 +6,6 @@ import KPICard from '@/components/ui/KPICard'
 import StatusBadge from '@/components/ui/StatusBadge'
 import LiveIndicator from '@/components/ui/LiveIndicator'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
-import RecordVitalsModal from '@/components/modals/RecordVitalsModal'
 import QuickActionBar from '@/components/dashboard/QuickActionBar'
 
 type Props = {
@@ -14,7 +13,7 @@ type Props = {
 }
 
 export default function NursingDashboardView({ userName }: Props) {
-  const { beds, vitals, setVitalsOpen, assignBed, releaseBed } = useClinicRealtime()
+  const { beds, vitals, setVitalsOpen, openAssignBedModal, releaseBed } = useClinicRealtime()
   const [activeFilter, setActiveFilter] = useState('All Wards')
 
   const occupiedCount = beds.filter((b) => b.status === 'occupied').length
@@ -27,8 +26,6 @@ export default function NursingDashboardView({ userName }: Props) {
 
   return (
     <div className="flex flex-col space-y-gutter-desktop">
-      <RecordVitalsModal />
-
       {/* Quick Action Shortcuts */}
       <QuickActionBar className="w-full" />
 
@@ -179,9 +176,7 @@ export default function NursingDashboardView({ userName }: Props) {
                   </button>
                 ) : bed.status === 'available' ? (
                   <button
-                    onClick={() =>
-                      assignBed(bed.id, 'Carlos Mendez', '49M', 'Chest Pain Observation')
-                    }
+                    onClick={() => openAssignBedModal(bed.id)}
                     className="text-label-sm text-primary font-bold hover:underline"
                   >
                     + Assign Patient

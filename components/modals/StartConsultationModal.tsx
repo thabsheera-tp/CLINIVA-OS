@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import ModalBackdrop from './ModalBackdrop'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import VoiceNoteRecorder from '@/components/ui/VoiceNoteRecorder'
+import { saveConsultationEncounter } from '@/lib/data'
 
 export default function StartConsultationModal() {
   const { isConsultOpen, setConsultOpen, activePatient, completeConsultation } = useClinicRealtime()
@@ -15,8 +16,15 @@ export default function StartConsultationModal() {
   const [rxDrug, setRxDrug] = useState('Lisinopril 10mg')
   const [rxDosage, setRxDosage] = useState('1 tablet daily')
   const [rxDuration, setRxDuration] = useState('30 days')
-  const [orderLabs, setOrderLabs] = useState<string[]>(['Troponin I', 'Serum Potassium'])
+  const [orderLabs, setOrderLabs] = useState<string[]>(['Troponin I (STAT)', 'Serum Potassium'])
   const [completed, setCompleted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [saveSuccessDetails, setSaveSuccessDetails] = useState<{
+    consultationId?: string
+    prescriptionId?: string | null
+    labCount?: number
+  } | null>(null)
 
   const patientName = activePatient?.name ?? 'Marcus Delacroix'
 
@@ -36,22 +44,67 @@ export default function StartConsultationModal() {
     }
   }
 
-  const handleFinish = (e: React.FormEvent) => {
+  const handleFinish = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsSubmitting(true)
+    setErrorMsg(null)
+
+    const rxPayload = rxDrug
+      ? {
+          drug_name: rxDrug,
+          dosage: rxDosage,
+          duration: rxDuration,
+          route: 'PO',
+          instructions: `Take ${rxDosage} for ${rxDuration}.`,
+        }
+      : null
+
+    const result = await saveConsultationEncounter({
+      patient_id: activePatient?.id,
+      patient_name: patientName,
+      patient_token: activePatient?.token,
+      subjective,
+      objective,
+      assessment,
+      plan,
+      prescription: rxPayload,
+      lab_tests: orderLabs,
+    })
+
+    setIsSubmitting(false)
+
+    if (!result.ok) {
+      setErrorMsg(result.error)
+      return
+    }
+
     if (activePatient) {
       completeConsultation(activePatient.id)
     }
+
+    setSaveSuccessDetails({
+      consultationId: result.consultation_id,
+      prescriptionId: result.prescription_id,
+      labCount: result.lab_order_ids.length,
+    })
+
     setCompleted(true)
     setTimeout(() => {
       setCompleted(false)
       setConsultOpen(false)
-    }, 1500)
+      setErrorMsg(null)
+    }, 2000)
   }
 
   return (
     <ModalBackdrop
       isOpen={isConsultOpen}
-      onClose={() => setConsultOpen(false)}
+      onClose={() => {
+        if (!isSubmitting) {
+          setErrorMsg(null)
+          setConsultOpen(false)
+        }
+      }}
       title="Clinical Encounter & Consultation"
       subtitle={`Encounter Note • ${patientName}`}
       icon="stethoscope"
@@ -66,14 +119,24 @@ export default function StartConsultationModal() {
             Consultation Completed!
           </h3>
           <p className="text-body-md text-on-surface-variant max-w-md">
-            SOAP note signed, Rx dispatched to Central Pharmacy, and STAT lab order routed to Diagnostics.
+            SOAP note signed &amp; persisted to database.{' '}
+            {saveSuccessDetails?.prescriptionId ? 'Rx dispatched to Central Pharmacy. ' : ''}
+            {saveSuccessDetails?.labCount ? `${saveSuccessDetails.labCount} STAT lab order(s) routed to Diagnostics.` : ''}
           </p>
           <span className="px-3 py-1 bg-secondary-fixed/50 text-on-secondary-fixed text-label-sm rounded-full font-semibold uppercase tracking-wider">
-            Queue Advanced Live
+            Queue Advanced Live · Database Synced
           </span>
         </div>
       ) : (
         <form onSubmit={handleFinish} className="space-y-space-md">
+          {/* Error banner */}
+          {errorMsg && (
+            <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-body-sm">
+              <span className="material-symbols-outlined text-[18px] mt-0.5 flex-shrink-0">error</span>
+              <span>{errorMsg}</span>
+            </div>
+          )}
+
           {/* Active Encounter Banner */}
           <div className="flex items-center justify-between p-space-md bg-secondary-fixed/20 rounded-xl border border-primary/20">
             <div className="flex items-center gap-space-sm">
@@ -227,15 +290,30 @@ export default function StartConsultationModal() {
           <div className="pt-space-md border-t border-outline-variant/20 flex items-center justify-between">
             <button
               type="button"
-              onClick={() => setConsultOpen(false)}
+              onClick={() => {
+                if (!isSubmitting) {
+                  setErrorMsg(null)
+                  setConsultOpen(false)
+                }
+              }}
               className="btn-ghost"
+              disabled={isSubmitting}
             >
               Cancel
             </button>
             <div className="flex items-center gap-space-sm">
-              <button type="submit" className="btn-primary">
-                <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                <span>Sign & Complete Encounter</span>
+              <button type="submit" className="btn-primary" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+                    <span>Signing &amp; Saving…</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                    <span>Sign &amp; Complete Encounter</span>
+                  </>
+                )}
               </button>
             </div>
           </div>

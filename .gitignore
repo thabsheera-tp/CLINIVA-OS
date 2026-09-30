@@ -7,9 +7,13 @@ node_modules/
 out/
 
 # Environment (NEVER COMMIT — contains credentials)
+.env
 .env.local
 .env.production
 .env.*.local
+.env.*
+!.env.example
+!.env.local.example
 
 # Supabase local dev
 .supabase/

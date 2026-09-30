@@ -49,9 +49,14 @@ export default function ModalBackdrop({
 
       {/* Modal dialog: bottom sheet on small mobile, centered dialog on sm+ */}
       <div
-        className={`relative w-full ${maxWidth} bg-surface-container-lowest rounded-t-2xl sm:rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden z-10 flex flex-col max-h-[92vh] sm:max-h-[88vh] my-0 sm:my-auto animate-in fade-in slide-in-from-bottom-4 sm:zoom-in-95 duration-150`}
+        className={`relative w-full ${maxWidth} bg-surface-container-lowest rounded-t-2xl sm:rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden z-10 flex flex-col max-h-[92dvh] sm:max-h-[88dvh] my-0 sm:my-auto animate-in fade-in slide-in-from-bottom-4 sm:zoom-in-95 duration-150`}
         style={{ boxShadow: 'var(--shadow-modal)' }}
       >
+        {/* Mobile drag handle (bottom sheet indicator) */}
+        <div className="sm:hidden flex justify-center pt-2.5 pb-1 flex-shrink-0">
+          <div className="w-10 h-1 rounded-full bg-outline-variant/50" />
+        </div>
+
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-space-lg py-3 sm:py-space-md border-b border-outline-variant/20 bg-surface-container-low/50 flex-shrink-0">
           <div className="flex items-center gap-space-sm min-w-0 pr-2">

@@ -8,6 +8,8 @@ import RecordVitalsModal from './RecordVitalsModal'
 import StartConsultationModal from './StartConsultationModal'
 import DispenseMedicationModal from './DispenseMedicationModal'
 import CollectPaymentModal from './CollectPaymentModal'
+import EnterLabResultModal from './EnterLabResultModal'
+import AssignBedModal from './AssignBedModal'
 
 /**
  * GlobalModalRoot mounts all application clinical dialogs at the root level.
@@ -24,6 +26,8 @@ export default function GlobalModalRoot() {
       <StartConsultationModal />
       <DispenseMedicationModal />
       <CollectPaymentModal />
+      <EnterLabResultModal />
+      <AssignBedModal />
     </>
   )
 }

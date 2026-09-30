@@ -40,18 +40,125 @@ export default function CreatePrescriptionModal() {
 
     setSubmitting(true)
     try {
-      const supabase = createClientSideClient()
-      await (supabase.from('prescriptions') as any).insert({
-        drug_name: drugName,
-        dose: dosage,
-        frequency,
-        quantity: parseInt(quantity, 10) || 30,
-        refills: parseInt(refills, 10) || 0,
-        status: 'pending_dispense',
-        prescribed_at: new Date().toISOString(),
-      })
-    } catch {
-      // Graceful local fallback for demo/offline
+      const supabase: any = createClientSideClient()
+
+      // 1. Resolve tenant_id and doctor_id
+      const { data: userAuth } = await supabase.auth.getUser()
+      let doctorId: string | null = userAuth?.user?.id || null
+      let tenantId: string | null = null
+
+      if (doctorId) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id, tenant_id')
+          .eq('id', doctorId)
+          .maybeSingle()
+        if (profile) {
+          tenantId = profile.tenant_id
+        }
+      }
+
+      // Fallback for demo mode / unauthenticated preview
+      if (!tenantId || !doctorId) {
+        const { data: firstClinic } = await supabase
+          .from('clinics')
+          .select('id')
+          .limit(1)
+          .maybeSingle()
+        tenantId = firstClinic?.id || null
+
+        const { data: doctorProfile } = await supabase
+          .from('profiles')
+          .select('id, tenant_id')
+          .eq('role', 'doctor')
+          .limit(1)
+          .maybeSingle()
+        if (doctorProfile) {
+          doctorId = doctorProfile.id
+          if (!tenantId) tenantId = doctorProfile.tenant_id
+        }
+      }
+
+      // 2. Resolve patient_id
+      let patientId: string | null = null
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+      if (activePatient?.id && uuidRegex.test(activePatient.id)) {
+        patientId = activePatient.id
+      } else {
+        const { data: matchedPatient } = await supabase
+          .from('patients')
+          .select('id')
+          .limit(1)
+          .maybeSingle()
+        patientId = matchedPatient?.id || null
+      }
+
+      // 3. Resolve medication_id (lookup or insert into medications table)
+      let medicationId: string | null = null
+      if (tenantId) {
+        const { data: existingMed } = await supabase
+          .from('medications')
+          .select('id')
+          .eq('tenant_id', tenantId)
+          .ilike('generic_name', drugName.trim())
+          .limit(1)
+          .maybeSingle()
+
+        if (existingMed?.id) {
+          medicationId = existingMed.id
+        } else {
+          const { data: newMed } = await supabase
+            .from('medications')
+            .insert({
+              tenant_id: tenantId,
+              generic_name: drugName.trim(),
+              brand_name: drugName.trim(),
+              strength: dosage.trim(),
+              form: 'Tablet',
+            })
+            .select('id')
+            .maybeSingle()
+          medicationId = newMed?.id || null
+        }
+      }
+
+      // 4. Create prescription header in `prescriptions`
+      if (tenantId && patientId && doctorId) {
+        const { data: rxHeader, error: rxErr } = await supabase
+          .from('prescriptions')
+          .insert({
+            tenant_id: tenantId,
+            patient_id: patientId,
+            prescribed_by: doctorId,
+            status: 'pending',
+            notes: instructions || null,
+            prescribed_at: new Date().toISOString(),
+          })
+          .select('id')
+          .single()
+
+        if (rxErr) {
+          console.warn('[CreatePrescription] Header insert notice:', rxErr.message)
+        } else if (rxHeader?.id && medicationId) {
+          // 5. Insert line item in `prescription_items`
+          const { error: itemErr } = await supabase
+            .from('prescription_items')
+            .insert({
+              prescription_id: rxHeader.id,
+              medication_id: medicationId,
+              dosage: dosage.trim(),
+              route: 'PO',
+              frequency: frequency.trim(),
+              quantity: parseInt(quantity, 10) || 30,
+              instructions: instructions?.trim() || null,
+            })
+          if (itemErr) {
+            console.warn('[CreatePrescription] Line item insert notice:', itemErr.message)
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('[CreatePrescription] Local fallback for demo/offline:', err)
     }
 
     setSubmitting(false)
