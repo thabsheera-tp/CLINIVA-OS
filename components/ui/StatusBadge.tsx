@@ -1,5 +1,6 @@
 import React from 'react'
 import { clsx } from 'clsx'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 type Variant = 'routine' | 'warning' | 'critical' | 'neutral' | 'info'
 
@@ -14,28 +15,28 @@ type StatusBadgeProps = {
 
 const variantStyles: Record<Variant, { container: string; dot: string; defaultIcon?: string }> = {
   routine: {
-    container: 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50',
-    dot: 'bg-emerald-500',
+    container: 'bg-[#2E7D5B]/10 text-[#2E7D5B] border-[#2E7D5B]/20 dark:bg-[#2E7D5B]/20 dark:text-[#3E9F76] dark:border-[#2E7D5B]/30',
+    dot: 'bg-[#2E7D5B]',
     defaultIcon: 'check_circle',
   },
   warning: {
-    container: 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50',
-    dot: 'bg-amber-500',
+    container: 'bg-[#C58A24]/10 text-[#C58A24] border-[#C58A24]/20 dark:bg-[#C58A24]/20 dark:text-[#E0A238] dark:border-[#C58A24]/30',
+    dot: 'bg-[#C58A24]',
     defaultIcon: 'schedule',
   },
   critical: {
-    container: 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/50 font-bold',
-    dot: 'bg-rose-500',
+    container: 'bg-[#C94A4A]/10 text-[#C94A4A] border-[#C94A4A]/20 dark:bg-[#C94A4A]/20 dark:text-[#E06262] dark:border-[#C94A4A]/30 font-bold',
+    dot: 'bg-[#C94A4A]',
     defaultIcon: 'priority_high',
   },
   info: {
-    container: 'bg-sky-50 text-sky-800 border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800/50',
-    dot: 'bg-sky-500',
+    container: 'bg-[#E8F6F5] text-[#0F8B8D] border-[#0F8B8D]/30 dark:bg-[#0F8B8D]/20 dark:text-[#28B5B7] dark:border-[#0F8B8D]/40',
+    dot: 'bg-[#0F8B8D]',
     defaultIcon: 'info',
   },
   neutral: {
-    container: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
-    dot: 'bg-slate-400',
+    container: 'bg-[#F0F4F7] text-[#60727F] border-[#E2E8EC] dark:bg-[#1B354A] dark:text-[#92A6B5] dark:border-[#22425B]',
+    dot: 'bg-[#60727F]',
   },
 }
 
@@ -66,9 +67,12 @@ export default function StatusBadge({
           <span className={clsx('relative inline-flex rounded-full h-1.5 w-1.5', style.dot)} />
         </span>
       ) : displayIcon ? (
-        <span className={clsx('material-symbols-outlined flex-shrink-0', size === 'sm' ? 'text-[12px]' : 'text-[14px]')}>
-          {displayIcon}
-        </span>
+        <ClinivaIcon
+          name={displayIcon}
+          size={size === 'sm' ? 12 : 14}
+          strokeWidth={1.5}
+          className="flex-shrink-0"
+        />
       ) : null}
       <span className="truncate">{label}</span>
     </span>

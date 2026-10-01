@@ -4,6 +4,7 @@ import DashboardShell from '@/components/layout/DashboardShell'
 import KPICard from '@/components/ui/KPICard'
 import StatusBadge from '@/components/ui/StatusBadge'
 import LiveIndicator from '@/components/ui/LiveIndicator'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 const NAV_SECTIONS = [
   {
@@ -53,18 +54,18 @@ export default async function CanteenDashboard() {
     >
       <div className="flex flex-col space-y-gutter-desktop">
 
-        <section className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-lg bg-surface-container-lowest p-space-lg rounded-2xl" style={{ boxShadow: 'var(--shadow-card)' }}>
+        <section className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-lg bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/30">
           <div>
-            <h1 className="font-heading text-headline-lg text-on-surface font-semibold">Canteen & Dietary</h1>
-            <p className="text-body-md text-on-surface-variant mt-1">Main Kitchen — Lunch Service • 11:30 – 14:00</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-on-surface">Canteen & Dietary</h1>
+            <p className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium mt-0.5">Main Kitchen — Lunch Service • 11:30 – 14:00</p>
           </div>
           <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full lg:w-auto">
-            <button className="btn-primary justify-center touch-tap flex-1 sm:flex-initial">
-              <span className="material-symbols-outlined text-[18px]">room_service</span>
+            <button className="btn-primary justify-center touch-tap flex-1 sm:flex-initial py-2 px-4 text-xs font-semibold">
+              <ClinivaIcon name="room_service" size={18} strokeWidth={1.5} />
               <span>New Meal Order</span>
             </button>
-            <button className="btn-secondary justify-center touch-tap flex-1 sm:flex-initial">
-              <span className="material-symbols-outlined text-[18px]">point_of_sale</span>
+            <button className="btn-secondary justify-center touch-tap flex-1 sm:flex-initial py-2 px-3 text-xs">
+              <ClinivaIcon name="point_of_sale" size={18} strokeWidth={1.5} />
               <span>Cafeteria POS</span>
             </button>
           </div>
@@ -81,13 +82,13 @@ export default async function CanteenDashboard() {
           {/* Patient Meal Orders */}
           <div className="xl:col-span-2 clinical-card">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between p-space-md border-b border-outline-variant/20 gap-2">
-              <div className="flex items-center gap-space-sm">
-                <h3 className="font-heading text-headline-sm text-on-surface font-semibold">Patient Meal Orders</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-bold text-[#123047] dark:text-white uppercase tracking-wider">Patient Meal Orders</h3>
                 <LiveIndicator size="sm" />
               </div>
               <div className="flex gap-space-xs overflow-x-auto smooth-touch-scroll pb-1 sm:pb-0">
                 {['All', 'Pending', 'Delivered', 'Special Diet'].map(f => (
-                  <button key={f} className={`px-space-md py-1 rounded-full text-label-sm whitespace-nowrap transition-all touch-tap ${f === 'All' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'}`}>{f}</button>
+                  <button key={f} className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all touch-tap ${f === 'All' ? 'bg-[#0F8B8D] text-white font-semibold' : 'bg-surface-container text-[#4A5D6B] dark:text-[#9FB1C0] hover:bg-surface-container-high'}`}>{f}</button>
                 ))}
               </div>
             </div>
@@ -104,19 +105,19 @@ export default async function CanteenDashboard() {
                 <div key={row.bed} className="p-3 flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="w-8 h-8 rounded-lg bg-surface-container font-bold text-on-surface flex items-center justify-center text-label-md">
+                      <span className="w-8 h-8 rounded-lg bg-surface-container font-mono font-bold text-xs text-[#123047] dark:text-white flex items-center justify-center">
                         {row.bed}
                       </span>
                       <div>
-                        <p className="text-label-lg font-semibold text-on-surface">{row.patient}</p>
-                        <p className="text-body-sm text-on-surface-variant">Time: {row.time}</p>
+                        <p className="text-sm font-semibold text-[#123047] dark:text-white">{row.patient}</p>
+                        <p className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">Time: {row.time}</p>
                       </div>
                     </div>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-bold border ${DIETARY_FLAGS[row.diet] ?? ''}`}>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold border ${DIETARY_FLAGS[row.diet] ?? ''}`}>
                       {row.diet.toUpperCase()}
                     </span>
                   </div>
-                  <p className="text-body-sm text-on-surface bg-surface-container-low p-2 rounded-lg">
+                  <p className="text-xs font-medium text-[#253848] dark:text-[#D9E5F0] bg-surface-container-low p-2 rounded-lg">
                     {row.meal}
                   </p>
                   <div className="flex items-center justify-between pt-1">
@@ -125,7 +126,7 @@ export default async function CanteenDashboard() {
                       label={row.status}
                     />
                     {row.status !== 'npo' && row.status !== 'delivered' && (
-                      <button className="btn-primary py-1 px-3 text-label-sm touch-tap">
+                      <button className="btn-primary py-1 px-3 text-xs font-semibold touch-tap">
                         {row.status === 'pending' ? 'Prepare →' : 'Deliver →'}
                       </button>
                     )}
@@ -136,10 +137,10 @@ export default async function CanteenDashboard() {
 
             {/* Desktop Meal Order Table (sm+ screens) */}
             <div className="hidden sm:block overflow-x-auto">
-              <table className="w-full">
-                <thead><tr className="border-b border-outline-variant/20">
+              <table className="w-full text-left text-[13px]">
+                <thead><tr className="border-b border-outline-variant/20 bg-surface-container-low/20 text-[#4A5D6B] dark:text-[#9FB1C0] text-[11px] font-bold uppercase tracking-wider">
                   {['Bed', 'Patient', 'Meal', 'Dietary', 'Meal Time', 'Status', 'Action'].map(h => (
-                    <th key={h} className="px-space-md py-space-sm text-left text-label-sm text-on-surface-variant uppercase tracking-wider">{h}</th>
+                    <th key={h} className="px-4 py-2.5 font-bold uppercase tracking-wider">{h}</th>
                   ))}
                 </tr></thead>
                 <tbody className="divide-y divide-outline-variant/10">
@@ -151,24 +152,24 @@ export default async function CanteenDashboard() {
                     { bed: 'B-02', patient: 'David Chen',        meal: 'Dal khichdi, buttermilk',                  diet: 'diabetic',    time: '12:30', status: 'pending' },
                   ].map(row => (
                     <tr key={row.bed} className="hover:bg-surface-container-low/50 transition-colors">
-                      <td className="px-space-md py-space-sm text-label-lg text-on-surface font-bold">{row.bed}</td>
-                      <td className="px-space-md py-space-sm text-label-md text-on-surface">{row.patient}</td>
-                      <td className="px-space-md py-space-sm text-body-sm text-on-surface-variant max-w-[180px] truncate">{row.meal}</td>
-                      <td className="px-space-md py-space-sm">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-bold border ${DIETARY_FLAGS[row.diet] ?? ''}`}>
+                      <td className="px-4 py-2.5 font-mono text-xs font-bold text-[#123047] dark:text-white">{row.bed}</td>
+                      <td className="px-4 py-2.5 font-semibold text-sm text-[#123047] dark:text-white">{row.patient}</td>
+                      <td className="px-4 py-2.5 text-[13px] font-medium text-[#253848] dark:text-[#D9E5F0] max-w-[200px] truncate">{row.meal}</td>
+                      <td className="px-4 py-2.5">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold border ${DIETARY_FLAGS[row.diet] ?? ''}`}>
                           {row.diet.toUpperCase()}
                         </span>
                       </td>
-                      <td className="px-space-md py-space-sm text-body-sm text-on-surface-variant tabular-nums">{row.time}</td>
-                      <td className="px-space-md py-space-sm">
+                      <td className="px-4 py-2.5 font-mono text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium tabular-nums">{row.time}</td>
+                      <td className="px-4 py-2.5">
                         <StatusBadge
                           variant={row.status === 'npo' ? 'critical' : row.status === 'delivered' ? 'routine' : row.status === 'preparing' ? 'warning' : 'neutral'}
                           label={row.status}
                         />
                       </td>
-                      <td className="px-space-md py-space-sm text-right">
+                      <td className="px-4 py-2.5 text-right">
                         {row.status !== 'npo' && row.status !== 'delivered' && (
-                          <button className="text-primary text-label-sm font-semibold hover:underline touch-tap">
+                          <button className="text-primary text-xs font-semibold hover:underline touch-tap">
                             {row.status === 'pending' ? 'Prepare →' : 'Deliver →'}
                           </button>
                         )}
@@ -182,26 +183,26 @@ export default async function CanteenDashboard() {
 
           {/* Kitchen Inventory Alerts + Menu Today */}
           <div className="flex flex-col gap-space-md">
-            <div className="clinical-card p-space-md flex flex-col gap-space-sm">
-              <div className="flex items-center justify-between">
-                <h3 className="font-heading text-headline-sm text-on-surface font-semibold">Today&apos;s Menu</h3>
-                <button className="text-primary text-label-sm font-semibold hover:underline">Edit</button>
+            <div className="clinical-card p-4 flex flex-col gap-2">
+              <div className="flex items-center justify-between pb-2 border-b border-outline-variant/20">
+                <h3 className="text-xs font-bold text-[#123047] dark:text-white uppercase tracking-wider">Today&apos;s Menu</h3>
+                <button className="text-primary text-xs font-semibold hover:underline">Edit</button>
               </div>
               {[
                 { meal: 'Breakfast', items: 'Idli, Sambar, Chutney' },
                 { meal: 'Lunch',     items: 'Rice, Dal, Sabzi, Curd, Fruit' },
                 { meal: 'Dinner',    items: 'Roti, Paneer Curry, Khichdi' },
               ].map(m => (
-                <div key={m.meal} className="p-space-sm bg-surface-container-low rounded-xl">
-                  <p className="text-label-md text-on-surface font-semibold">{m.meal}</p>
-                  <p className="text-body-sm text-on-surface-variant">{m.items}</p>
+                <div key={m.meal} className="p-2.5 bg-surface-container-low rounded-xl">
+                  <p className="text-xs font-bold text-[#123047] dark:text-white">{m.meal}</p>
+                  <p className="text-xs font-medium text-[#4A5D6B] dark:text-[#9FB1C0] mt-0.5">{m.items}</p>
                 </div>
               ))}
             </div>
 
             <div className="clinical-card flex flex-col">
-              <div className="flex items-center justify-between p-space-md border-b border-outline-variant/20">
-                <h3 className="font-heading text-headline-sm text-on-surface font-semibold">Kitchen Inventory</h3>
+              <div className="flex items-center justify-between p-4 border-b border-outline-variant/20">
+                <h3 className="text-xs font-bold text-[#123047] dark:text-white uppercase tracking-wider">Kitchen Inventory</h3>
                 <StatusBadge variant="critical" label="3 Low" />
               </div>
               <div className="divide-y divide-outline-variant/10">
@@ -212,11 +213,11 @@ export default async function CanteenDashboard() {
                   { item: 'Vegetables Mix',   stock: '3 kg',  status: 'ok' },
                   { item: 'Dal (Toor)',       stock: '5 kg',  status: 'ok' },
                 ].map(item => (
-                  <div key={item.item} className="flex items-center justify-between px-space-md py-space-sm hover:bg-surface-container-low/50 transition-colors">
-                    <p className="text-label-md text-on-surface">{item.item}</p>
-                    <div className="flex items-center gap-space-sm">
-                      <span className={`text-label-md font-semibold tabular-nums ${item.status === 'critical' ? 'text-tertiary' : item.status === 'warning' ? 'text-status-warning' : 'text-on-surface-variant'}`}>{item.stock}</span>
-                      {item.status !== 'ok' && <button className="text-primary text-label-sm font-semibold">Order</button>}
+                  <div key={item.item} className="flex items-center justify-between px-4 py-2.5 hover:bg-surface-container-low/50 transition-colors">
+                    <p className="text-sm font-semibold text-[#123047] dark:text-white">{item.item}</p>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs font-mono font-bold tabular-nums ${item.status === 'critical' ? 'text-tertiary' : item.status === 'warning' ? 'text-[#C58A24]' : 'text-[#4A5D6B] dark:text-[#9FB1C0]'}`}>{item.stock}</span>
+                      {item.status !== 'ok' && <button className="text-primary text-xs font-semibold">Order</button>}
                     </div>
                   </div>
                 ))}

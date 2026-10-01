@@ -5,6 +5,7 @@ import ModalBackdrop from './ModalBackdrop'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import VoiceNoteRecorder from '@/components/ui/VoiceNoteRecorder'
 import { saveConsultationEncounter } from '@/lib/data'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 export default function StartConsultationModal() {
   const { isConsultOpen, setConsultOpen, activePatient, completeConsultation } = useClinicRealtime()
@@ -113,7 +114,7 @@ export default function StartConsultationModal() {
       {completed ? (
         <div className="py-8 flex flex-col items-center justify-center text-center space-y-3">
           <div className="w-16 h-16 rounded-full bg-secondary-fixed flex items-center justify-center text-primary animate-pulse">
-            <span className="material-symbols-outlined text-[36px]">verified</span>
+            <ClinivaIcon name="verified" size={36} strokeWidth={1.5} />
           </div>
           <h3 className="font-heading text-headline-md text-on-surface font-bold">
             Consultation Completed!
@@ -132,7 +133,7 @@ export default function StartConsultationModal() {
           {/* Error banner */}
           {errorMsg && (
             <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-body-sm">
-              <span className="material-symbols-outlined text-[18px] mt-0.5 flex-shrink-0">error</span>
+              <ClinivaIcon name="error" size={18} strokeWidth={1.5} className="mt-0.5 flex-shrink-0" />
               <span>{errorMsg}</span>
             </div>
           )}
@@ -140,7 +141,7 @@ export default function StartConsultationModal() {
           {/* Active Encounter Banner */}
           <div className="flex items-center justify-between p-space-md bg-secondary-fixed/20 rounded-xl border border-primary/20">
             <div className="flex items-center gap-space-sm">
-              <span className="material-symbols-outlined text-primary text-[24px]">personal_injury</span>
+              <ClinivaIcon name="personal_injury" size={24} strokeWidth={1.5} className="text-primary" />
               <div>
                 <p className="text-headline-sm font-heading font-semibold text-on-surface">{patientName}</p>
                 <p className="text-body-sm text-on-surface-variant">
@@ -211,7 +212,7 @@ export default function StartConsultationModal() {
           {/* Rx Builder Section */}
           <div className="p-space-md bg-surface-container-low rounded-xl border border-outline-variant/30 space-y-space-sm">
             <div className="flex items-center gap-space-xs text-primary font-semibold text-label-md uppercase tracking-wider">
-              <span className="material-symbols-outlined text-[18px]">prescriptions</span>
+              <ClinivaIcon name="prescriptions" size={18} strokeWidth={1.5} />
               Electronic Prescription (e-Rx)
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-sm">
@@ -253,7 +254,7 @@ export default function StartConsultationModal() {
           {/* Lab Requisitions */}
           <div className="p-space-md bg-surface-container-low rounded-xl border border-outline-variant/30 space-y-space-xs">
             <div className="flex items-center gap-space-xs text-primary font-semibold text-label-md uppercase tracking-wider">
-              <span className="material-symbols-outlined text-[18px]">biotech</span>
+              <ClinivaIcon name="biotech" size={18} strokeWidth={1.5} />
               Diagnostic Lab Orders
             </div>
             <div className="flex flex-wrap gap-space-xs pt-1">
@@ -276,9 +277,7 @@ export default function StartConsultationModal() {
                         : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
                     }`}
                   >
-                    <span className="material-symbols-outlined text-[14px]">
-                      {checked ? 'check' : 'add'}
-                    </span>
+                    <ClinivaIcon name={checked ? 'check' : 'add'} size={14} strokeWidth={1.5} />
                     {lab}
                   </button>
                 )
@@ -305,12 +304,12 @@ export default function StartConsultationModal() {
               <button type="submit" className="btn-primary" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
-                    <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+                    <ClinivaIcon name="progress_activity" size={18} strokeWidth={1.5} className="animate-spin" />
                     <span>Signing &amp; Saving…</span>
                   </>
                 ) : (
                   <>
-                    <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                    <ClinivaIcon name="check_circle" size={18} strokeWidth={1.5} />
                     <span>Sign &amp; Complete Encounter</span>
                   </>
                 )}

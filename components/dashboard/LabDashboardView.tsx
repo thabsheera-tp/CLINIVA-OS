@@ -7,6 +7,7 @@ import StatusBadge from '@/components/ui/StatusBadge'
 import LiveIndicator from '@/components/ui/LiveIndicator'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import { usePendingLabOrders, useCriticalLabResults } from '@/hooks/useClinicData'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 type Props = {
   userName: string
@@ -21,8 +22,8 @@ const DEFAULT_SAMPLE_ORDERS = [
 ]
 
 const DEFAULT_CRITICAL_RESULTS = [
-  { patient: 'George Tanner', test: 'Serum K+', value: '6.2 mEq/L', ref: '3.5–5.0', flag: 'HIGH' },
-  { patient: 'Marcus Delacroix', test: 'Troponin I', value: '0.08 ng/mL', ref: '<0.04', flag: 'HIGH' },
+  { patient: 'George Tanner', test: 'Serum K+', value: '6.2 mEq/L', ref: '3.5–5.0', flag: 'PANIC HIGH' },
+  { patient: 'Marcus Delacroix', test: 'Troponin I', value: '0.08 ng/mL', ref: '<0.04', flag: 'PANIC HIGH' },
   { patient: 'Ana García', test: 'FPG', value: '295 mg/dL', ref: '70–100', flag: 'CRITICAL' },
 ]
 
@@ -47,47 +48,37 @@ export default function LabDashboardView({ userName }: Props) {
   const criticalCount = criticalList ? criticalList.length : 3
 
   return (
-    <div className="flex flex-col space-y-gutter-desktop">
-      {/* Page Header */}
-      <section
-        className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-lg bg-surface-container-lowest p-space-lg rounded-2xl"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
+    <div className="flex flex-col space-y-4">
+      {/* Clean Hospital Header */}
+      <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/30">
         <div>
-          <h1 className="font-heading text-headline-lg text-on-surface font-semibold">
-            Lab & Diagnostics
-          </h1>
-          <p className="text-body-md text-on-surface-variant mt-1">
-            Clinical Laboratory • Technician: {userName} •{' '}
-            {new Date().toLocaleDateString('en-US', {
-              weekday: 'long',
-              month: 'short',
-              day: 'numeric',
-            })}
+          <h1 className="text-xl sm:text-2xl font-bold text-on-surface">Diagnostic Laboratory</h1>
+          <p className="text-sm text-[#4A5D6B] dark:text-[#9FB1C0] mt-0.5 font-normal">
+            Specimen Testing &amp; Diagnostic Results &bull; {userName}
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full lg:w-auto">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => openLabResultModal()}
-            className="btn-primary justify-center touch-tap flex-1 sm:flex-initial"
+            className="btn-primary py-2 px-4 text-xs font-semibold"
           >
-            <span className="material-symbols-outlined text-[18px]">edit_note</span>
+            <ClinivaIcon name="edit_note" size={16} strokeWidth={1.5} />
             <span>Enter Results</span>
           </button>
           <Link
             href="/lab/reports"
-            className="btn-secondary justify-center touch-tap flex-1 sm:flex-initial"
+            className="btn-secondary py-2 px-3 text-xs font-semibold"
           >
-            <span className="material-symbols-outlined text-[18px]">send</span>
-            <span>Deliver Reports</span>
+            <ClinivaIcon name="send" size={16} strokeWidth={1.5} />
+            <span>Reports</span>
           </Link>
         </div>
       </section>
 
-      {/* KPI Cards */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+      {/* Compact KPIs */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KPICard
-          title="Test Orders Today"
+          title="Orders Today"
           value={pendingList ? pendingList.length + 25 : 34}
           icon="assignment"
           trend={`${pendingCount} pending`}
@@ -102,7 +93,7 @@ export default function LabDashboardView({ userName }: Props) {
           trendDir="up"
         />
         <KPICard
-          title="Results Pending"
+          title="Pending Results"
           value={pendingCount}
           icon="pending"
           trend={`${criticalCount} critical`}
@@ -118,17 +109,15 @@ export default function LabDashboardView({ userName }: Props) {
       </section>
 
       {/* Main Grid: Orders Queue & Critical Results */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-space-md">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         {/* Test Order Queue */}
-        <div className="xl:col-span-2 clinical-card">
-          <div className="flex items-center justify-between p-space-md border-b border-outline-variant/20">
-            <div className="flex items-center gap-space-sm">
-              <h3 className="font-heading text-headline-sm text-on-surface font-semibold">
-                Test Order Queue
-              </h3>
+        <div className="xl:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant/20 bg-surface-container-low/40">
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-bold text-[#123047] dark:text-white">Test Orders Queue</h3>
               <LiveIndicator size="sm" />
             </div>
-            <span className="text-label-sm bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded-full font-bold">
+            <span className="text-xs font-bold bg-[#0F8B8D]/15 text-[#0F8B8D] dark:text-[#28B5B7] px-3 py-1 rounded-full">
               {pendingCount} Pending
             </span>
           </div>
@@ -139,8 +128,8 @@ export default function LabDashboardView({ userName }: Props) {
               ? pendingList.map((row) => (
                   <div key={row.id} className="p-3 flex flex-col gap-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-label-sm font-mono text-on-surface-variant">
-                        #{row.id.slice(0, 8).toUpperCase()} • {row.sample_type || 'Blood'}
+                      <span className="text-xs font-mono text-[#506473] dark:text-[#90A4B3] font-medium">
+                        #{row.id.slice(0, 8).toUpperCase()} &bull; {row.sample_type || 'Blood'}
                       </span>
                       <div className="flex items-center gap-1.5">
                         <StatusBadge
@@ -148,73 +137,49 @@ export default function LabDashboardView({ userName }: Props) {
                           label={row.priority ? row.priority.toUpperCase() : 'ROUTINE'}
                           pulse={row.priority === 'stat'}
                         />
-                        <StatusBadge
-                          variant={
-                            row.status === 'processing'
-                              ? 'warning'
-                              : row.status === 'sample_collected'
-                              ? 'routine'
-                              : 'neutral'
-                          }
-                          label={row.status}
-                        />
                       </div>
                     </div>
                     <div>
-                      <p className="text-label-lg font-semibold text-on-surface">
+                      <p className="text-[15px] font-bold text-[#123047] dark:text-white">
                         {row.patient_name || 'Patient'}
                       </p>
-                      <p className="text-body-sm text-on-surface-variant font-medium">
+                      <p className="text-xs text-[#253848] dark:text-[#D9E5F0] font-semibold mt-0.5">
                         {row.test_name}
                       </p>
                     </div>
                     <button
                       onClick={() => openLabResultModal(row.id)}
-                      className="btn-primary w-full justify-center py-1.5 text-label-sm touch-tap"
+                      className="btn-primary w-full justify-center py-2 text-xs font-semibold"
                     >
-                      {row.status === 'ordered'
-                        ? 'Collect Sample →'
-                        : 'Enter Results →'}
+                      {row.status === 'ordered' ? 'Collect Sample' : 'Enter Results'}
                     </button>
                   </div>
                 ))
               : DEFAULT_SAMPLE_ORDERS.map((row) => (
                   <div key={row.id} className="p-3 flex flex-col gap-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-label-sm font-mono text-on-surface-variant">
-                        {row.id} • {row.sample}
+                      <span className="text-xs font-mono text-[#506473] dark:text-[#90A4B3] font-medium">
+                        {row.id} &bull; {row.sample}
                       </span>
-                      <div className="flex items-center gap-1.5">
-                        <StatusBadge
-                          variant={row.priority === 'stat' ? 'critical' : 'neutral'}
-                          label={row.priority.toUpperCase()}
-                          pulse={row.priority === 'stat'}
-                        />
-                        <StatusBadge
-                          variant={
-                            row.status === 'processing'
-                              ? 'warning'
-                              : row.status === 'collected'
-                              ? 'routine'
-                              : 'neutral'
-                          }
-                          label={row.status}
-                        />
-                      </div>
+                      <StatusBadge
+                        variant={row.priority === 'stat' ? 'critical' : 'neutral'}
+                        label={row.priority.toUpperCase()}
+                        pulse={row.priority === 'stat'}
+                      />
                     </div>
                     <div>
-                      <p className="text-label-lg font-semibold text-on-surface">{row.patient}</p>
-                      <p className="text-body-sm text-on-surface-variant font-medium">{row.tests}</p>
+                      <p className="text-[15px] font-bold text-[#123047] dark:text-white">{row.patient}</p>
+                      <p className="text-xs text-[#253848] dark:text-[#D9E5F0] font-semibold mt-0.5">{row.tests}</p>
                     </div>
                     <button
                       onClick={() => openLabResultModal(row.id)}
-                      className="btn-primary w-full justify-center py-1.5 text-label-sm touch-tap"
+                      className="btn-primary w-full justify-center py-2 text-xs font-semibold"
                     >
                       {row.status === 'pending'
-                        ? 'Collect Sample →'
+                        ? 'Collect Sample'
                         : row.status === 'collected'
-                        ? 'Enter Results →'
-                        : 'View Report →'}
+                        ? 'Enter Results'
+                        : 'View Report'}
                     </button>
                   </div>
                 ))}
@@ -222,19 +187,16 @@ export default function LabDashboardView({ userName }: Props) {
 
           {/* Desktop Test Order Table (sm+ screens) */}
           <div className="hidden sm:block overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full text-left text-[13px]">
               <thead>
-                <tr className="border-b border-outline-variant/20">
-                  {['Order #', 'Patient', 'Tests', 'Sample', 'Priority', 'Status', 'Action'].map(
-                    (h) => (
-                      <th
-                        key={h}
-                        className="px-space-md py-space-sm text-left text-label-sm text-on-surface-variant uppercase tracking-wider"
-                      >
-                        {h}
-                      </th>
-                    )
-                  )}
+                <tr className="border-b border-outline-variant/20 bg-surface-container-low/20">
+                  <th className="px-4 py-3 font-bold text-[#4A5D6B] dark:text-[#9FB1C0] uppercase tracking-wider text-[11px]">Order #</th>
+                  <th className="px-4 py-3 font-bold text-[#4A5D6B] dark:text-[#9FB1C0] uppercase tracking-wider text-[11px]">Patient</th>
+                  <th className="px-4 py-3 font-bold text-[#4A5D6B] dark:text-[#9FB1C0] uppercase tracking-wider text-[11px]">Tests Ordered</th>
+                  <th className="px-4 py-3 font-bold text-[#4A5D6B] dark:text-[#9FB1C0] uppercase tracking-wider text-[11px]">Sample</th>
+                  <th className="px-4 py-3 font-bold text-[#4A5D6B] dark:text-[#9FB1C0] uppercase tracking-wider text-[11px]">Priority</th>
+                  <th className="px-4 py-3 font-bold text-[#4A5D6B] dark:text-[#9FB1C0] uppercase tracking-wider text-[11px]">Status</th>
+                  <th className="px-4 py-3 text-right font-bold text-[#4A5D6B] dark:text-[#9FB1C0] uppercase tracking-wider text-[11px]">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/10">
@@ -244,45 +206,43 @@ export default function LabDashboardView({ userName }: Props) {
                         key={row.id}
                         className="hover:bg-surface-container-low/50 transition-colors"
                       >
-                        <td className="px-space-md py-space-sm text-label-sm text-on-surface-variant tabular-nums font-mono">
+                        <td className="px-4 py-3 font-mono text-[#506473] dark:text-[#90A4B3] font-medium text-xs">
                           #{row.id.slice(0, 8).toUpperCase()}
                         </td>
-                        <td className="px-space-md py-space-sm text-label-lg text-on-surface font-semibold">
+                        <td className="px-4 py-3 font-semibold text-[#123047] dark:text-white text-sm">
                           {row.patient_name || 'Patient'}
                         </td>
-                        <td className="px-space-md py-space-sm text-body-sm text-on-surface-variant max-w-[180px] truncate">
+                        <td className="px-4 py-3 text-[#253848] dark:text-[#D9E5F0] font-medium max-w-[220px]">
                           {row.test_name}
                         </td>
-                        <td className="px-space-md py-space-sm text-body-sm text-on-surface-variant">
+                        <td className="px-4 py-3 text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">
                           {row.sample_type || 'Blood'}
                         </td>
-                        <td className="px-space-md py-space-sm">
+                        <td className="px-4 py-3">
                           <StatusBadge
                             variant={row.priority === 'stat' ? 'critical' : 'neutral'}
                             label={row.priority ? row.priority.toUpperCase() : 'ROUTINE'}
                             pulse={row.priority === 'stat'}
                           />
                         </td>
-                        <td className="px-space-md py-space-sm">
+                        <td className="px-4 py-3">
                           <StatusBadge
                             variant={
                               row.status === 'processing'
                                 ? 'warning'
                                 : row.status === 'sample_collected'
                                 ? 'routine'
-                                : row.status === 'resulted'
-                                ? 'routine'
                                 : 'neutral'
                             }
                             label={row.status}
                           />
                         </td>
-                        <td className="px-space-md py-space-sm text-right">
+                        <td className="px-4 py-3 text-right">
                           <button
                             onClick={() => openLabResultModal(row.id)}
-                            className="text-primary text-label-sm font-semibold hover:underline touch-tap"
+                            className="btn-primary py-1.5 px-3.5 text-xs font-semibold"
                           >
-                            Enter Results →
+                            Enter Results
                           </button>
                         </td>
                       </tr>
@@ -292,26 +252,26 @@ export default function LabDashboardView({ userName }: Props) {
                         key={row.id}
                         className="hover:bg-surface-container-low/50 transition-colors"
                       >
-                        <td className="px-space-md py-space-sm text-label-sm text-on-surface-variant tabular-nums font-mono">
+                        <td className="px-4 py-3 font-mono text-[#506473] dark:text-[#90A4B3] font-medium text-xs">
                           {row.id}
                         </td>
-                        <td className="px-space-md py-space-sm text-label-lg text-on-surface font-semibold">
+                        <td className="px-4 py-3 font-semibold text-[#123047] dark:text-white text-sm">
                           {row.patient}
                         </td>
-                        <td className="px-space-md py-space-sm text-body-sm text-on-surface-variant max-w-[180px] truncate">
+                        <td className="px-4 py-3 text-[#253848] dark:text-[#D9E5F0] font-medium max-w-[220px]">
                           {row.tests}
                         </td>
-                        <td className="px-space-md py-space-sm text-body-sm text-on-surface-variant">
+                        <td className="px-4 py-3 text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">
                           {row.sample}
                         </td>
-                        <td className="px-space-md py-space-sm">
+                        <td className="px-4 py-3">
                           <StatusBadge
                             variant={row.priority === 'stat' ? 'critical' : 'neutral'}
                             label={row.priority.toUpperCase()}
                             pulse={row.priority === 'stat'}
                           />
                         </td>
-                        <td className="px-space-md py-space-sm">
+                        <td className="px-4 py-3">
                           <StatusBadge
                             variant={
                               row.status === 'processing'
@@ -323,12 +283,12 @@ export default function LabDashboardView({ userName }: Props) {
                             label={row.status}
                           />
                         </td>
-                        <td className="px-space-md py-space-sm text-right">
+                        <td className="px-4 py-3 text-right">
                           <button
                             onClick={() => openLabResultModal(row.id)}
-                            className="text-primary text-label-sm font-semibold hover:underline touch-tap"
+                            className="btn-primary py-1.5 px-3.5 text-xs font-semibold"
                           >
-                            Enter Results →
+                            Enter Results
                           </button>
                         </td>
                       </tr>
@@ -338,33 +298,34 @@ export default function LabDashboardView({ userName }: Props) {
           </div>
         </div>
 
-        {/* Critical Results Panel */}
-        <div className="clinical-card flex flex-col">
-          <div className="flex items-center justify-between p-space-md border-b border-outline-variant/20">
-            <div className="flex items-center gap-space-sm">
-              <h3 className="font-heading text-headline-sm text-on-surface font-semibold">
-                Critical Results
-              </h3>
-              <StatusBadge
-                variant="critical"
-                label={`${criticalCount} Critical`}
-                pulse
-              />
-            </div>
+        {/* Critical Results Alerts */}
+        {/* Critical Results Alerts */}
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant/20 bg-surface-container-low/40">
+            <h3 className="text-base font-bold text-[#123047] dark:text-white">
+              Critical Lab Alerts
+            </h3>
+            <StatusBadge
+              variant="critical"
+              label={`${criticalCount} Panic Values`}
+              pulse
+            />
           </div>
-          <div className="flex-1 divide-y divide-outline-variant/10">
+          <div className="flex-1 divide-y divide-outline-variant/10 text-xs p-2">
             {criticalList
               ? criticalList.map((r) => (
                   <div
                     key={r.id}
-                    className="px-space-md py-space-sm hover:bg-surface-container-low/50 transition-colors"
+                    className="p-3 hover:bg-surface-container-low/40 rounded-lg transition-colors"
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="text-label-md text-on-surface font-semibold">
+                        <p className="text-[14px] font-bold text-[#123047] dark:text-white">
                           {r.patient_name || 'Patient'}
                         </p>
-                        <p className="text-body-sm text-on-surface-variant">{r.test_name}</p>
+                        <p className="text-xs font-semibold text-[#0F8B8D] dark:text-[#28B5B7] mt-0.5">
+                          {r.test_name}
+                        </p>
                       </div>
                       <StatusBadge
                         variant="critical"
@@ -372,47 +333,51 @@ export default function LabDashboardView({ userName }: Props) {
                         pulse
                       />
                     </div>
-                    <div className="flex items-center gap-space-sm mt-1">
-                      <span className="text-telemetry-num text-tertiary font-semibold tabular-nums">
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <span className="font-mono font-extrabold text-[15px] text-[#C94A4A] dark:text-[#E06262] tabular-nums">
                         {r.result_value} {r.result_unit || ''}
                       </span>
                       {r.reference_range && (
-                        <span className="text-body-sm text-on-surface-variant">
-                          Ref: {r.reference_range}
+                        <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">
+                          (Ref: {r.reference_range})
                         </span>
                       )}
                     </div>
                     <button
                       onClick={() => openLabResultModal(r.id)}
-                      className="mt-1 text-primary text-label-sm font-semibold hover:underline"
+                      className="mt-2 text-[#0F8B8D] dark:text-[#28B5B7] font-semibold hover:underline text-xs flex items-center gap-1"
                     >
-                      Update / Notify Attender →
+                      <span>Notify Attending Physician</span>
+                      <span>&rarr;</span>
                     </button>
                   </div>
                 ))
               : DEFAULT_CRITICAL_RESULTS.map((r) => (
                   <div
                     key={r.patient + r.test}
-                    className="px-space-md py-space-sm hover:bg-surface-container-low/50 transition-colors"
+                    className="p-3 hover:bg-surface-container-low/40 rounded-lg transition-colors"
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="text-label-md text-on-surface font-semibold">{r.patient}</p>
-                        <p className="text-body-sm text-on-surface-variant">{r.test}</p>
+                        <p className="text-[14px] font-bold text-[#123047] dark:text-white">{r.patient}</p>
+                        <p className="text-xs font-semibold text-[#0F8B8D] dark:text-[#28B5B7] mt-0.5">{r.test}</p>
                       </div>
                       <StatusBadge variant="critical" label={r.flag} pulse />
                     </div>
-                    <div className="flex items-center gap-space-sm mt-1">
-                      <span className="text-telemetry-num text-tertiary font-semibold tabular-nums">
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <span className="font-mono font-extrabold text-[15px] text-[#C94A4A] dark:text-[#E06262] tabular-nums">
                         {r.value}
                       </span>
-                      <span className="text-body-sm text-on-surface-variant">Ref: {r.ref}</span>
+                      <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">
+                        (Ref: {r.ref})
+                      </span>
                     </div>
                     <button
                       onClick={() => openLabResultModal()}
-                      className="mt-1 text-primary text-label-sm font-semibold hover:underline"
+                      className="mt-2 text-[#0F8B8D] dark:text-[#28B5B7] font-semibold hover:underline text-xs flex items-center gap-1"
                     >
-                      Notify Doctor →
+                      <span>Notify Attending Physician</span>
+                      <span>&rarr;</span>
                     </button>
                   </div>
                 ))}

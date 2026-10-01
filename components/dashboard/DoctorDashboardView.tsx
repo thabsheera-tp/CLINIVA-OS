@@ -6,11 +6,10 @@ import KPICard from '@/components/ui/KPICard'
 import StatusBadge from '@/components/ui/StatusBadge'
 import LiveIndicator from '@/components/ui/LiveIndicator'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import StartConsultationModal from '@/components/modals/StartConsultationModal'
 import RegisterPatientModal from '@/components/modals/RegisterPatientModal'
 import RecordVitalsModal from '@/components/modals/RecordVitalsModal'
-import QuickActionBar from '@/components/dashboard/QuickActionBar'
-import LiveQueueTimePredictor from '@/components/dashboard/LiveQueueTimePredictor'
 
 type Props = {
   userName: string
@@ -29,7 +28,6 @@ export default function DoctorDashboardView({ userName }: Props) {
 
   const [copiedMRN, setCopiedMRN] = useState(false)
   const [scheduleFilter, setScheduleFilter] = useState<'All' | 'Completed' | 'Upcoming' | 'Telehealth'>('All')
-  const [queueViewMode, setQueueViewMode] = useState<'cockpit' | 'predictor'>('cockpit')
 
   const handleCopyMRN = (mrn: string) => {
     navigator.clipboard?.writeText(mrn)
@@ -56,312 +54,357 @@ export default function DoctorDashboardView({ userName }: Props) {
   })
 
   return (
-    <div className="flex flex-col w-full space-y-gutter-desktop">
-      {/* Modals */}
+    <div className="flex flex-col w-full space-y-5">
+      {/* Clinical Modals */}
       <StartConsultationModal />
       <RegisterPatientModal />
       <RecordVitalsModal />
 
-      {/* Quick Actions Shortcuts Bar */}
-      <QuickActionBar className="w-full" />
-
-      {/* ── 1. Greeting & Operational Cockpit Header ── */}
-      <section
-        className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-space-lg bg-white dark:bg-slate-900 p-space-lg rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs"
-      >
-        <div className="flex flex-col space-y-space-xs">
-          <div className="flex items-center gap-space-sm flex-wrap">
-            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 text-label-sm font-semibold tracking-wider uppercase">
-              Cardiovascular Medicine
-            </span>
-            <span className="text-slate-300 dark:text-slate-700">•</span>
-            <span className="text-label-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-              Room 304 – Exam B
+      {/* ── 1. Compact Header ── */}
+      <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#122433] px-5 py-3.5 rounded-xl border border-[#E2E8EC] dark:border-white/[0.08]">
+        <div>
+          <div className="flex items-center gap-2 mb-0.5">
+            <h1 className="font-heading text-base sm:text-lg font-bold text-[#123047] dark:text-white tracking-tight">
+              Clinical Workstation
+            </h1>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 text-[#0F8B8D] dark:text-[#28B5B7] border border-[#0F8B8D]/30">
+              Exam Room 304
             </span>
           </div>
-          <h1 className="font-heading text-headline-lg text-slate-900 dark:text-slate-50 tracking-tight">
-            Good morning, {userName.split(',')[0]}
-          </h1>
-          <p className="text-body-md text-slate-500 dark:text-slate-400">
-            St. Jude Medical Center — West Campus • Shift 08:00 – 17:00
+          <p className="text-sm text-[#4A5D6B] dark:text-[#9FB1C0] mt-0.5 font-normal">
+            Cardiology OPD &bull; {userName}
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-space-sm w-full xl:w-auto">
-          <div className="flex items-center gap-space-sm bg-slate-50 dark:bg-slate-950 px-space-md py-space-sm rounded-xl border border-slate-200 dark:border-slate-800">
-            <span className="material-symbols-outlined text-primary text-[20px]">calendar_today</span>
-            <div className="flex flex-col">
-              <span className="text-label-sm text-slate-500 dark:text-slate-400 uppercase font-medium">Clinic Date</span>
-              <span className="text-label-md text-slate-900 dark:text-slate-50 font-semibold">
-                {new Date().toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                })}
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setRegisterOpen(true)}
+            className="px-3 py-1.5 rounded-lg border border-[#E2E8EC] dark:border-white/[0.1] bg-white dark:bg-white/[0.04] text-[#172B3A] dark:text-[#E8F0F5] hover:bg-[#F7F9FA] text-xs font-semibold flex items-center gap-1.5 transition-colors"
+          >
+            <ClinivaIcon name="person_add" size={15} strokeWidth={1.5} className="text-[#4A5D6B]" />
+            <span>Intake Patient</span>
+          </button>
+          <button
+            onClick={() => setConsultOpen(true)}
+            className="px-4 py-1.5 rounded-lg bg-[#0F8B8D] hover:bg-[#0D7A7C] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
+          >
+            <ClinivaIcon name="play_arrow" size={16} strokeWidth={1.5} />
+            <span>Start Consultation</span>
+          </button>
+        </div>
+      </section>
+
+      {/* ── 2. Compact Low-Height Summary Row ── */}
+      <section className="bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] px-4 py-2.5 flex items-center justify-between flex-wrap gap-2 shadow-xs">
+        <div className="flex items-center gap-2 sm:gap-3.5 flex-wrap whitespace-nowrap">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#4A5D6B] dark:text-[#9FB1C0] flex items-center gap-1.5">
+            <ClinivaIcon name="analytics" size={15} strokeWidth={1.5} className="text-[#0F8B8D]" />
+            TODAY
+          </span>
+          <span className="text-[#E2E8EC] dark:text-white/20">|</span>
+          <Link
+            href="/doctor/queue"
+            className="flex items-center gap-1.5 text-xs font-semibold text-[#172B3A] dark:text-[#E8F0F5] hover:text-[#0F8B8D] transition-colors"
+            title="View Patient Queue"
+          >
+            <span className="text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">Queue</span>
+            <span className="font-mono text-sm font-bold text-[#123047] dark:text-white tabular-nums">{waitingPatients.length}</span>
+          </Link>
+          <span className="text-[#C8D3DE] dark:text-white/30">&middot;</span>
+          <Link
+            href="/doctor/appointments"
+            className="flex items-center gap-1.5 text-xs font-semibold text-[#172B3A] dark:text-[#E8F0F5] hover:text-[#0F8B8D] transition-colors"
+            title="View Consultations"
+          >
+            <span className="text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">Consultations</span>
+            <span className="font-mono text-sm font-bold text-[#123047] dark:text-white tabular-nums">18</span>
+          </Link>
+          <span className="text-[#C8D3DE] dark:text-white/30">&middot;</span>
+          <Link
+            href="/doctor/lab-results"
+            className="flex items-center gap-1.5 text-xs font-semibold text-[#172B3A] dark:text-[#E8F0F5] hover:text-[#0F8B8D] transition-colors"
+            title="View Pending Labs"
+          >
+            <span className="text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">Labs</span>
+            <span className="font-mono text-sm font-bold text-[#123047] dark:text-white tabular-nums">3</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C94A4A]" title="STAT Alert" />
+          </Link>
+          <span className="text-[#C8D3DE] dark:text-white/30">&middot;</span>
+          <Link
+            href="/doctor/prescriptions"
+            className="flex items-center gap-1.5 text-xs font-semibold text-[#172B3A] dark:text-[#E8F0F5] hover:text-[#0F8B8D] transition-colors"
+            title="View e-Prescriptions"
+          >
+            <span className="text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">Rx</span>
+            <span className="font-mono text-sm font-bold text-[#123047] dark:text-white tabular-nums">14</span>
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-2 text-xs font-medium text-[#4A5D6B] dark:text-[#9FB1C0]">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#2E7D5B] animate-pulse" />
+            <span className="text-[#172B3A] dark:text-[#E8F0F5] font-semibold text-xs">Room Active</span>
+          </span>
+        </div>
+      </section>
+
+      {/* ── 3. Active Patient & Waiting Queue ── */}
+      <section className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        {/* Left: Active Consultation Clinical Card */}
+        <div className="xl:col-span-2 bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] p-4 flex flex-col gap-3.5 shadow-xs">
+          {/* Section Header */}
+          <div className="flex items-center justify-between pb-2.5 border-b border-[#E2E8EC] dark:border-white/[0.06]">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#0F8B8D] dark:text-[#28B5B7] flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 border border-[#0F8B8D]/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#0F8B8D] animate-pulse" />
+                ACTIVE PATIENT
               </span>
+              <StatusBadge variant="warning" label="In Room" />
             </div>
-          </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-space-xs w-full sm:w-auto">
-            <button
-              onClick={() => setRegisterOpen(true)}
-              className="btn-secondary justify-center touch-tap"
-            >
-              <span className="material-symbols-outlined text-[18px]">emergency</span>
-              <span>+ Emergency Triage</span>
-            </button>
-            <button
-              onClick={() => setVitalsOpen(true)}
-              className="btn-secondary justify-center touch-tap"
-            >
-              <span className="material-symbols-outlined text-[18px]">monitor_heart</span>
-              <span>Record Vitals</span>
-            </button>
-            <button
-              onClick={() => setConsultOpen(true)}
-              className="btn-primary justify-center touch-tap"
-            >
-              <span className="material-symbols-outlined text-[18px]">play_arrow</span>
-              <span>Start Next Consultation</span>
-            </button>
-          </div>
-        </div>
-      </section>
 
-      {/* ── 2. Four KPI Stat Cards ── */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
-        <KPICard
-          title="Today's Schedule"
-          value={18}
-          icon="event_available"
-          trend="+8% vs yesterday"
-          trendDir="up"
-          subtitle="12 done • 6 left"
-        />
-        <KPICard
-          title="Live In Queue"
-          value={waitingPatients.length}
-          icon="group"
-          trend="14m avg wait"
-          trendDir="neutral"
-          subtitle={`${waitingPatients.length} waiting`}
-          live
-        />
-        <KPICard
-          title="Pending Diagnostics"
-          value={3}
-          icon="biotech"
-          trend="2 critical labs"
-          trendDir="down"
-          subtitle="Urgent review"
-        />
-        <KPICard
-          title="Clinical Inquiries"
-          value={4}
-          icon="chat"
-          trend="1 new urgent"
-          trendDir="down"
-          subtitle="4 unread"
-        />
-      </section>
-
-      {/* ── 3. Live Queue & Operational Cockpit Switcher ── */}
-      <div className="flex items-center justify-between overflow-x-auto scrollbar-hide">
-        <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700/80 w-full xs:w-auto">
-          <button
-            onClick={() => setQueueViewMode('cockpit')}
-            className={`flex-1 xs:flex-initial px-2.5 sm:px-3 py-1.5 sm:py-1 rounded-lg text-[11px] sm:text-label-sm font-medium transition-all whitespace-nowrap ${
-              queueViewMode === 'cockpit'
-                ? 'bg-white dark:bg-slate-900 text-primary shadow-xs font-semibold'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
-            }`}
-          >
-            <span className="hidden xs:inline">Clinical Cockpit & Vitals</span>
-            <span className="xs:hidden">Cockpit</span>
-          </button>
-          <button
-            onClick={() => setQueueViewMode('predictor')}
-            className={`flex-1 xs:flex-initial px-2.5 sm:px-3 py-1.5 sm:py-1 rounded-lg text-[11px] sm:text-label-sm font-medium transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
-              queueViewMode === 'predictor'
-                ? 'bg-white dark:bg-slate-900 text-primary shadow-xs font-semibold'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
-            <span className="hidden xs:inline">Live Queue & Time Predictor</span>
-            <span className="xs:hidden">Live Queue</span>
-          </button>
-        </div>
-      </div>
-
-      {queueViewMode === 'predictor' ? (
-        <LiveQueueTimePredictor department="All" doctorMode={true} />
-      ) : (
-        <section className="grid grid-cols-1 xl:grid-cols-3 gap-space-md">
-          {/* Active Patient Card */}
-          <div className="xl:col-span-2 clinical-card p-space-md flex flex-col gap-space-md">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-space-sm">
-              <LiveIndicator label="In Examination" />
-              <StatusBadge variant="warning" label="Ongoing" />
-            </div>
-            <button
-              onClick={() => setConsultOpen(true)}
-              className="btn-ghost text-label-sm py-1.5 px-space-md flex items-center gap-1.5 touch-tap"
-            >
-              <span>Open SOAP Clinical Note (e-Rx)</span>
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </button>
+            <StatusBadge
+              variant={activePatient?.priority === 'emergency' ? 'critical' : 'warning'}
+              label={activePatient?.priority === 'emergency' ? 'STAT' : 'Hypertension II'}
+            />
           </div>
 
-          {/* Patient banner */}
-          <div className="flex items-start gap-space-md p-space-md bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center flex-shrink-0">
-              <span className="material-symbols-outlined text-[28px]">person</span>
+          {/* Patient Details & Chief Complaint */}
+          <div className="flex items-start gap-3.5 p-3.5 bg-[#F7F9FA] dark:bg-[#0D1B26] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08]">
+            <div className="w-11 h-11 rounded-xl bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 text-[#0F8B8D] dark:text-[#28B5B7] border border-[#0F8B8D]/30 flex items-center justify-center flex-shrink-0">
+              <ClinivaIcon name="person" size={22} strokeWidth={1.5} />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between flex-wrap gap-2">
-                <div>
-                  <h2 className="font-heading text-headline-sm text-slate-900 dark:text-slate-50 font-semibold">
-                    {activePatient?.name ?? 'Marcus Delacroix'}
-                  </h2>
-                  <div className="flex items-center gap-1.5 text-body-sm text-slate-500 dark:text-slate-400 flex-wrap mt-0.5">
-                    <span>MRN:</span>
-                    <button
-                      type="button"
-                      onClick={() => handleCopyMRN('00482910')}
-                      className="inline-flex items-center gap-1 font-mono font-semibold text-slate-800 dark:text-slate-200 bg-slate-200/70 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-300/60 dark:border-slate-700 hover:bg-slate-200 transition-colors"
-                      title="Click to copy Patient MRN"
-                    >
-                      <span>00482910</span>
-                      <span className="material-symbols-outlined text-[13px] text-primary">
-                        {copiedMRN ? 'check' : 'content_copy'}
-                      </span>
-                      {copiedMRN && <span className="text-[10px] text-emerald-600 font-sans font-medium">Copied</span>}
-                    </button>
-                    <span>•</span>
-                    <span>{activePatient?.age ?? '54M'}</span>
-                    <span>•</span>
-                    <span className="font-semibold text-primary">Token #{activePatient?.token ?? 7}</span>
-                    <span>•</span>
-                    <span>Room 304</span>
-                  </div>
-                </div>
-                <StatusBadge
-                  variant={activePatient?.priority === 'emergency' ? 'critical' : 'warning'}
-                  label={activePatient?.priority === 'emergency' ? 'Emergency STAT' : 'Hypertension Stage II'}
-                  pulse
-                />
+              <div className="flex items-center justify-between flex-wrap gap-1.5">
+                <h2 className="text-lg sm:text-xl font-bold text-[#123047] dark:text-white tracking-tight">
+                  {activePatient?.name ?? 'Marcus Delacroix'}
+                </h2>
+                <span className="font-mono text-xs font-bold text-[#0F8B8D] bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 px-2 py-0.5 rounded border border-[#0F8B8D]/30">
+                  Token #{activePatient?.token ?? 7}
+                </span>
               </div>
-              <p className="text-body-sm text-slate-600 dark:text-slate-300 mt-2">
-                <span className="font-semibold text-slate-900 dark:text-slate-100">Chief Complaint:</span>{' '}
-                {activePatient?.complaint ?? 'Acute chest tightness, exertional dyspnea since 06:00 AM'}
-              </p>
+              <div className="flex items-center gap-2 text-xs text-[#4A5D6B] dark:text-[#9FB1C0] mt-0.5">
+                <span className="font-semibold text-[#172B3A] dark:text-[#E8F0F5]">{activePatient?.age ?? '54M'}</span>
+                <span>&bull;</span>
+                <span className="flex items-center gap-1">
+                  <span>MRN:</span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyMRN('00482910')}
+                    className="inline-flex items-center gap-1 font-mono font-medium text-[#172B3A] dark:text-[#E8F0F5] hover:text-[#0F8B8D] transition-colors"
+                    title="Copy MRN"
+                  >
+                    <span>00482910</span>
+                    <ClinivaIcon name={copiedMRN ? 'check' : 'content_copy'} size={12} strokeWidth={1.5} />
+                  </button>
+                </span>
+              </div>
+
+              <div className="mt-2.5 pt-2 border-t border-[#E2E8EC]/80 dark:border-white/[0.06]">
+                <p className="text-xs sm:text-[13px] text-[#172B3A] dark:text-[#E8F0F5]">
+                  <span className="text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">Chief complaint:</span>{' '}
+                  <span className="font-semibold text-[#123047] dark:text-white">
+                    {activePatient?.complaint ?? 'Chest tightness, shortness of breath'}
+                  </span>
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Vitals Telemetry Grid (Live Reactivity) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-space-sm">
-            {[
-              { label: 'Blood Pressure', value: vitals.bp, unit: 'mmHg', icon: 'favorite', normal: '120/80' },
-              { label: 'Heart Rate', value: vitals.heartRate, unit: 'bpm', icon: 'ecg_heart', normal: '60-100' },
-              { label: 'Oxygen SpO₂', value: vitals.spo2, unit: '%', icon: 'air', normal: '> 95%' },
-              { label: 'Temperature', value: `${vitals.temperature}°F`, unit: 'Oral', icon: 'thermometer', normal: '98.6°F' },
-            ].map((v) => (
-              <div
-                key={v.label}
+          {/* Primary Action Button & Secondary Clinical Actions */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+            <button
+              onClick={() => setConsultOpen(true)}
+              className="flex-1 sm:flex-initial px-6 py-2.5 rounded-xl bg-[#0F8B8D] hover:bg-[#0D7A7C] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-xs transition-colors"
+            >
+              <ClinivaIcon name="play_arrow" size={16} strokeWidth={1.5} />
+              <span>Start Consultation</span>
+            </button>
+
+            {/* Desktop secondary actions */}
+            <div className="hidden sm:flex items-center gap-1.5 flex-wrap">
+              <button
                 onClick={() => setVitalsOpen(true)}
-                className="flex flex-col items-center justify-center p-3.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 gap-1 cursor-pointer hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-150 group active:scale-[0.99]"
-                title="Click to update physiological vitals telemetry"
+                className="px-2.5 py-1.5 rounded-lg border border-[#E2E8EC] dark:border-white/[0.1] bg-white dark:bg-white/[0.04] text-[#172B3A] dark:text-[#E8F0F5] hover:bg-[#F7F9FA] text-[11px] font-medium flex items-center gap-1 transition-colors"
               >
-                <div className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined text-[15px] text-primary">{v.icon}</span>
-                  <span>{v.label}</span>
-                </div>
-                <span className="font-heading text-headline-sm text-slate-900 dark:text-slate-50 tabular-nums font-mono font-bold tracking-tight">
-                  {v.value}
-                </span>
-                <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                  {v.unit} • <span className="text-slate-400 dark:text-slate-500">Ref {v.normal}</span>
-                </span>
-              </div>
-            ))}
+                <ClinivaIcon name="monitor_heart" size={14} strokeWidth={1.5} className="text-[#60727F]" />
+                <span>Record Vitals</span>
+              </button>
+              <button
+                onClick={() => setConsultOpen(true)}
+                className="px-2.5 py-1.5 rounded-lg border border-[#E2E8EC] dark:border-white/[0.1] bg-white dark:bg-white/[0.04] text-[#172B3A] dark:text-[#E8F0F5] hover:bg-[#F7F9FA] text-[11px] font-medium flex items-center gap-1 transition-colors"
+              >
+                <ClinivaIcon name="description" size={14} strokeWidth={1.5} className="text-[#60727F]" />
+                <span>Clinical Note</span>
+              </button>
+              <Link
+                href="/doctor/prescriptions"
+                className="px-2.5 py-1.5 rounded-lg border border-[#E2E8EC] dark:border-white/[0.1] bg-white dark:bg-white/[0.04] text-[#172B3A] dark:text-[#E8F0F5] hover:bg-[#F7F9FA] text-[11px] font-medium flex items-center gap-1 transition-colors"
+              >
+                <ClinivaIcon name="prescriptions" size={14} strokeWidth={1.5} className="text-[#60727F]" />
+                <span>Prescription</span>
+              </Link>
+              <Link
+                href="/doctor/lab-results"
+                className="px-2.5 py-1.5 rounded-lg border border-[#E2E8EC] dark:border-white/[0.1] bg-white dark:bg-white/[0.04] text-[#172B3A] dark:text-[#E8F0F5] hover:bg-[#F7F9FA] text-[11px] font-medium flex items-center gap-1 transition-colors"
+              >
+                <ClinivaIcon name="science" size={14} strokeWidth={1.5} className="text-[#60727F]" />
+                <span>Lab Order</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Compact Clinical Vitals Row — Comfortably Readable */}
+          <div
+            onClick={() => setVitalsOpen(true)}
+            className="flex items-center justify-between flex-wrap gap-2 px-3.5 py-2.5 bg-[#F7F9FA] dark:bg-[#0D1B26] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] cursor-pointer hover:border-[#0F8B8D]/40 transition-colors"
+            title="Click to Record or Update Vitals"
+          >
+            <div className="flex items-center gap-2.5 sm:gap-3.5 flex-wrap">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#123047] dark:text-white flex items-center gap-1.5">
+                <ClinivaIcon name="ecg_heart" size={15} strokeWidth={1.5} className="text-[#0F8B8D]" />
+                VITALS
+              </span>
+              <span className="text-[#E2E8EC] dark:text-white/20">|</span>
+              <span className="text-xs text-[#172B3A] dark:text-[#E8F0F5]">
+                <span className="text-[#4A5D6B] dark:text-[#9FB1C0] font-medium mr-1">BP</span>
+                <strong className="text-sm font-bold font-mono text-[#123047] dark:text-white tabular-nums">{vitals.bp}</strong>
+              </span>
+              <span className="text-[#C8D3DE] dark:text-white/30">&middot;</span>
+              <span className="text-xs text-[#172B3A] dark:text-[#E8F0F5]">
+                <span className="text-[#4A5D6B] dark:text-[#9FB1C0] font-medium mr-1">HR</span>
+                <strong className="text-sm font-bold font-mono text-[#123047] dark:text-white tabular-nums">{vitals.heartRate}</strong>
+              </span>
+              <span className="text-[#C8D3DE] dark:text-white/30">&middot;</span>
+              <span className="text-xs text-[#172B3A] dark:text-[#E8F0F5]">
+                <span className="text-[#4A5D6B] dark:text-[#9FB1C0] font-medium mr-1">SpO₂</span>
+                <strong className="text-sm font-bold font-mono text-[#123047] dark:text-white tabular-nums">{vitals.spo2}%</strong>
+              </span>
+              <span className="text-[#C8D3DE] dark:text-white/30">&middot;</span>
+              <span className="text-xs text-[#172B3A] dark:text-[#E8F0F5]">
+                <span className="text-[#4A5D6B] dark:text-[#9FB1C0] font-medium mr-1">Temp</span>
+                <strong className="text-sm font-bold font-mono text-[#123047] dark:text-white tabular-nums">{vitals.temperature}°F</strong>
+              </span>
+            </div>
+
+            <span className="text-xs text-[#0F8B8D] font-semibold hover:underline flex items-center gap-0.5 ml-auto">
+              <span>Update</span>
+              <ClinivaIcon name="edit" size={13} strokeWidth={1.5} />
+            </span>
           </div>
         </div>
 
-        {/* Queue List (Live Reactivity) */}
-        <div className="clinical-card flex flex-col">
-          <div className="flex items-center justify-between p-space-md border-b border-slate-200 dark:border-slate-800">
-            <div className="flex items-center gap-space-sm">
-              <h3 className="font-heading text-headline-sm text-slate-900 dark:text-slate-50 font-semibold">OPD Triage & Patient Flow</h3>
-              <LiveIndicator size="sm" />
-            </div>
-            <span className="text-[11px] bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50 px-2.5 py-0.5 rounded-full font-semibold">
-              {waitingPatients.length} Waiting
-            </span>
-          </div>
-          <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 max-h-[380px]">
-            {waitingPatients.length === 0 ? (
-              <div className="p-8 text-center text-slate-500 dark:text-slate-400 text-body-sm">
-                No patients waiting in queue.
+        {/* Right: Waiting Queue List */}
+        <div className="bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] p-4 flex flex-col justify-between shadow-xs">
+          <div>
+            <div className="flex items-center justify-between pb-2.5 border-b border-[#E2E8EC] dark:border-white/[0.06] mb-2">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-bold text-[#123047] dark:text-white uppercase tracking-wider">
+                  Waiting Queue &bull; {waitingPatients.length}
+                </h3>
+                <LiveIndicator size="sm" />
               </div>
-            ) : (
-              waitingPatients.map((p) => (
-                <div
-                  key={p.id}
-                  onClick={() => callNextPatient()}
-                  className="flex items-center gap-space-sm px-space-md py-space-sm hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group active:scale-[0.99]"
-                >
-                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-[12px] text-slate-800 dark:text-slate-200 font-mono font-bold flex-shrink-0 tabular-nums">
-                    #{p.token}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-label-lg text-slate-900 dark:text-slate-100 truncate font-semibold">{p.name}</p>
-                    <p className="text-body-sm text-slate-500 dark:text-slate-400 truncate">
-                      {p.age} • {p.complaint}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-end flex-shrink-0">
-                    <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 tabular-nums">{p.wait}</span>
+              <Link href="/doctor/queue" className="text-xs text-[#0F8B8D] hover:underline font-semibold">
+                Full Queue &rarr;
+              </Link>
+            </div>
+
+            <div className="overflow-y-auto divide-y divide-[#E2E8EC]/60 dark:divide-white/[0.04] max-h-60">
+              {waitingPatients.length === 0 ? (
+                <p className="text-center text-xs text-[#8EA2B0] py-8">Queue clear. No patients waiting.</p>
+              ) : (
+                waitingPatients.map((p) => (
+                  <div
+                    key={p.id}
+                    className="py-2.5 flex items-center justify-between gap-2 hover:bg-[#F7F9FA] dark:hover:bg-white/[0.03] transition-colors rounded-md px-1"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="w-6 h-6 rounded bg-[#F0F4F7] dark:bg-white/10 text-[#123047] dark:text-white font-mono font-bold text-xs flex items-center justify-center flex-shrink-0">
+                        #{p.token}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-[#172B3A] dark:text-white truncate">{p.name}</p>
+                        <p className="text-[11px] text-[#4A5D6B] dark:text-[#9FB1C0] truncate font-medium">{p.complaint}</p>
+                      </div>
+                    </div>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        callNextPatient()
-                      }}
-                      className="text-primary hover:text-primary-container text-[12px] font-semibold opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity touch-tap flex items-center gap-0.5 mt-0.5"
+                      onClick={() => callNextPatient()}
+                      className="px-2.5 py-1 rounded-md bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 text-[#0F8B8D] dark:text-[#28B5B7] border border-[#0F8B8D]/30 text-xs font-semibold hover:bg-[#0F8B8D] hover:text-white transition-colors flex-shrink-0"
                     >
-                      <span>Call Next</span>
-                      <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+                      Call
                     </button>
                   </div>
-                </div>
-              ))
-            )}
+                ))
+              )}
+            </div>
+          </div>
+
+          <div className="pt-2.5 border-t border-[#E2E8EC]/60 dark:border-white/[0.04] mt-2 flex items-center justify-between text-xs text-[#4A5D6B] dark:text-[#9FB1C0]">
+            <span>Next: <strong className="text-[#123047] dark:text-white font-semibold">{waitingPatients[0]?.name ?? 'None'}</strong></span>
+            <button
+              onClick={() => callNextPatient()}
+              className="text-[#0F8B8D] dark:text-[#28B5B7] font-semibold hover:underline"
+            >
+              Call Next &rarr;
+            </button>
           </div>
         </div>
       </section>
-      )}
 
-      {/* ── 4. Daily Ambulatory Schedule ── */}
-      <section className="clinical-card">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-space-md border-b border-slate-200 dark:border-slate-800 gap-2">
+      {/* Mobile-only secondary clinical actions row (strictly honors mobile workflow order) */}
+      <section className="sm:hidden flex items-center gap-1.5 flex-wrap bg-white dark:bg-[#122433] p-3 rounded-xl border border-[#E2E8EC] dark:border-white/[0.08]">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-[#4A5D6B] dark:text-[#9FB1C0] w-full mb-1">
+          Clinical Actions
+        </span>
+        <button
+          onClick={() => setVitalsOpen(true)}
+          className="flex-1 py-1.5 px-2 rounded-lg border border-[#E2E8EC] dark:border-white/[0.1] bg-[#F7F9FA] text-[#172B3A] text-xs font-semibold flex items-center justify-center gap-1"
+        >
+          <ClinivaIcon name="monitor_heart" size={14} strokeWidth={1.5} className="text-[#4A5D6B]" />
+          <span>Vitals</span>
+        </button>
+        <button
+          onClick={() => setConsultOpen(true)}
+          className="flex-1 py-1.5 px-2 rounded-lg border border-[#E2E8EC] dark:border-white/[0.1] bg-[#F7F9FA] text-[#172B3A] text-xs font-semibold flex items-center justify-center gap-1"
+        >
+          <ClinivaIcon name="description" size={14} strokeWidth={1.5} className="text-[#4A5D6B]" />
+          <span>Notes</span>
+        </button>
+        <Link
+          href="/doctor/prescriptions"
+          className="flex-1 py-1.5 px-2 rounded-lg border border-[#E2E8EC] dark:border-white/[0.1] bg-[#F7F9FA] text-[#172B3A] text-xs font-semibold flex items-center justify-center gap-1"
+        >
+          <ClinivaIcon name="prescriptions" size={14} strokeWidth={1.5} className="text-[#4A5D6B]" />
+          <span>Rx</span>
+        </Link>
+        <Link
+          href="/doctor/lab-results"
+          className="flex-1 py-1.5 px-2 rounded-lg border border-[#E2E8EC] dark:border-white/[0.1] bg-[#F7F9FA] text-[#172B3A] text-xs font-semibold flex items-center justify-center gap-1"
+        >
+          <ClinivaIcon name="science" size={14} strokeWidth={1.5} className="text-[#4A5D6B]" />
+          <span>Lab</span>
+        </Link>
+      </section>
+
+      {/* ── 4. Daily Schedule ── */}
+      <section className="bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] p-4">
+        <div className="flex items-center justify-between pb-3 border-b border-[#E2E8EC] dark:border-white/[0.06] mb-3">
           <div className="flex items-center gap-2">
-            <h3 className="font-heading text-headline-sm text-slate-900 dark:text-slate-50 font-semibold">
-              Daily Ambulatory Schedule
+            <h3 className="text-xs font-bold text-[#123047] dark:text-white uppercase tracking-wider">
+              Today&apos;s Appointments
             </h3>
-            <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono font-semibold border border-slate-200 dark:border-slate-700">
-              {filteredSchedule.length} Encounters
+            <span className="text-xs px-2 py-0.5 rounded bg-[#F0F4F7] dark:bg-white/10 text-[#4A5D6B] dark:text-[#9FB1C0] font-mono font-bold">
+              {filteredSchedule.length}
             </span>
           </div>
-          <div className="flex items-center gap-space-xs overflow-x-auto smooth-touch-scroll pb-1 sm:pb-0">
-            {(['All', 'Completed', 'Upcoming', 'Telehealth'] as const).map((f) => (
+          <div className="flex items-center gap-1 text-xs">
+            {(['All', 'Completed', 'Upcoming'] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setScheduleFilter(f)}
-                className={`px-space-md py-1 rounded-full text-label-sm whitespace-nowrap transition-all touch-tap ${
+                className={`px-2.5 py-1 rounded-md font-semibold transition-colors ${
                   scheduleFilter === f
-                    ? 'bg-primary text-white font-semibold shadow-xs'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                    ? 'bg-[#0F8B8D] text-white'
+                    : 'text-[#4A5D6B] dark:text-[#9FB1C0] hover:text-[#123047] dark:hover:text-white'
                 }`}
               >
                 {f}
@@ -370,182 +413,82 @@ export default function DoctorDashboardView({ userName }: Props) {
           </div>
         </div>
 
-        {/* Mobile Schedule Cards (< sm screens) */}
-        <div className="block sm:hidden divide-y divide-slate-100 dark:divide-slate-800 p-2">
-          {filteredSchedule.length === 0 ? (
-            <div className="p-6 text-center text-slate-500 dark:text-slate-400 text-body-sm">
-              No consultations found for filter &quot;{scheduleFilter}&quot;.
-            </div>
-          ) : (
-            filteredSchedule.map((row) => (
-              <div key={row.time} className="p-3 flex items-center justify-between gap-2">
-                <div>
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <span className="font-bold text-primary tabular-nums text-label-md">{row.time}</span>
-                    <span className="text-slate-300 dark:text-slate-700">•</span>
-                    <p className="text-body-md text-slate-900 dark:text-slate-50 font-semibold">{row.patient}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-body-sm text-slate-500 dark:text-slate-400">{row.type}</span>
-                    <StatusBadge
-                      variant={
-                        row.status === 'completed'
-                          ? 'routine'
-                          : row.status === 'in-progress'
-                          ? 'warning'
-                          : 'neutral'
-                      }
-                      label={row.status}
-                    />
-                  </div>
-                </div>
-                <button
-                  onClick={() => setConsultOpen(true)}
-                  className="btn-ghost text-label-sm py-1 px-3 touch-tap flex-shrink-0"
-                >
-                  {row.status === 'completed' ? 'Chart' : 'Start →'}
-                </button>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Desktop Schedule Table (sm+ screens) */}
-        <div className="hidden sm:block overflow-x-auto">
-          <table className="w-full text-left">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-[13px]">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
-                {['Time', 'Patient', 'Type', 'Status', 'Actions'].map((h) => (
-                  <th
-                    key={h}
-                    className="px-space-md py-space-sm text-label-sm text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold"
-                  >
-                    {h}
-                  </th>
-                ))}
+              <tr className="border-b border-[#E2E8EC] dark:border-white/[0.06] text-[#4A5D6B] dark:text-[#9FB1C0] uppercase text-[11px] font-bold">
+                <th className="py-2.5 px-3 font-bold">Time</th>
+                <th className="py-2.5 px-3 font-bold">Patient</th>
+                <th className="py-2.5 px-3 font-bold">Type</th>
+                <th className="py-2.5 px-3 font-bold">Status</th>
+                <th className="py-2.5 px-3 text-right font-bold">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {filteredSchedule.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="p-8 text-center text-slate-500 dark:text-slate-400 text-body-sm">
-                    No consultations found for filter &quot;{scheduleFilter}&quot;.
+            <tbody className="divide-y divide-[#E2E8EC]/60 dark:divide-white/[0.04]">
+              {filteredSchedule.map((row) => (
+                <tr key={row.time} className="hover:bg-[#F7F9FA] dark:hover:bg-white/[0.03]">
+                  <td className="py-2.5 px-3 font-mono font-bold text-xs text-[#123047] dark:text-white">{row.time}</td>
+                  <td className="py-2.5 px-3 font-semibold text-[#172B3A] dark:text-white text-sm">{row.patient}</td>
+                  <td className="py-2.5 px-3 text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">{row.type}</td>
+                  <td className="py-2.5 px-3">
+                    <StatusBadge
+                      variant={row.status === 'completed' ? 'routine' : row.status === 'in-progress' ? 'warning' : 'neutral'}
+                      label={row.status}
+                    />
+                  </td>
+                  <td className="py-2.5 px-3 text-right">
+                    <button
+                      onClick={() => setConsultOpen(true)}
+                      className="text-[#0F8B8D] dark:text-[#28B5B7] font-semibold hover:underline text-xs"
+                    >
+                      {row.status === 'completed' ? 'View' : 'Start'}
+                    </button>
                   </td>
                 </tr>
-              ) : (
-                filteredSchedule.map((row) => (
-                  <tr key={row.time} className="hover:bg-slate-50 dark:hover:bg-slate-850/40 transition-colors">
-                    <td className="px-space-md py-space-sm text-label-lg text-slate-900 dark:text-slate-50 font-medium tabular-nums">
-                      {row.time}
-                    </td>
-                    <td className="px-space-md py-space-sm text-body-md text-slate-900 dark:text-slate-50 font-semibold">
-                      {row.patient}
-                    </td>
-                    <td className="px-space-md py-space-sm text-body-sm text-slate-600 dark:text-slate-400">
-                      {row.type}
-                    </td>
-                    <td className="px-space-md py-space-sm">
-                      <StatusBadge
-                        variant={
-                          row.status === 'completed'
-                            ? 'routine'
-                            : row.status === 'in-progress'
-                            ? 'warning'
-                            : 'neutral'
-                        }
-                        label={row.status}
-                      />
-                    </td>
-                    <td className="px-space-md py-space-sm text-right">
-                      <button
-                        onClick={() => setConsultOpen(true)}
-                        className="text-primary text-label-md font-semibold hover:underline touch-tap"
-                      >
-                        {row.status === 'completed' ? 'View Chart' : 'Start →'}
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         </div>
       </section>
 
       {/* ── 5. Diagnostic Alerts ── */}
-      <section className="clinical-card">
-        <div className="flex items-center justify-between p-space-md border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-space-sm">
-            <h3 className="font-heading text-headline-sm text-slate-900 dark:text-slate-50 font-semibold">
+      <section className="bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] p-4">
+        <div className="flex items-center justify-between pb-3 border-b border-[#E2E8EC] dark:border-white/[0.06] mb-2">
+          <div className="flex items-center gap-2">
+            <h3 className="text-xs font-bold text-[#123047] dark:text-white uppercase tracking-wider">
               Diagnostic Alerts
             </h3>
-            <StatusBadge variant="critical" label="3 Urgent" pulse />
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#C94A4A]/10 text-[#C94A4A] border border-[#C94A4A]/25">
+              3 Urgent
+            </span>
           </div>
-          <Link href="/doctor/lab-results" className="btn-ghost text-label-sm py-1 px-space-md">
-            View All
+          <Link href="/doctor/lab-results" className="text-xs font-semibold text-[#0F8B8D] hover:underline">
+            All Labs →
           </Link>
         </div>
-        <div className="divide-y divide-slate-100 dark:divide-slate-800">
+
+        <div className="divide-y divide-[#E2E8EC]/60 dark:divide-white/[0.04]">
           {[
-            {
-              patient: 'George Tanner',
-              test: 'Serum Potassium',
-              value: '6.2 mEq/L',
-              ref: 'Ref: 3.5–5.0',
-              level: 'critical',
-              time: '09:14',
-            },
-            {
-              patient: activePatient?.name ?? 'Marcus Delacroix',
-              test: 'Troponin I',
-              value: '0.08 ng/mL',
-              ref: 'Ref: <0.04',
-              level: 'critical',
-              time: '08:50',
-            },
-            {
-              patient: 'Ana García',
-              test: 'HbA1c',
-              value: '8.4%',
-              ref: 'Ref: <7.0%',
-              level: 'warning',
-              time: '07:30',
-            },
-          ].map((alert) => (
-            <div
-              key={alert.patient + alert.test}
-              className="flex items-start sm:items-center gap-space-sm sm:gap-space-md p-space-sm sm:p-space-md hover:bg-slate-50 dark:hover:bg-slate-850/40 transition-colors"
-            >
-              <div
-                className={`w-2.5 h-2.5 rounded-full flex-shrink-0 mt-1.5 sm:mt-0 ${
-                  alert.level === 'critical' ? 'bg-rose-500' : 'bg-amber-500'
-                }`}
-              />
-              <div className="flex-1 min-w-0">
-                <p className="text-label-lg text-slate-900 dark:text-slate-50 font-semibold truncate">
-                  {alert.patient}
-                </p>
-                <p className="text-body-sm text-slate-500 dark:text-slate-400">
-                  <span className="text-slate-700 dark:text-slate-300">{alert.test}</span>{' '}•{' '}
-                  <span
-                    className={`font-bold tabular-nums ${
-                      alert.level === 'critical' ? 'text-rose-700 dark:text-rose-400' : 'text-amber-700 dark:text-amber-400'
-                    }`}
-                  >
-                    {alert.value}
-                  </span>{' '}
-                  • {alert.ref}
-                </p>
+            { patient: 'George Tanner', test: 'Serum Potassium', value: '6.2 mEq/L', ref: '3.5–5.0', level: 'critical' },
+            { patient: activePatient?.name ?? 'Marcus Delacroix', test: 'Troponin I', value: '0.08 ng/mL', ref: '<0.04', level: 'critical' },
+            { patient: 'Ana García', test: 'HbA1c', value: '8.4%', ref: '<7.0%', level: 'warning' },
+          ].map((item) => (
+            <div key={item.patient + item.test} className="py-2.5 flex items-center justify-between text-xs">
+              <div>
+                <span className="font-semibold text-sm text-[#123047] dark:text-white">{item.patient}</span>
+                <span className="text-[#4A5D6B] dark:text-[#9FB1C0] mx-1.5">•</span>
+                <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">{item.test}:</span>{' '}
+                <span className={`font-bold font-mono text-sm ${item.level === 'critical' ? 'text-[#C94A4A]' : 'text-[#C58A24]'}`}>
+                  {item.value}
+                </span>{' '}
+                <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">(Ref {item.ref})</span>
               </div>
-              <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                <span className="text-label-sm text-slate-500 dark:text-slate-400">{alert.time}</span>
-                <button
-                  onClick={() => setConsultOpen(true)}
-                  className="btn-urgent text-label-sm py-1 px-2.5 sm:px-space-md flex-shrink-0 touch-tap"
-                >
-                  Review
-                </button>
-              </div>
+              <button
+                onClick={() => setConsultOpen(true)}
+                className="px-2.5 py-1 rounded bg-[#C94A4A]/10 text-[#C94A4A] hover:bg-[#C94A4A]/20 border border-[#C94A4A]/25 text-xs font-semibold transition-colors"
+              >
+                Review
+              </button>
             </div>
           ))}
         </div>

@@ -14,14 +14,27 @@ const ROLE_ROUTES: Record<string, string> = {
   patient: '/portal',
 }
 
-// Protected route prefixes — require authentication
+// Protected route prefixes — require authentication and role authorization
 const PROTECTED_PREFIXES = [
   '/doctor', '/front-desk', '/nursing', '/pharmacy',
-  '/lab', '/billing', '/admin', '/canteen', '/portal',
+  '/lab', '/billing', '/admin', '/canteen',
 ]
 
 // Public routes — never redirect
-const PUBLIC_ROUTES = ['/login', '/onboarding', '/_next', '/api', '/favicon']
+const PUBLIC_ROUTES = ['/login', '/onboarding', '/_next', '/api', '/favicon', '/portal/qr']
+
+// Demo users map for offline/demo RBAC verification
+const DEMO_USERS: Record<string, { role: string; roles: string[]; email: string }> = {
+  doctor: { role: 'doctor', roles: ['doctor'], email: 'doctor@cliniva.os' },
+  front_desk: { role: 'front_desk', roles: ['front_desk'], email: 'reception@cliniva.os' },
+  nurse: { role: 'nurse', roles: ['nurse'], email: 'nurse@cliniva.os' },
+  pharmacist: { role: 'pharmacist', roles: ['pharmacist'], email: 'pharmacy@cliniva.os' },
+  lab_tech: { role: 'lab_tech', roles: ['lab_tech'], email: 'lab@cliniva.os' },
+  cashier: { role: 'cashier', roles: ['cashier'], email: 'billing@cliniva.os' },
+  admin: { role: 'admin', roles: ['admin', 'doctor'], email: 'admin@cliniva.os' },
+  canteen: { role: 'canteen', roles: ['canteen'], email: 'canteen@cliniva.os' },
+  patient: { role: 'patient', roles: ['patient'], email: 'patient@cliniva.os' },
+}
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key'
@@ -53,7 +66,7 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh the session (keeps it alive, syncs cookies)
+  // Refresh the Supabase session
   let session = null
   try {
     const { data } = await supabase.auth.getSession()
@@ -62,51 +75,79 @@ export async function middleware(request: NextRequest) {
     // Supabase offline / placeholder
   }
 
-  const demoRole = request.cookies.get('cliniva_demo_role')?.value
   const { pathname } = request.nextUrl
-
-  // Allow public routes
-  if (PUBLIC_ROUTES.some((p) => pathname.startsWith(p))) {
-    // If logged-in user hits /login without explicit switch request, redirect to their dashboard
-    if (pathname === '/login' && session && !request.nextUrl.searchParams.has('switch')) {
-      const role = session.user.user_metadata?.role as string | undefined
-      const dest = role ? ROLE_ROUTES[role] : null
-      if (dest && dest !== '/login') {
-        return NextResponse.redirect(new URL(dest, request.url))
-      }
-    }
-    return response
-  }
-
-  // Demo mode: auto-grant access and allow seamless workspace switching when enabled
   const isDemoModeEnabled = process.env.NEXT_PUBLIC_DEMO_MODE !== 'false'
-  const targetEntry = Object.entries(ROLE_ROUTES).find(([_, path]) => pathname.startsWith(path))
+  const authUserKey = request.cookies.get('cliniva_auth_user')?.value
+  const demoRoleCookie = request.cookies.get('cliniva_demo_role')?.value
 
-  if (isDemoModeEnabled) {
-    if (targetEntry) {
-      const [targetRole] = targetEntry
-      if (demoRole !== targetRole) {
-        response.cookies.set('cliniva_demo_role', targetRole, { path: '/', maxAge: 86400 })
-      }
+  // Determine authentication status and assigned roles
+  const assignedRoles: string[] = []
+  let isAuthenticated = false
+
+  if (session?.user) {
+    isAuthenticated = true
+    const meta = session.user.user_metadata || {}
+    if (Array.isArray(meta.roles)) {
+      assignedRoles.push(...meta.roles)
+    }
+    if (meta.role && !assignedRoles.includes(meta.role)) {
+      assignedRoles.push(meta.role)
+    }
+  } else if (isDemoModeEnabled && (authUserKey || demoRoleCookie)) {
+    // Authenticated demo user
+    const key = authUserKey || demoRoleCookie
+    const demoUser = key ? DEMO_USERS[key] : null
+    if (demoUser) {
+      isAuthenticated = true
+      assignedRoles.push(...demoUser.roles)
+    }
+  }
+
+  // Fallback if authenticated but no role defined
+  if (isAuthenticated && assignedRoles.length === 0) {
+    assignedRoles.push('doctor')
+  }
+
+  // 1. Handle Public Routes
+  if (PUBLIC_ROUTES.some((p) => pathname.startsWith(p))) {
+    // If logged-in user visits /login, redirect directly to their primary authorized dashboard.
+    // (Role Selection Screen is hidden from authenticated users).
+    if (pathname === '/login' && isAuthenticated) {
+      const primaryRole = assignedRoles[0]
+      const dest = primaryRole ? (ROLE_ROUTES[primaryRole] ?? '/doctor') : '/doctor'
+      return NextResponse.redirect(new URL(dest, request.url))
     }
     return response
   }
 
-  // Require authentication for protected routes in production
+  // 2. Handle Protected Workspace Routes
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))
-  if (isProtected && !session) {
-    const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('returnTo', pathname)
-    return NextResponse.redirect(loginUrl)
-  }
 
-  // Role-based access control — prevent cross-role access for authenticated users in production
-  if (!isDemoModeEnabled && session && isProtected) {
-    const role = session.user.user_metadata?.role as string | undefined
-    const allowedPrefix = role ? ROLE_ROUTES[role] : null
+  if (isProtected) {
+    // A. Unauthenticated users cannot access protected clinical workspaces
+    if (!isAuthenticated) {
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('returnTo', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
 
-    if (allowedPrefix && !pathname.startsWith(allowedPrefix)) {
-      return NextResponse.redirect(new URL(allowedPrefix, request.url))
+    // B. Authenticated users: enforce RBAC strictly
+    const targetEntry = Object.entries(ROLE_ROUTES).find(([_, path]) => pathname.startsWith(path))
+    if (targetEntry) {
+      const [requiredRole] = targetEntry
+      const hasPermission = assignedRoles.includes(requiredRole)
+
+      if (!hasPermission) {
+        // Block unauthorized workspace access and redirect to authorized primary dashboard
+        const primaryRole = assignedRoles[0]
+        const safeDest = primaryRole ? (ROLE_ROUTES[primaryRole] ?? '/doctor') : '/login'
+        return NextResponse.redirect(new URL(safeDest, request.url))
+      }
+
+      // If authorized multi-role user switches, keep demo role cookie in sync with active workspace
+      if (isDemoModeEnabled && demoRoleCookie !== requiredRole) {
+        response.cookies.set('cliniva_demo_role', requiredRole, { path: '/', maxAge: 86400, sameSite: 'lax' })
+      }
     }
   }
 

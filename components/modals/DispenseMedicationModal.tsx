@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react'
 import ModalBackdrop from './ModalBackdrop'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import {
   fetchPrescriptionDetails,
@@ -163,7 +164,7 @@ export default function DispenseMedicationModal() {
       {dispensedResult ? (
         <div className="py-8 flex flex-col items-center justify-center text-center space-y-3">
           <div className="w-16 h-16 rounded-full bg-secondary-fixed flex items-center justify-center text-primary animate-bounce">
-            <span className="material-symbols-outlined text-[36px]">done_all</span>
+            <ClinivaIcon name="done_all" size={32} strokeWidth={1.5} />
           </div>
           <h3 className="font-heading text-headline-md text-on-surface font-bold">
             Medication Dispensed!
@@ -180,7 +181,7 @@ export default function DispenseMedicationModal() {
           {/* Error Banner */}
           {errorMsg && (
             <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-body-sm">
-              <span className="material-symbols-outlined text-[18px] mt-0.5 flex-shrink-0">error</span>
+              <ClinivaIcon name="error" size={18} strokeWidth={1.5} className="mt-0.5 flex-shrink-0" />
               <span>{errorMsg}</span>
             </div>
           )}
@@ -188,7 +189,7 @@ export default function DispenseMedicationModal() {
           {/* Already Dispensed Warning */}
           {isAlreadyDispensed && (
             <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-body-sm">
-              <span className="material-symbols-outlined text-[18px] mt-0.5 flex-shrink-0">verified</span>
+              <ClinivaIcon name="verified" size={18} strokeWidth={1.5} className="mt-0.5 flex-shrink-0" />
               <span>This prescription has already been dispensed and signed out.</span>
             </div>
           )}
@@ -296,7 +297,7 @@ export default function DispenseMedicationModal() {
 
             {!hasSufficientStock && (
               <p className="text-label-sm text-red-600 font-medium mt-1.5 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[16px]">warning</span>
+                <ClinivaIcon name="warning" size={16} strokeWidth={1.5} />
                 <span>Selected batch does not have sufficient stock to fulfill this order.</span>
               </p>
             )}
@@ -325,12 +326,12 @@ export default function DispenseMedicationModal() {
             >
               {isSubmitting ? (
                 <>
-                  <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+                  <ClinivaIcon name="progress_activity" size={18} strokeWidth={1.5} className="animate-spin" />
                   <span>Dispensing…</span>
                 </>
               ) : (
                 <>
-                  <span className="material-symbols-outlined text-[18px]">verified</span>
+                  <ClinivaIcon name="verified" size={18} strokeWidth={1.5} />
                   <span>Confirm &amp; Dispense {totalQty} Units</span>
                 </>
               )}

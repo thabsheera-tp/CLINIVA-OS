@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import SubScreenHeader from './SubScreenHeader'
 import StatusBadge from '@/components/ui/StatusBadge'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import RegisterPatientModal from '@/components/modals/RegisterPatientModal'
 import { registerPatient, fetchDoctors, type DoctorProfile } from '@/lib/data'
@@ -120,7 +121,7 @@ export default function FrontDeskSubScreens({ slug, userName }: Props) {
             description="Lookup registered hospital records across Outpatient, Emergency, and Inpatient admissions."
             actions={
               <button onClick={() => setRegisterOpen(true)} className="btn-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">person_add</span>
+                <ClinivaIcon name="person_add" size={16} strokeWidth={1.5} />
                 <span>New Registration</span>
               </button>
             }
@@ -128,7 +129,7 @@ export default function FrontDeskSubScreens({ slug, userName }: Props) {
 
           <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5 shadow-sm space-y-4">
             <div className="relative max-w-xl">
-              <span className="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[20px]">search</span>
+              <ClinivaIcon name="search" size={16} strokeWidth={1.5} className="absolute left-3 top-2.5 text-outline" />
               <input
                 type="text"
                 placeholder="Search by full name, phone number, national ID, or MRN..."
@@ -184,13 +185,13 @@ export default function FrontDeskSubScreens({ slug, userName }: Props) {
           <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 shadow-sm max-w-3xl">
             {regSuccess && (
               <div className="mb-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-body-sm flex items-center gap-2">
-                <span className="material-symbols-outlined text-[20px]">check_circle</span>
+                <ClinivaIcon name="check_circle" size={18} strokeWidth={1.5} />
                 <span>Patient registered and queued successfully! Live token issued.</span>
               </div>
             )}
             {regError && (
               <div className="mb-4 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-body-sm flex items-center gap-2">
-                <span className="material-symbols-outlined text-[20px]">warning</span>
+                <ClinivaIcon name="warning" size={18} strokeWidth={1.5} />
                 <span>Added to local queue (DB: {regError})</span>
               </div>
             )}
@@ -296,7 +297,7 @@ export default function FrontDeskSubScreens({ slug, userName }: Props) {
             description="Real-time token sequence generator and acoustic bell calling station."
             actions={
               <button onClick={() => callNextPatient()} className="btn-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">volume_up</span>
+                <ClinivaIcon name="volume_up" size={16} strokeWidth={1.5} />
                 <span>Announce Next Token</span>
               </button>
             }
@@ -310,7 +311,7 @@ export default function FrontDeskSubScreens({ slug, userName }: Props) {
               </div>
               <p className="text-body-sm text-on-surface-variant">Printed at OPD Terminal A</p>
               <button onClick={() => setTicketPrinted(queue[queue.length - 1]?.token ?? 12)} className="btn-secondary w-full justify-center">
-                <span className="material-symbols-outlined text-[18px]">print</span>
+                <ClinivaIcon name="print" size={16} strokeWidth={1.5} />
                 <span>Print Duplicate Slip</span>
               </button>
               {ticketPrinted && (

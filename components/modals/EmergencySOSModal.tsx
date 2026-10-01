@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import ModalBackdrop from './ModalBackdrop'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 
 export type GPSLocation = {
@@ -98,7 +99,7 @@ export default function EmergencySOSModal({
           latitude: location?.latitude,
           longitude: location?.longitude,
           accuracy: location?.accuracy,
-          notes: `🚨 One-Tap Emergency SOS Ambulance Request ${coordsStr}`,
+          notes: `[EMERGENCY SOS] Ambulance Request ${coordsStr}`,
         }),
       })
       if (res.ok) {
@@ -122,7 +123,7 @@ export default function EmergencySOSModal({
     addQueuePatient({
       name: patientName,
       age: '54M',
-      complaint: `🚨 AMBULANCE SOS DISPATCHED: ${coordsStr}`,
+      complaint: `[EMERGENCY SOS] AMBULANCE DISPATCHED: ${coordsStr}`,
       priority: 'emergency',
       status: 'waiting',
     })
@@ -145,19 +146,19 @@ export default function EmergencySOSModal({
           /* ── State 2: Ambulance Dispatched & Live Tracking ── */
           <div className="space-y-4 py-2">
             {/* Flashing Dispatch Header */}
-            <div className="p-4 bg-gradient-to-r from-rose-500/20 via-rose-500/10 to-amber-500/15 border-2 border-rose-500 rounded-2xl text-center space-y-2 animate-fadeIn">
-              <div className="w-14 h-14 rounded-full bg-rose-600 text-white flex items-center justify-center mx-auto shadow-lg shadow-rose-600/40 animate-bounce">
-                <span className="material-symbols-outlined text-[32px]">local_shipping</span>
+            <div className="p-4 bg-[#FDF2F2] border border-[#F8D7D7] rounded-xl text-center space-y-2">
+              <div className="w-12 h-12 rounded-xl bg-[#C94A4A] text-white flex items-center justify-center mx-auto shadow-sm">
+                <ClinivaIcon name="local_shipping" size={28} strokeWidth={1.5} />
               </div>
-              <span className="inline-block px-3 py-0.5 rounded-full text-label-xs font-extrabold uppercase tracking-widest bg-rose-600 text-white">
+              <span className="inline-block px-3 py-0.5 rounded-full text-label-xs font-semibold uppercase tracking-wider bg-[#C94A4A] text-white">
                 Ambulance En Route
               </span>
-              <h3 className="font-heading text-headline-sm font-black text-rose-700 dark:text-rose-400">
+              <h3 className="font-heading text-headline-sm font-bold text-[#C94A4A]">
                 Unit Dispatched • ETA: {dispatchedData.etaMinutes} Mins
               </h3>
-              <p className="text-body-sm text-on-surface-variant">
+              <p className="text-body-sm text-secondary-text">
                 Cliniva Emergency Trauma Center has received your GPS coordinates and dispatched{' '}
-                <strong className="text-on-surface">{dispatchedData.unit}</strong>.
+                <strong className="text-primary-navy">{dispatchedData.unit}</strong>.
               </p>
             </div>
 
@@ -199,14 +200,14 @@ export default function EmergencySOSModal({
                 href="tel:911"
                 className="p-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold text-label-sm text-center shadow-sm flex items-center justify-center gap-1.5 transition-all"
               >
-                <span className="material-symbols-outlined text-[18px]">call</span>
+                <ClinivaIcon name="call" size={18} strokeWidth={1.5} />
                 <span>Call 911 Direct</span>
               </a>
               <a
                 href="tel:+15559110000"
                 className="p-3 bg-surface-container-high hover:bg-surface-container-highest text-on-surface rounded-xl font-bold text-label-sm text-center border border-outline-variant/40 flex items-center justify-center gap-1.5 transition-all"
               >
-                <span className="material-symbols-outlined text-[18px] text-primary">support_agent</span>
+                <ClinivaIcon name="support_agent" size={18} strokeWidth={1.5} className="text-primary" />
                 <span>Hospital ER Desk</span>
               </a>
             </div>
@@ -224,7 +225,7 @@ export default function EmergencySOSModal({
             {/* Warning Banner */}
             <div className="p-3.5 bg-rose-500/15 border border-rose-500/30 rounded-xl flex items-start gap-3">
               <span className="w-9 h-9 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="material-symbols-outlined text-[22px]">warning</span>
+                <ClinivaIcon name="warning" size={20} strokeWidth={1.5} />
               </span>
               <div>
                 <h4 className="font-heading text-title-sm font-bold text-rose-700 dark:text-rose-300">
@@ -241,7 +242,7 @@ export default function EmergencySOSModal({
             <div className="p-3.5 bg-surface-container-low rounded-xl border border-outline-variant/30 space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-label-xs font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px] text-primary">my_location</span>
+                  <ClinivaIcon name="my_location" size={16} strokeWidth={1.5} className="text-primary" />
                   Patient GPS Coordinates
                 </span>
                 <span
@@ -275,21 +276,23 @@ export default function EmergencySOSModal({
                     href={`https://www.google.com/maps?q=${location.latitude},${location.longitude}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline font-sans text-[11px] font-bold"
+                    className="inline-flex items-center gap-1 text-primary hover:underline font-sans text-[11px] font-bold"
                   >
-                    View on Map ↗
+                    <span>View on Map</span>
+                    <ClinivaIcon name="open_in_new" size={12} />
                   </a>
                 </div>
               ) : (
                 <div className="py-3 flex items-center justify-center gap-2 text-body-xs text-on-surface-variant animate-pulse">
-                  <span className="animate-spin text-sm">⏳</span>
+                  <ClinivaIcon name="refresh" size={14} className="animate-spin text-primary" />
                   <span>Querying browser geolocation satellites...</span>
                 </div>
               )}
 
               {locationError && (
-                <p className="text-[11px] text-amber-600 dark:text-amber-400">
-                  ⚠️ {locationError}
+                <p className="inline-flex items-center gap-1.5 text-[11px] text-amber-600 dark:text-amber-400">
+                  <ClinivaIcon name="warning" size={13} className="flex-shrink-0" />
+                  <span>{locationError}</span>
                 </p>
               )}
             </div>
@@ -346,16 +349,16 @@ export default function EmergencySOSModal({
                 type="button"
                 onClick={handleDispatchAmbulance}
                 disabled={isDispatching}
-                className="w-full py-3.5 px-4 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-700 hover:to-red-800 text-white rounded-xl font-extrabold text-label-md transition-all shadow-lg shadow-rose-600/30 flex items-center justify-center gap-2 touch-tap"
+                className="w-full py-3.5 px-4 bg-[#C94A4A] hover:bg-[#B33E3E] text-white rounded-xl font-bold text-label-md transition-all shadow-sm flex items-center justify-center gap-2 touch-tap"
               >
                 {isDispatching ? (
                   <>
-                    <span className="animate-spin text-lg">⏳</span>
+                    <ClinivaIcon name="progress_activity" size={18} strokeWidth={1.5} className="animate-spin" />
                     <span>Broadcasting Alert & Dispatching Unit...</span>
                   </>
                 ) : (
                   <>
-                    <span className="material-symbols-outlined text-[22px]">local_shipping</span>
+                    <ClinivaIcon name="local_shipping" size={20} strokeWidth={1.5} />
                     <span>DISPATCH AMBULANCE & BROADCAST GPS</span>
                   </>
                 )}

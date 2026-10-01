@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { createClientSideClient } from '@/lib/supabase/client'
 import { usePortalLang } from '@/context/PortalLanguageContext'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 const LOCKER_I18N = {
   en: {
@@ -49,8 +50,8 @@ const LOCKER_I18N = {
     vaxHeaderSub: (name: string) => `Official vaccination history and booster schedules for ${name}.`,
     logVaxBtn: '+ Log Vaccine',
     vaxStatus: {
-      administered: '✓ Administered',
-      upcoming: '⏳ Scheduled',
+      administered: 'Administered',
+      upcoming: 'Scheduled',
     } as Record<string, string>,
     givenPrefix: 'Given:',
     duePrefix: 'Due:',
@@ -163,8 +164,8 @@ const LOCKER_I18N = {
     vaxHeaderSub: (name: string) => `${name}-ന്റെ വാക്സിനേഷൻ വിവരങ്ങളും അടുത്ത തീയതികളും.`,
     logVaxBtn: '+ വാക്സിൻ ചേർക്കൂ',
     vaxStatus: {
-      administered: '✓ എടുത്തു',
-      upcoming: '⏳ നിശ്ചയിച്ചത്',
+      administered: 'എടുത്തു',
+      upcoming: 'നിശ്ചയിച്ചത്',
     } as Record<string, string>,
     givenPrefix: 'എടുത്ത തീയതി:',
     duePrefix: 'അടുത്ത തീയതി:',
@@ -777,8 +778,8 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
             </svg>
             <span>{uploadSuccessToast}</span>
           </div>
-          <button onClick={() => setUploadSuccessToast(null)} className="text-white/80 hover:text-white">
-            ✕
+          <button onClick={() => setUploadSuccessToast(null)} className="text-white/80 hover:text-white p-1 rounded-md" aria-label="Close notification">
+            <ClinivaIcon name="close" size={15} />
           </button>
         </div>
       )}
@@ -945,9 +946,10 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                 currentMember.allergies.map((allergy) => (
                   <span
                     key={allergy}
-                    className="px-2 py-0.5 rounded-lg text-body-xs font-semibold bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30"
+                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-body-xs font-semibold bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30"
                   >
-                    ⚠️ {allergy}
+                    <ClinivaIcon name="warning" size={11} className="flex-shrink-0" />
+                    <span>{allergy}</span>
                   </span>
                 ))
               ) : (
@@ -965,9 +967,10 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                 currentMember.chronic_conditions.map((cond) => (
                   <span
                     key={cond}
-                    className="px-2 py-0.5 rounded-lg text-body-xs font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30"
+                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-body-xs font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30"
                   >
-                    🩺 {cond}
+                    <ClinivaIcon name="stethoscope" size={11} className="flex-shrink-0" />
+                    <span>{cond}</span>
                   </span>
                 ))
               ) : (
@@ -1072,9 +1075,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
 
                     {/* Doctor & Clinic */}
                     <p className="text-body-xs text-on-surface-variant mt-1 flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[15px] text-primary">
-                        stethoscope
-                      </span>
+                      <ClinivaIcon name="stethoscope" size={14} strokeWidth={1.5} className="text-primary" />
                       <span>{record.doctor_name}</span>
                       <span>•</span>
                       <span>{record.clinic_hospital}</span>
@@ -1242,7 +1243,10 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                       : 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30'
                   }`}
                 >
-                  {i18n.vaxStatus[vax.status] || (vax.status === 'administered' ? '✓ Administered' : '⏳ Scheduled')}
+                  <span className="inline-flex items-center gap-1">
+                    <ClinivaIcon name={vax.status === 'administered' ? 'check' : 'schedule'} size={11} />
+                    <span>{i18n.vaxStatus[vax.status] || (vax.status === 'administered' ? 'Administered' : 'Scheduled')}</span>
+                  </span>
                 </span>
               </div>
             ))}
@@ -1273,8 +1277,9 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               <button
                 onClick={() => setIsUploadOpen(false)}
                 className="text-on-surface-variant hover:text-on-surface p-1 rounded-lg"
+                aria-label="Close modal"
               >
-                ✕
+                <ClinivaIcon name="close" size={16} />
               </button>
             </div>
 
@@ -1426,7 +1431,7 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
                 >
                   {isUploading ? (
                     <>
-                      <span className="animate-spin text-sm">⏳</span>
+                      <ClinivaIcon name="refresh" size={14} className="animate-spin" />
                       <span>{i18n.uploadModal.uploading}</span>
                     </>
                   ) : (
@@ -1454,9 +1459,10 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               </h3>
               <button
                 onClick={() => setIsAddMemberOpen(false)}
-                className="text-on-surface-variant hover:text-on-surface p-1"
+                className="text-on-surface-variant hover:text-on-surface p-1 rounded-lg"
+                aria-label="Close modal"
               >
-                ✕
+                <ClinivaIcon name="close" size={16} />
               </button>
             </div>
 
@@ -1606,9 +1612,10 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               </h3>
               <button
                 onClick={() => setIsAddVaccineOpen(false)}
-                className="text-on-surface-variant hover:text-on-surface p-1"
+                className="text-on-surface-variant hover:text-on-surface p-1 rounded-lg"
+                aria-label="Close modal"
               >
-                ✕
+                <ClinivaIcon name="close" size={16} />
               </button>
             </div>
 
@@ -1714,8 +1721,9 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               <button
                 onClick={() => setPreviewDoc(null)}
                 className="text-on-surface-variant hover:text-on-surface p-1 rounded-lg"
+                aria-label="Close modal"
               >
-                ✕
+                <ClinivaIcon name="close" size={16} />
               </button>
             </div>
 
@@ -1742,8 +1750,9 @@ export default function FamilyHealthLocker({ className = '' }: { className?: str
               </div>
               <div className="flex justify-between">
                 <span className="text-on-surface-variant">{i18n.previewModal.encryption}</span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                  <span>🔒 AES-256 (Supabase Storage RLS)</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold inline-flex items-center gap-1.5">
+                  <ClinivaIcon name="lock" size={13} className="text-emerald-600 flex-shrink-0" />
+                  <span>AES-256 (Supabase Storage RLS)</span>
                 </span>
               </div>
               {previewDoc.notes && (

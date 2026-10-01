@@ -630,9 +630,9 @@ export default function LiveQueueTimePredictor({
 
       {/* ── 3. Active In-Consultation Spotlight Card ── */}
       {activeConsultation ? (
-        <div className="mb-space-md p-space-md bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-2 border-primary/30 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md">
+        <div className="mb-space-md p-space-md bg-white border border-border-subtle rounded-xl shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-primary text-on-primary flex flex-col items-center justify-center shadow-md">
+            <div className="w-12 h-12 rounded-xl bg-primary-navy text-white flex flex-col items-center justify-center shadow-sm">
               <span className="text-[10px] font-bold uppercase tracking-wider">TOKEN</span>
               <span className="text-title-md font-extrabold leading-none">
                 #{activeConsultation.token_number}
@@ -640,7 +640,7 @@ export default function LiveQueueTimePredictor({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-[#EBF7F2] text-[#2E7D5B] border border-[#C3ECD8]">
                   ● In Consultation Now
                 </span>
                 <span className="text-label-sm font-semibold text-primary">

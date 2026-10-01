@@ -17,76 +17,79 @@ const config: Config = {
       '2xl': '1536px',
     },
     extend: {
-      // ─── Cliniva Soft Clinical Color Palette (from design-system/tokens.json) ───
+      // ─── Cliniva Premium Healthcare Color Palette ───
       colors: {
-        // Primary: Forest Teal — deeper, more authoritative
-        primary: '#0c7a6e',
-        'on-primary': '#ffffff',
-        'primary-container': '#0a6860',
-        'on-primary-container': '#f0fffc',
-        'primary-fixed': '#7de8d8',
-        'primary-fixed-dim': '#5ccabc',
-        'on-primary-fixed': '#00201d',
-        'on-primary-fixed-variant': '#00524a',
-        'inverse-primary': '#5ccabc',
+        // Primary Medical Teal: #0F8B8D
+        primary: '#0F8B8D',
+        'on-primary': '#FFFFFF',
+        'primary-container': '#E8F6F5',
+        'on-primary-container': '#123047',
+        'primary-fixed': '#E8F6F5',
+        'primary-fixed-dim': '#C4ECE9',
+        'on-primary-fixed': '#123047',
+        'on-primary-fixed-variant': '#0F8B8D',
+        'inverse-primary': '#28B5B7',
 
-        // Secondary teal
-        secondary: '#006b5f',
-        'on-secondary': '#ffffff',
-        'secondary-container': '#6df5e1',
-        'on-secondary-container': '#006f64',
-        'secondary-fixed': '#71f8e4',
-        'secondary-fixed-dim': '#4fdbc8',
-        'on-secondary-fixed': '#00201c',
-        'on-secondary-fixed-variant': '#005048',
+        // Primary & Navies
+        'primary-navy': '#123047',
+        'secondary-navy': '#1B3A4B',
+        'medical-teal': '#0F8B8D',
+        'light-teal': '#E8F6F5',
+        accent: '#0F8B8D',
+        'light-accent': '#E8F6F5',
+        'primary-text': '#172B3A',
+        'secondary-text': '#60727F',
+        'border-subtle': '#E2E8EC',
 
-        // Tertiary (alert/critical — use sparingly)
-        tertiary: '#b90538',
-        'on-tertiary': '#ffffff',
-        'tertiary-container': '#dc2c4f',
-        'on-tertiary-container': '#fffbff',
-        'tertiary-fixed': '#ffdadb',
-        'tertiary-fixed-dim': '#ffb2b7',
-        'on-tertiary-fixed': '#40000d',
-        'on-tertiary-fixed-variant': '#92002a',
+        // Secondary: Dark Navy / Slate
+        secondary: '#1B3A4B',
+        'on-secondary': '#FFFFFF',
+        'secondary-container': '#E2E8EC',
+        'on-secondary-container': '#123047',
+
+        // Tertiary / Error
+        tertiary: '#C94A4A',
+        'on-tertiary': '#FFFFFF',
+        'tertiary-container': '#FDE8E8',
+        'on-tertiary-container': '#7D1A1A',
 
         // Error
-        error: '#ba1a1a',
-        'on-error': '#ffffff',
-        'error-container': '#ffdad6',
-        'on-error-container': '#93000a',
+        error: '#C94A4A',
+        'on-error': '#FFFFFF',
+        'error-container': '#FDE8E8',
+        'on-error-container': '#7D1A1A',
 
-        // Surfaces (canvas, cards, layers) — CSS-var-driven for light/dark switching
-        surface: 'var(--color-surface, #f5f7f9)',
-        'surface-dim': 'var(--color-surface-dim, #edf0f4)',
-        'surface-bright': 'var(--color-surface-bright, #ffffff)',
-        'surface-container-lowest': 'var(--color-surface-container-lowest, #ffffff)',
-        'surface-container-low': 'var(--color-surface-container-low, #f2f5f8)',
-        'surface-container': 'var(--color-surface-container, #e9edf3)',
-        'surface-container-high': 'var(--color-surface-container-high, #dde3ea)',
-        'surface-container-highest': 'var(--color-surface-container-highest, #cfd8e3)',
-        'surface-variant': 'var(--color-surface-container, #e9edf3)',
-        'surface-tint': '#0c7a6e',
+        // Surfaces (canvas, cards, layers) — CSS-var-driven
+        surface: 'var(--color-surface, #F7F9FA)',
+        'surface-dim': 'var(--color-surface-dim, #EEF2F5)',
+        'surface-bright': 'var(--color-surface-bright, #FFFFFF)',
+        'surface-container-lowest': 'var(--color-surface-container-lowest, #FFFFFF)',
+        'surface-container-low': 'var(--color-surface-container-low, #F7F9FA)',
+        'surface-container': 'var(--color-surface-container, #F0F4F7)',
+        'surface-container-high': 'var(--color-surface-container-high, #E2E8EC)',
+        'surface-container-highest': 'var(--color-surface-container-highest, #D5DFE6)',
+        'surface-variant': 'var(--color-surface-container, #F0F4F7)',
+        'surface-tint': '#0F8B8D',
 
         // On-surfaces (text, icons)
-        'on-surface': 'var(--color-on-surface, #1b2a3b)',
-        'on-surface-variant': 'var(--color-on-surface-variant, #4e6478)',
-        'on-background': 'var(--color-on-surface, #1b2a3b)',
-        background: 'var(--color-surface, #f5f7f9)',
+        'on-surface': 'var(--color-on-surface, #172B3A)',
+        'on-surface-variant': 'var(--color-on-surface-variant, #60727F)',
+        'on-background': 'var(--color-on-surface, #172B3A)',
+        background: 'var(--color-surface, #F7F9FA)',
 
         // Inverse
-        'inverse-surface': '#1b3350',
-        'inverse-on-surface': '#e6f0f8',
+        'inverse-surface': '#123047',
+        'inverse-on-surface': '#F7F9FA',
 
         // Borders
-        outline: 'var(--color-outline, #7d96a8)',
-        'outline-variant': 'var(--color-outline-variant, #dae0e8)',
+        outline: 'var(--color-outline, #A0B0BC)',
+        'outline-variant': 'var(--color-outline-variant, #E2E8EC)',
 
-        // Semantic status colors (design-system spec)
-        'status-success': '#27AE60',
-        'status-warning': '#F2994A',
-        'status-error': '#EB5757',
-        'status-neutral': '#9CA3AF',
+        // Semantic status colors (clinical meanings only)
+        'status-success': '#2E7D5B',
+        'status-warning': '#C58A24',
+        'status-error': '#C94A4A',
+        'status-neutral': '#60727F',
       },
 
       // ─── Typography (Plus Jakarta Sans + Inter) ───
@@ -112,14 +115,15 @@ const config: Config = {
         'telemetry-num': ['24px', { lineHeight: '28px', letterSpacing: '-0.02em', fontWeight: '600' }],
       },
 
-      // ─── Border Radius ───
+      // ─── Moderate Border Radius (Soft Clinical UI) ───
       borderRadius: {
-        DEFAULT: '0.5rem',
-        sm: '0.25rem',
-        md: '0.75rem',
-        lg: '1rem',
-        xl: '1.5rem',
-        '2xl': '1.5rem',
+        DEFAULT: '0.375rem', // 6px
+        sm: '0.25rem',        // 4px
+        md: '0.5rem',         // 8px
+        lg: '0.625rem',       // 10px
+        xl: '0.75rem',        // 12px
+        '2xl': '0.875rem',    // 14px
+        '3xl': '1rem',        // 16px
         full: '9999px',
       },
 
@@ -138,13 +142,14 @@ const config: Config = {
         'margin-desktop': '2rem',
       },
 
-      // ─── Shadows (Warm-toned, professional depth) ───
+      // ─── Subtle Shadows (Soft, calm healthcare elevation) ───
       boxShadow: {
-        card: '0px 1px 3px rgba(27, 42, 59, 0.05), 0px 1px 2px -1px rgba(27, 42, 59, 0.03)',
-        'card-hover': '0px 4px 8px -2px rgba(27, 42, 59, 0.07), 0px 2px 4px -2px rgba(27, 42, 59, 0.04)',
-        modal: '0px 12px 28px -6px rgba(27, 42, 59, 0.12), 0px 6px 12px -4px rgba(27, 42, 59, 0.06)',
-        sidebar: '0_1px_8px_rgba(27,42,59,0.03)',
-        'focus-ring': '0 0 0 3px rgba(12, 122, 110, 0.15)',
+        xs: '0 1px 2px 0 rgba(18, 48, 71, 0.03)',
+        card: '0 1px 3px 0 rgba(18, 48, 71, 0.04), 0 1px 2px -1px rgba(18, 48, 71, 0.02)',
+        'card-hover': '0 3px 6px -1px rgba(18, 48, 71, 0.06), 0 2px 4px -2px rgba(18, 48, 71, 0.03)',
+        modal: '0 10px 25px -5px rgba(18, 48, 71, 0.10), 0 8px 10px -6px rgba(18, 48, 71, 0.05)',
+        sidebar: '0 1px 4px 0 rgba(18, 48, 71, 0.03)',
+        'focus-ring': '0 0 0 3px rgba(15, 139, 141, 0.15)',
       },
 
       // ─── Animation ───

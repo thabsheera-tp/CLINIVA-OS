@@ -25,19 +25,24 @@ export default async function PharmacyDashboard() {
   const { data: { session } } = await supabase.auth.getSession()
   if (!session && process.env.NEXT_PUBLIC_DEMO_MODE === 'false') redirect('/login')
   const userName = session?.user?.user_metadata?.display_name ?? 'Marcus Vance, PharmD'
+  const userMeta = session?.user?.user_metadata || {}
+  const assignedRoles = (Array.isArray(userMeta.roles) && userMeta.roles.length > 0)
+    ? userMeta.roles
+    : (userMeta.role ? [userMeta.role] : ['pharmacist'])
 
   return (
     <DashboardShell
       role="pharmacist"
       roleLabel="Pharmacy & Inventory"
       userName={userName}
+      assignedRoles={assignedRoles}
       clinicName="St. Jude Medical Center — Pharmacy"
       clinicIcon="local_pharmacy"
       searchPlaceholder="Search drugs, prescriptions, orders..."
       liveSyncLabel="Rx Live"
       notificationCount={3}
       navSections={NAV_SECTIONS}
-      contextLabel="Main Dispensary — Counter 1"
+      contextLabel="Main Dispensary"
       contextIcon="pill"
       primaryAction={{ label: 'Dispense Rx', icon: 'medication' }}
     >

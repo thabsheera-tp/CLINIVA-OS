@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import ModalBackdrop from './ModalBackdrop'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import {
   registerPatient,
@@ -128,7 +129,7 @@ export default function RegisterPatientModal() {
       {successResult !== null ? (
         <div className="py-8 flex flex-col items-center justify-center text-center space-y-3">
           <div className="w-16 h-16 rounded-full bg-secondary-fixed flex items-center justify-center text-primary animate-bounce">
-            <span className="material-symbols-outlined text-[36px]">confirmation_number</span>
+            <ClinivaIcon name="confirmation_number" size={32} strokeWidth={1.5} />
           </div>
           <h3 className="font-heading text-headline-md text-on-surface font-bold">
             Token #{successResult.token} Issued!
@@ -148,14 +149,14 @@ export default function RegisterPatientModal() {
           {/* Error banner */}
           {errorMsg && (
             <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-body-sm">
-              <span className="material-symbols-outlined text-[18px] mt-0.5 flex-shrink-0">error</span>
+              <ClinivaIcon name="error" size={18} strokeWidth={1.5} className="mt-0.5 flex-shrink-0" />
               <span>{errorMsg}</span>
             </div>
           )}
           {/* Token issuance banner */}
           <div className="flex items-center justify-between p-space-md bg-secondary-fixed/30 rounded-xl border border-primary/20">
             <div className="flex items-center gap-space-sm">
-              <span className="material-symbols-outlined text-primary text-[24px]">confirmation_number</span>
+              <ClinivaIcon name="confirmation_number" size={24} strokeWidth={1.5} className="text-primary" />
               <div>
                 <p className="text-label-sm text-on-surface-variant uppercase font-semibold">Next In Sequence</p>
                 <p className="text-headline-sm font-heading font-bold text-primary">Token #{nextToken}</p>
@@ -290,7 +291,7 @@ export default function RegisterPatientModal() {
                       : 'bg-surface-container-low hover:bg-surface-container border-transparent text-on-surface-variant'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[20px] mb-1">{t.icon}</span>
+                  <ClinivaIcon name={t.icon} size={20} strokeWidth={1.5} className="mb-1" />
                   <span className="text-label-sm">{t.label}</span>
                 </button>
               ))}
@@ -309,12 +310,12 @@ export default function RegisterPatientModal() {
             <button type="submit" className="btn-primary" disabled={isSubmitting || !selectedDoctorId}>
               {isSubmitting ? (
                 <>
-                  <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+                  <ClinivaIcon name="progress_activity" size={18} strokeWidth={1.5} className="animate-spin" />
                   <span>Registering…</span>
                 </>
               ) : (
                 <>
-                  <span className="material-symbols-outlined text-[18px]">add_circle</span>
+                  <ClinivaIcon name="add_circle" size={18} strokeWidth={1.5} />
                   <span>Register &amp; Issue Token #{nextToken}</span>
                 </>
               )}

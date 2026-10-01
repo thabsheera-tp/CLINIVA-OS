@@ -1,12 +1,11 @@
 'use client'
 
 import React, { useState } from 'react'
-import Link from 'next/link'
 import KPICard from '@/components/ui/KPICard'
 import StatusBadge from '@/components/ui/StatusBadge'
 import LiveIndicator from '@/components/ui/LiveIndicator'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
-import QuickActionBar from '@/components/dashboard/QuickActionBar'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 type Props = {
   userName: string
@@ -25,98 +24,83 @@ export default function NursingDashboardView({ userName }: Props) {
       : beds.filter((b) => b.ward.toLowerCase().includes(activeFilter.toLowerCase()))
 
   return (
-    <div className="flex flex-col space-y-gutter-desktop">
-      {/* Quick Action Shortcuts */}
-      <QuickActionBar className="w-full" />
-
-      <section
-        className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-lg bg-surface-container-lowest p-space-lg rounded-2xl"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
+    <div className="flex flex-col w-full space-y-5">
+      {/* ── 1. Compact Header ── */}
+      <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#122433] px-5 py-4 rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] shadow-card">
         <div>
-          <h1 className="font-heading text-headline-lg text-on-surface font-semibold">
-            Ward & IP Nursing Dashboard
-          </h1>
-          <p className="text-body-md text-on-surface-variant mt-1">
-            Nurse Station • {userName} • Ward A & B Live Shift
+          <div className="flex items-center gap-2 mb-0.5">
+            <h1 className="font-heading text-base sm:text-lg font-bold text-[#123047] dark:text-white tracking-tight">
+              Inpatient Nursing Station
+            </h1>
+            <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 text-[#0F8B8D] dark:text-[#28B5B7] border border-[#0F8B8D]/30">
+              Ward Floor 2
+            </span>
+          </div>
+          <p className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">
+            Bed Management & Vital Telemetry • {userName}
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full lg:w-auto">
+
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setVitalsOpen(true)}
-            className="btn-primary justify-center touch-tap flex-1 sm:flex-initial"
+            className="btn-primary text-xs py-1.5 px-4 flex items-center gap-1.5"
           >
-            <span className="material-symbols-outlined text-[18px]">monitor_heart</span>
+            <ClinivaIcon name="monitor_heart" size={16} strokeWidth={1.5} />
             <span>Record Vitals</span>
-          </button>
-          <Link
-            href="/nursing/handover"
-            className="btn-secondary justify-center touch-tap flex-1 sm:flex-initial"
-          >
-            <span className="material-symbols-outlined text-[18px]">transfer_within_a_station</span>
-            <span>Shift Handover</span>
-          </Link>
-          <button
-            onClick={() => setVitalsOpen(true)}
-            className="btn-urgent justify-center touch-tap flex-1 sm:flex-initial"
-          >
-            <span className="material-symbols-outlined text-[18px]">emergency</span>
-            <span>Emergency Alert</span>
           </button>
         </div>
       </section>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+      {/* ── 2. Compact KPI Cards ── */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KPICard
-          title="Total Ward Beds"
-          value={beds.length}
-          icon="airline_seat_individual_suite"
-          subtitle={`${occupiedCount} occupied • ${availableCount} available`}
-        />
-        <KPICard
-          title="Active Inpatients"
+          title="Occupied Beds"
           value={occupiedCount}
-          icon="group"
-          trend="+2 since yesterday"
-          trendDir="up"
+          icon="airline_seat_individual_suite"
+          subtitle={`${occupiedCount} / ${beds.length} occupied`}
         />
         <KPICard
-          title="MAR Pending"
+          title="Available Beds"
+          value={availableCount}
+          icon="bed"
+          subtitle="Ready for intake"
+        />
+        <KPICard
+          title="Medications Due"
           value={4}
           icon="medication"
-          trend="4 doses due"
-          trendDir="down"
+          subtitle="MAR Pending"
           live
         />
         <KPICard
-          title="Telemetry Pulse"
-          value={vitals.heartRate}
+          title="Active Telemetry"
+          value={`${vitals.heartRate} bpm`}
           icon="ecg_heart"
-          trend={`${vitals.bp} BP`}
-          trendDir="neutral"
           subtitle={vitals.patientName}
           live
         />
       </section>
 
-      {/* Bed Board */}
-      <section className="clinical-card">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-space-md border-b border-outline-variant/20 gap-2">
-          <div className="flex items-center gap-space-sm">
-            <h3 className="font-heading text-headline-sm text-on-surface font-semibold">
-              Bed Management Board
+      {/* ── 3. Bed Management Board ── */}
+      <section className="bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] p-4 shadow-card">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#E2E8EC] dark:border-white/[0.08] gap-2 mb-3">
+          <div className="flex items-center gap-2">
+            <h3 className="text-xs font-bold text-[#123047] dark:text-white uppercase tracking-wider">
+              Ward Bed Roster ({filteredBeds.length})
             </h3>
             <LiveIndicator size="sm" />
           </div>
-          <div className="flex gap-space-xs overflow-x-auto smooth-touch-scroll pb-1 sm:pb-0">
+
+          <div className="flex gap-1 text-xs">
             {['All Wards', 'Ward A', 'Ward B'].map((f) => (
               <button
                 key={f}
                 onClick={() => setActiveFilter(f)}
-                className={`px-space-md py-1 rounded-full text-label-sm whitespace-nowrap transition-all touch-tap ${
+                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
                   activeFilter === f
-                    ? 'bg-primary text-on-primary font-semibold'
-                    : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
+                    ? 'bg-[#0F8B8D] text-white font-semibold'
+                    : 'text-[#4A5D6B] hover:text-[#123047] dark:text-[#9FB1C0] dark:hover:text-white'
                 }`}
               >
                 {f}
@@ -124,30 +108,31 @@ export default function NursingDashboardView({ userName }: Props) {
             ))}
           </div>
         </div>
-        <div className="p-space-md grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-space-md">
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {filteredBeds.map((bed) => (
             <div
               key={bed.id}
-              className={`p-space-md rounded-2xl border-2 transition-all flex flex-col justify-between min-h-[140px] ${
+              className={`p-3 rounded-xl border transition-all flex flex-col justify-between ${
                 bed.status === 'occupied'
-                  ? 'bg-surface-container-low border-outline-variant/40 hover:shadow-md'
+                  ? 'bg-[#F7F9FA] dark:bg-white/[0.04] border-[#E2E8EC] dark:border-white/[0.08]'
                   : bed.status === 'available'
-                  ? 'bg-primary-fixed/20 border-primary/30 hover:border-primary'
-                  : 'bg-surface-container border-dashed border-outline-variant/40 opacity-60'
+                  ? 'bg-[#E8F6F5]/50 dark:bg-[#0F8B8D]/10 border-[#0F8B8D]/30'
+                  : 'bg-[#F7F9FA] dark:bg-white/[0.02] border-dashed border-[#E2E8EC] dark:border-white/[0.06] opacity-60'
               }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-headline-sm font-heading font-bold text-on-surface">
-                    {bed.id}
+                  <span className="text-sm font-heading font-bold text-[#123047] dark:text-white">
+                    Bed {bed.id}
                   </span>
                   <span
-                    className={`px-2 py-0.5 rounded-full text-label-sm font-bold capitalize ${
+                    className={`px-2 py-0.5 rounded text-[11px] font-bold capitalize border ${
                       bed.status === 'occupied'
-                        ? 'bg-status-warning/20 text-status-warning'
+                        ? 'bg-[#C58A24]/10 text-[#C58A24] border-[#C58A24]/20'
                         : bed.status === 'available'
-                        ? 'bg-status-success/20 text-status-success'
-                        : 'bg-status-neutral/20 text-on-surface-variant'
+                        ? 'bg-[#2E7D5B]/10 text-[#2E7D5B] border-[#2E7D5B]/20'
+                        : 'bg-[#F0F4F7] text-[#4A5D6B] border-[#E2E8EC]'
                     }`}
                   >
                     {bed.status}
@@ -155,31 +140,31 @@ export default function NursingDashboardView({ userName }: Props) {
                 </div>
                 {bed.patient ? (
                   <div>
-                    <p className="text-label-lg text-on-surface font-bold truncate">{bed.patient}</p>
-                    <p className="text-body-sm text-on-surface-variant">
+                    <p className="text-sm font-semibold text-[#123047] dark:text-white truncate">{bed.patient}</p>
+                    <p className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium mt-0.5">
                       {bed.age} • {bed.condition}
                     </p>
                   </div>
                 ) : (
-                  <p className="text-body-sm text-on-surface-variant italic">Bed Ready for Admission</p>
+                  <p className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] italic">Ready for admission</p>
                 )}
               </div>
 
-              <div className="pt-2 border-t border-outline-variant/20 flex items-center justify-between">
-                <span className="text-label-sm text-on-surface-variant">{bed.ward}</span>
+              <div className="pt-2 mt-2.5 border-t border-[#E2E8EC] dark:border-white/[0.06] flex items-center justify-between text-xs">
+                <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">{bed.ward}</span>
                 {bed.status === 'occupied' ? (
                   <button
                     onClick={() => releaseBed(bed.id)}
-                    className="text-label-sm text-tertiary font-semibold hover:underline"
+                    className="text-[#C94A4A] hover:underline font-semibold text-xs"
                   >
                     Discharge
                   </button>
                 ) : bed.status === 'available' ? (
                   <button
                     onClick={() => openAssignBedModal(bed.id)}
-                    className="text-label-sm text-primary font-bold hover:underline"
+                    className="text-[#0F8B8D] dark:text-[#28B5B7] font-bold hover:underline text-xs"
                   >
-                    + Assign Patient
+                    + Assign
                   </button>
                 ) : null}
               </div>
@@ -188,101 +173,61 @@ export default function NursingDashboardView({ userName }: Props) {
         </div>
       </section>
 
-      {/* MAR + Vitals Telemetry */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-space-md">
+      {/* ── 4. MAR + Vitals Telemetry ── */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         {/* Medication Administration Record */}
-        <div className="clinical-card">
-          <div className="flex items-center justify-between p-space-md border-b border-outline-variant/20">
-            <div className="flex items-center gap-space-sm">
-              <h3 className="font-heading text-headline-sm text-on-surface font-semibold">
-                MAR — Medication Due
-              </h3>
-              <StatusBadge variant="critical" label="4 Pending" pulse />
-            </div>
+        <div className="bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] p-4 shadow-card">
+          <div className="flex items-center justify-between pb-3 border-b border-[#E2E8EC] dark:border-white/[0.08] mb-2">
+            <h3 className="text-xs font-bold text-[#123047] dark:text-white uppercase tracking-wider">
+              Medication Due (MAR)
+            </h3>
+            <StatusBadge variant="critical" label="4 Due" />
           </div>
-          <div className="divide-y divide-outline-variant/10">
+          <div className="divide-y divide-[#E2E8EC]/80 dark:divide-white/[0.05]">
             {[
               { patient: 'Marcus Delacroix', bed: 'A-01', drug: 'Lisinopril 10mg', route: 'PO', time: '09:00', status: 'overdue' },
               { patient: 'Priya Mehta', bed: 'A-02', drug: 'Amoxicillin 500mg', route: 'IV', time: '09:00', status: 'due' },
               { patient: 'George Tanner', bed: 'A-04', drug: 'Metformin 500mg', route: 'PO', time: '09:30', status: 'due' },
               { patient: 'Aisha Nkosi', bed: 'A-06', drug: 'Ketorolac 30mg', route: 'IM', time: '10:00', status: 'upcoming' },
             ].map((med) => (
-              <div
-                key={med.patient + med.drug}
-                className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 px-space-md py-space-sm hover:bg-surface-container-low/50 transition-colors"
-              >
-                <div className="flex items-center gap-space-sm min-w-0">
-                  <div
-                    className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                      med.status === 'overdue'
-                        ? 'bg-tertiary animate-pulse'
-                        : med.status === 'due'
-                        ? 'bg-status-warning'
-                        : 'bg-status-neutral'
-                    }`}
-                  />
-                  <div className="min-w-0">
-                    <p className="text-label-md text-on-surface font-semibold truncate">
-                      {med.patient} <span className="text-on-surface-variant font-normal">• Bed {med.bed}</span>
-                    </p>
-                    <p className="text-body-sm text-on-surface-variant">
-                      {med.drug} — {med.route} at {med.time}
-                    </p>
-                  </div>
+              <div key={med.patient + med.drug} className="py-2.5 flex items-center justify-between text-xs">
+                <div>
+                  <span className="font-semibold text-sm text-[#123047] dark:text-white">{med.patient}</span>
+                  <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium ml-1.5">({med.bed})</span>
+                  <p className="text-xs text-[#253848] dark:text-[#D9E5F0] font-medium mt-0.5">{med.drug} • {med.route}</p>
                 </div>
-                <button
-                  className={`text-label-sm px-space-md py-1.5 rounded-full font-semibold flex-shrink-0 w-full sm:w-auto text-center touch-tap ${
-                    med.status === 'overdue' ? 'btn-urgent' : 'btn-primary'
-                  }`}
-                >
-                  {med.status === 'overdue' ? 'Administer (Overdue)' : 'Administer'}
-                </button>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs font-bold text-[#123047] dark:text-white">{med.time}</span>
+                  <StatusBadge
+                    variant={med.status === 'overdue' ? 'critical' : med.status === 'due' ? 'warning' : 'neutral'}
+                    label={med.status}
+                  />
+                </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Live Vitals Telemetry Card */}
-        <div className="clinical-card p-space-md flex flex-col justify-between gap-space-md">
-          <div>
-            <div className="flex items-center justify-between mb-space-sm">
-              <h3 className="font-heading text-headline-sm text-on-surface font-semibold">
-                Live Vitals Telemetry Monitor
-              </h3>
-              <LiveIndicator label="Streaming" />
+        {/* Telemetry Vitals */}
+        <div className="bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] p-4 shadow-card">
+          <div className="flex items-center justify-between pb-3 border-b border-[#E2E8EC] dark:border-white/[0.08] mb-2">
+            <h3 className="text-xs font-bold text-[#123047] dark:text-white uppercase tracking-wider">
+              Bedside Telemetry
+            </h3>
+            <LiveIndicator size="sm" />
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-center">
+            <div className="p-3 rounded-lg bg-[#F7F9FA] dark:bg-white/[0.04] border border-[#E2E8EC] dark:border-white/[0.08]">
+              <span className="text-[11px] text-[#4A5D6B] dark:text-[#9FB1C0] uppercase font-bold tracking-wider">Pulse / Heart Rate</span>
+              <p className="text-xl font-bold font-mono text-[#2E7D5B] dark:text-[#3E9F76] mt-0.5">{vitals.heartRate} bpm</p>
+              <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">{vitals.patientName}</span>
             </div>
-            <p className="text-body-sm text-on-surface-variant mb-space-md">
-              Monitoring active bed patient: <span className="font-semibold text-on-surface">{vitals.patientName}</span> ({vitals.mrn})
-            </p>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-space-sm">
-              {[
-                { label: 'BP', value: vitals.bp, unit: 'mmHg', icon: 'favorite' },
-                { label: 'Heart Rate', value: vitals.heartRate, unit: 'bpm', icon: 'ecg_heart' },
-                { label: 'SpO₂', value: vitals.spo2, unit: '%', icon: 'air' },
-                { label: 'Temp', value: `${vitals.temperature}°F`, unit: '°F', icon: 'thermometer' },
-              ].map((v) => (
-                <div
-                  key={v.label}
-                  className="p-space-sm bg-surface-container-low rounded-xl border border-outline-variant/30 flex flex-col items-center justify-center text-center"
-                >
-                  <span className="text-label-sm text-on-surface-variant uppercase">{v.label}</span>
-                  <span className="font-heading text-headline-md font-bold text-on-surface tabular-nums">
-                    {v.value}
-                  </span>
-                  <span className="text-label-sm text-on-surface-variant">{v.unit}</span>
-                </div>
-              ))}
+            <div className="p-3 rounded-lg bg-[#F7F9FA] dark:bg-white/[0.04] border border-[#E2E8EC] dark:border-white/[0.08]">
+              <span className="text-[11px] text-[#4A5D6B] dark:text-[#9FB1C0] uppercase font-bold tracking-wider">Blood Pressure</span>
+              <p className="text-xl font-bold font-mono text-[#123047] dark:text-white mt-0.5">{vitals.bp}</p>
+              <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">Normal Range</span>
             </div>
           </div>
-
-          <button
-            onClick={() => setVitalsOpen(true)}
-            className="btn-primary justify-center w-full"
-          >
-            <span className="material-symbols-outlined text-[18px]">edit</span>
-            Update Observation Vitals
-          </button>
         </div>
       </div>
     </div>

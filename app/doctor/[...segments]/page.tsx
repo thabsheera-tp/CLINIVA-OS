@@ -6,21 +6,21 @@ import DoctorDeepRoutes from '@/components/dashboard/DoctorDeepRoutes'
 
 const NAV_SECTIONS = [
   {
-    label: 'Clinical Operations',
+    label: 'Clinical',
     items: [
       { label: 'Dashboard',     href: '/doctor',              icon: 'space_dashboard' },
       { label: 'Patients',      href: '/doctor/patients',     icon: 'personal_injury', badge: '1,248' },
-      { label: 'Appointments',  href: '/doctor/appointments', icon: 'calendar_today',  badge: '18 Today' },
-      { label: 'Live Queue',    href: '/doctor/queue',        icon: 'queue',           badge: 5, badgeVariant: 'live' as const },
-      { label: 'Lab Results',   href: '/doctor/lab-results',  icon: 'biotech',         badge: 3, badgeVariant: 'alert' as const },
+      { label: 'Queue',         href: '/doctor/queue',        icon: 'queue',           badge: 5, badgeVariant: 'live' as const },
+      { label: 'Consultations', href: '/doctor/appointments', icon: 'calendar_today',  badge: '18 Today' },
+      { label: 'Lab',           href: '/doctor/lab-results',  icon: 'biotech',         badge: 3, badgeVariant: 'alert' as const },
       { label: 'Prescriptions', href: '/doctor/prescriptions',icon: 'prescriptions' },
-      { label: 'Messages',      href: '/doctor/messages',     icon: 'chat',            badge: 4 },
     ],
   },
   {
-    label: 'System',
+    label: 'Other',
     items: [
-      { label: 'Settings', href: '/doctor/settings', icon: 'settings' },
+      { label: 'Handover', href: '/doctor/messages',     icon: 'chat',            badge: 4 },
+      { label: 'Settings', href: '/doctor/settings',     icon: 'settings' },
     ],
   },
 ]

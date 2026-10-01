@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react'
 import ModalBackdrop from './ModalBackdrop'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 
 export default function AssignBedModal() {
@@ -144,7 +145,7 @@ export default function AssignBedModal() {
       {savedSuccess ? (
         <div className="py-8 flex flex-col items-center justify-center text-center space-y-3">
           <div className="w-16 h-16 rounded-full bg-status-success/20 flex items-center justify-center text-status-success animate-bounce">
-            <span className="material-symbols-outlined text-[36px]">check_circle</span>
+            <ClinivaIcon name="check_circle" size={32} strokeWidth={1.5} />
           </div>
           <h3 className="font-heading text-headline-md text-on-surface font-bold">
             Bed Allocated Successfully!
@@ -158,7 +159,7 @@ export default function AssignBedModal() {
         <form onSubmit={handleSubmit} className="space-y-space-md">
           {errorMsg && (
             <div className="p-3 rounded-xl bg-status-critical/10 border border-status-critical/30 text-status-critical text-body-sm flex items-start gap-2">
-              <span className="material-symbols-outlined text-[18px] flex-shrink-0 mt-0.5">error</span>
+              <ClinivaIcon name="error" size={18} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
               <span>{errorMsg}</span>
             </div>
           )}
@@ -167,7 +168,7 @@ export default function AssignBedModal() {
           <div className="p-space-md bg-surface-container-low rounded-2xl border border-outline-variant/30 space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-label-md text-on-surface font-semibold flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-primary text-[18px]">bed</span>
+                <ClinivaIcon name="bed" size={18} strokeWidth={1.5} className="text-primary" />
                 Select Hospital Bed
               </label>
               {selectedBed && (
@@ -201,13 +202,13 @@ export default function AssignBedModal() {
 
             {isBedOccupied && (
               <p className="text-label-sm text-status-critical flex items-center gap-1 font-medium">
-                <span className="material-symbols-outlined text-[16px]">warning</span>
+                <ClinivaIcon name="warning" size={16} strokeWidth={1.5} />
                 Warning: This bed is already occupied by {selectedBed?.patient}. Please select an available bed.
               </p>
             )}
             {isBedMaintenance && (
               <p className="text-label-sm text-status-warning flex items-center gap-1 font-medium">
-                <span className="material-symbols-outlined text-[16px]">build</span>
+                <ClinivaIcon name="build" size={16} strokeWidth={1.5} />
                 Warning: This bed is currently under maintenance / sanitation.
               </p>
             )}
@@ -217,7 +218,7 @@ export default function AssignBedModal() {
           {queue.length > 0 && (
             <div className="space-y-1">
               <label className="text-label-sm text-on-surface-variant font-medium flex items-center gap-1">
-                <span className="material-symbols-outlined text-[16px]">person_search</span>
+                <ClinivaIcon name="person_search" size={16} strokeWidth={1.5} />
                 Fast Fill from Active Patients
               </label>
               <select
@@ -331,12 +332,12 @@ export default function AssignBedModal() {
             >
               {isSubmitting ? (
                 <>
-                  <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+                  <ClinivaIcon name="progress_activity" size={18} strokeWidth={1.5} className="animate-spin" />
                   <span>Persisting Allocation...</span>
                 </>
               ) : (
                 <>
-                  <span className="material-symbols-outlined text-[18px]">check</span>
+                  <ClinivaIcon name="check" size={18} strokeWidth={1.5} />
                   <span>Confirm Bed Allocation</span>
                 </>
               )}

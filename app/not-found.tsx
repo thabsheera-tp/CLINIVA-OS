@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 export default function NotFound() {
   const WORKSPACES = [
@@ -13,10 +14,10 @@ export default function NotFound() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-50 flex flex-col items-center justify-center p-6 transition-colors duration-200">
+    <div className="min-h-screen bg-[#F7F9FA] dark:bg-[#0D1B26] text-[#172B3A] dark:text-[#E8F0F5] flex flex-col items-center justify-center p-6 transition-colors duration-200">
       <div className="max-w-2xl w-full text-center space-y-6">
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-secondary-fixed/50 text-primary shadow-sm">
-          <span className="material-symbols-outlined text-[44px]">healing</span>
+          <ClinivaIcon name="healing" size={40} strokeWidth={1.5} />
         </div>
 
         <div>
@@ -33,7 +34,7 @@ export default function NotFound() {
 
         <div className="p-6 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 text-left shadow-sm">
           <h2 className="text-label-lg font-semibold text-on-surface mb-3 flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-[20px]">hub</span>
+            <ClinivaIcon name="hub" size={20} strokeWidth={1.5} className="text-primary" />
             Jump to an Active Department Workspace:
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -44,7 +45,7 @@ export default function NotFound() {
                 className="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low border border-transparent hover:border-outline-variant/30 transition-all group"
               >
                 <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors flex-shrink-0">
-                  <span className="material-symbols-outlined text-[20px]">{w.icon}</span>
+                  <ClinivaIcon name={w.icon} size={20} strokeWidth={1.5} />
                 </div>
                 <div className="min-w-0">
                   <div className="text-label-md font-semibold text-on-surface group-hover:text-primary transition-colors">
@@ -64,7 +65,7 @@ export default function NotFound() {
             href="/doctor"
             className="btn-primary inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium"
           >
-            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+            <ClinivaIcon name="arrow_back" size={18} strokeWidth={1.5} />
             Return to Main Dashboard
           </Link>
         </div>

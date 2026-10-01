@@ -2,16 +2,18 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClientSideClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import InstantPatientSearch from '@/components/ui/InstantPatientSearch'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 type TopBarProps = {
   userName: string
   userRole: string
+  assignedRoles?: string[]
   userAvatar?: string | null
   clinicName?: string
   clinicIcon?: string
@@ -25,6 +27,7 @@ type TopBarProps = {
 export default function TopBar({
   userName,
   userRole,
+  assignedRoles,
   userAvatar,
   clinicName = 'St. Jude Medical Center',
   clinicIcon = 'local_hospital',
@@ -40,6 +43,7 @@ export default function TopBar({
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [clinicMenuOpen, setClinicMenuOpen] = useState(false)
   const [selectedClinic, setSelectedClinic] = useState(clinicName)
+  const [userAssignedRoles, setUserAssignedRoles] = useState<string[]>(assignedRoles || [])
   const supabase = createClientSideClient()
   const {
     setRegisterOpen,
@@ -49,6 +53,37 @@ export default function TopBar({
     setDispenseOpen,
     setPrescriptionOpen,
   } = useClinicRealtime()
+
+  // Load user's actual assigned roles from session if not provided via props
+  useEffect(() => {
+    let isMounted = true
+    async function resolveRoles() {
+      if (assignedRoles && assignedRoles.length > 0) {
+        setUserAssignedRoles(assignedRoles)
+        return
+      }
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session?.user && isMounted) {
+          const meta = session.user.user_metadata || {}
+          const roles: string[] = []
+          if (Array.isArray(meta.roles)) {
+            roles.push(...meta.roles)
+          }
+          if (meta.role && !roles.includes(meta.role)) {
+            roles.push(meta.role)
+          }
+          if (roles.length > 0) {
+            setUserAssignedRoles(roles)
+          }
+        }
+      } catch {
+        // Session resolve fallback
+      }
+    }
+    resolveRoles()
+    return () => { isMounted = false }
+  }, [assignedRoles, supabase])
 
   const handlePrimaryAction = () => {
     if (primaryAction?.onClick) {
@@ -84,13 +119,19 @@ export default function TopBar({
   }
 
   const handleRoleSwitch = (targetRole: string, targetPath: string) => {
-    document.cookie = `cliniva_demo_role=${targetRole}; path=/; max-age=86400`
+    // Only allow switching to roles legitimately assigned to this user
+    if (userAssignedRoles.length > 0 && !userAssignedRoles.includes(targetRole)) {
+      console.warn('Unauthorized workspace switch attempt blocked')
+      return
+    }
+    document.cookie = `cliniva_demo_role=${targetRole}; path=/; max-age=86400; SameSite=Lax`
     setDropdownOpen(false)
     window.location.href = targetPath
   }
 
   const handleSignOut = async () => {
     document.cookie = 'cliniva_demo_role=; path=/; max-age=0'
+    document.cookie = 'cliniva_auth_user=; path=/; max-age=0'
     try {
       await supabase.auth.signOut()
     } catch {}
@@ -109,34 +150,40 @@ export default function TopBar({
     { role: 'patient',    label: 'Patient Portal',          path: '/portal',     icon: 'person_pin' },
   ]
 
+  // Filter workspaces to ONLY those assigned to the authenticated user
+  const effectiveRoles = userAssignedRoles.length > 0 ? userAssignedRoles : (userRole ? [userRole] : [])
+  const authorizedWorkspaces = WORKSPACE_LIST.filter((ws) =>
+    effectiveRoles.includes(ws.role)
+  )
+
   return (
     <>
-      <header className="fixed top-0 left-0 lg:left-72 right-0 h-16 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 z-40 px-3 sm:px-gutter lg:px-gutter-desktop flex items-center justify-between gap-2 sm:gap-gutter">
+      <header className="fixed top-0 left-0 lg:left-72 right-0 h-16 bg-white/95 dark:bg-[#122433]/95 backdrop-blur-md border-b border-[#E2E8EC] dark:border-white/[0.08] z-40 px-3 sm:px-gutter lg:px-gutter-desktop flex items-center justify-between gap-2 sm:gap-gutter">
         {/* Left: Mobile hamburger + Clinic selector / wordmark */}
         <div className="flex items-center gap-2 sm:gap-gutter min-w-0">
           {/* Hamburger toggle button for mobile */}
           <button
             onClick={onToggleMobileMenu}
-            className="lg:hidden p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors touch-tap flex-shrink-0"
+            className="lg:hidden p-2 rounded-xl hover:bg-[#F0F4F7] dark:hover:bg-white/5 text-[#60727F] dark:text-[#92A6B5] hover:text-[#172B3A] dark:hover:text-[#E8F0F5] transition-colors touch-tap flex-shrink-0"
             aria-label="Open Navigation Drawer"
           >
-            <span className="material-symbols-outlined text-[24px]">menu</span>
+            <ClinivaIcon name="menu" size={22} strokeWidth={1.5} />
           </button>
 
           {/* Desktop clinic indicator with dropdown */}
           <div className="relative">
             <button
               onClick={() => setClinicMenuOpen(!clinicMenuOpen)}
-              className="hidden lg:flex items-center gap-space-xs px-space-md py-space-xs bg-slate-50 dark:bg-slate-950 rounded-lg border border-slate-200 dark:border-slate-800 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex-shrink-0 touch-tap"
+              className="hidden lg:flex items-center gap-space-xs px-space-md py-space-xs bg-[#F7F9FA] dark:bg-[#0D1B26] rounded-lg border border-[#E2E8EC] dark:border-white/[0.08] cursor-pointer hover:bg-[#F0F4F7] dark:hover:bg-white/5 transition-colors flex-shrink-0 touch-tap"
             >
-              <span className="material-symbols-outlined text-primary text-[18px]">{clinicIcon}</span>
-              <span className="text-label-md text-slate-900 dark:text-slate-100 truncate max-w-[180px] xl:max-w-[220px] font-medium">{selectedClinic}</span>
-              <span className="material-symbols-outlined text-slate-400 text-[16px]">expand_more</span>
+              <ClinivaIcon name={clinicIcon} size={16} strokeWidth={1.5} className="text-[#0F8B8D]" />
+              <span className="text-label-md text-[#123047] dark:text-[#E8F0F5] truncate max-w-[180px] xl:max-w-[220px] font-medium">{selectedClinic}</span>
+              <ClinivaIcon name="expand_more" size={16} strokeWidth={1.5} className="text-[#60727F]" />
             </button>
 
             {clinicMenuOpen && (
-              <div className="absolute left-0 top-12 w-72 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-3 py-1 text-label-sm text-slate-400 dark:text-slate-500 uppercase font-semibold">Active Campus / Facility</div>
+              <div className="absolute left-0 top-12 w-72 bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] shadow-lg py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="px-3 py-1 text-label-sm text-[#60727F] dark:text-[#92A6B5] uppercase font-semibold">Active Campus / Facility</div>
                 {['St. Jude Medical Center — Main Hospital', 'St. Jude West Campus (OPD Clinic)', 'St. Jude South Pediatric Wing'].map((campus) => (
                   <button
                     key={campus}
@@ -144,12 +191,12 @@ export default function TopBar({
                       setSelectedClinic(campus)
                       setClinicMenuOpen(false)
                     }}
-                    className={`w-full text-left px-3 py-2 text-label-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-between ${
-                      selectedClinic === campus ? 'text-primary font-semibold bg-primary/10' : 'text-slate-700 dark:text-slate-300'
+                    className={`w-full text-left px-3 py-2 text-label-md hover:bg-[#F7F9FA] dark:hover:bg-white/5 transition-colors flex items-center justify-between ${
+                      selectedClinic === campus ? 'text-[#0F8B8D] font-semibold bg-[#E8F6F5] dark:bg-[#0F8B8D]/15' : 'text-[#172B3A] dark:text-[#E8F0F5]'
                     }`}
                   >
                     <span className="truncate">{campus}</span>
-                    {selectedClinic === campus && <span className="material-symbols-outlined text-primary text-[18px]">check</span>}
+                    {selectedClinic === campus && <ClinivaIcon name="check" size={16} strokeWidth={1.5} className="text-[#0F8B8D]" />}
                   </button>
                 ))}
               </div>
@@ -158,10 +205,10 @@ export default function TopBar({
 
           {/* Mobile: logo wordmark */}
           <div className="lg:hidden flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-white flex-shrink-0 shadow-xs">
-              <span className="material-symbols-outlined text-[16px]">medical_services</span>
+            <div className="w-7 h-7 rounded-lg bg-[#0F8B8D] flex items-center justify-center text-white flex-shrink-0">
+              <ClinivaIcon name="medical_services" size={16} strokeWidth={1.5} />
             </div>
-            <span className="font-heading font-semibold text-slate-900 dark:text-slate-50 text-headline-sm truncate">
+            <span className="font-heading font-semibold text-[#123047] dark:text-white text-headline-sm truncate">
               Cliniva OS
             </span>
           </div>
@@ -177,21 +224,19 @@ export default function TopBar({
           {/* Mobile search toggle button */}
           <button
             onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-            className="md:hidden p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors touch-tap"
+            className="md:hidden p-2 text-[#60727F] hover:text-[#172B3A] dark:text-[#92A6B5] dark:hover:text-[#E8F0F5] hover:bg-[#F0F4F7] dark:hover:bg-white/5 rounded-full transition-colors touch-tap"
             aria-label="Toggle search"
           >
-            <span className="material-symbols-outlined text-[22px]">
-              {mobileSearchOpen ? 'close' : 'search'}
-            </span>
+            <ClinivaIcon name={mobileSearchOpen ? 'close' : 'search'} size={20} strokeWidth={1.5} />
           </button>
 
           {/* Live sync indicator with dual-ring medical telemetry radar */}
-          <div className="hidden xl:flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full">
+          <div className="hidden xl:flex items-center gap-2 px-3 py-1 bg-[#E8F6F5] dark:bg-[#0F8B8D]/15 border border-[#0F8B8D]/25 rounded-full">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0F8B8D] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0F8B8D]" />
             </span>
-            <span className="text-[12px] font-semibold text-slate-700 dark:text-slate-300">{liveSyncLabel}</span>
+            <span className="text-[12px] font-semibold text-[#0F8B8D] dark:text-[#28B5B7]">{liveSyncLabel}</span>
           </div>
 
           {/* Theme Toggle (Dark / Light Mode) */}
@@ -201,44 +246,44 @@ export default function TopBar({
           <div className="relative">
             <button
               onClick={() => setNotificationsOpen(!notificationsOpen)}
-              className="relative p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors touch-tap"
+              className="relative p-2 text-[#60727F] hover:text-[#172B3A] dark:text-[#92A6B5] dark:hover:text-white hover:bg-[#F0F4F7] dark:hover:bg-white/5 rounded-full transition-colors touch-tap"
               aria-label="Notifications"
             >
-              <span className="material-symbols-outlined text-[22px]">notifications</span>
-              <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white text-[10px] leading-tight flex items-center justify-center rounded-full font-bold">
+              <ClinivaIcon name="notifications" size={20} strokeWidth={1.5} />
+              <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#C94A4A] text-white text-[10px] leading-tight flex items-center justify-center rounded-full font-bold">
                 {notificationCount || 3}
               </span>
             </button>
 
             {notificationsOpen && (
-              <div className="absolute right-0 top-12 w-[calc(100vw-1.5rem)] max-w-[20rem] bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 mb-2">
-                  <span className="text-label-md font-bold text-slate-900 dark:text-slate-100">Clinical Alerts</span>
-                  <span className="text-[11px] bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-900/40 px-2 py-0.5 rounded-full font-semibold">3 Unread</span>
+              <div className="absolute right-0 top-12 w-[calc(100vw-1.5rem)] max-w-[20rem] bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] shadow-lg p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="flex items-center justify-between pb-2 border-b border-[#E2E8EC] dark:border-white/[0.06] mb-2">
+                  <span className="text-label-md font-bold text-[#123047] dark:text-white">Clinical Alerts</span>
+                  <span className="text-[11px] bg-[#C94A4A]/10 text-[#C94A4A] border border-[#C94A4A]/20 px-2 py-0.5 rounded-full font-semibold">3 Unread</span>
                 </div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
-                  <div className="p-2.5 rounded-xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200/60 dark:border-rose-900/40 flex gap-2.5 items-start">
-                    <span className="material-symbols-outlined text-rose-600 dark:text-rose-400 text-[18px] flex-shrink-0 mt-0.5">priority_high</span>
+                  <div className="p-2.5 rounded-lg bg-[#C94A4A]/5 border border-[#C94A4A]/15 flex gap-2.5 items-start">
+                    <ClinivaIcon name="priority_high" size={16} strokeWidth={1.5} className="text-[#C94A4A] flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-label-sm font-semibold text-slate-900 dark:text-slate-100">Critical Troponin Result</p>
-                      <p className="text-[12px] text-slate-500 dark:text-slate-400">Patient Marcus Delacroix: 0.08 ng/mL (STAT alert)</p>
-                      <span className="text-[10px] text-slate-400">5 mins ago</span>
+                      <p className="text-label-sm font-semibold text-[#172B3A] dark:text-white">Critical Troponin Result</p>
+                      <p className="text-[12px] text-[#60727F] dark:text-[#92A6B5]">Patient Marcus Delacroix: 0.08 ng/mL (STAT alert)</p>
+                      <span className="text-[10px] text-[#A0B0BC]">5 mins ago</span>
                     </div>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex gap-2.5 items-start">
-                    <span className="material-symbols-outlined text-primary text-[18px] flex-shrink-0 mt-0.5">prescriptions</span>
+                  <div className="p-2.5 rounded-lg bg-[#F7F9FA] dark:bg-white/[0.03] border border-[#E2E8EC] dark:border-white/[0.06] flex gap-2.5 items-start">
+                    <ClinivaIcon name="prescriptions" size={16} strokeWidth={1.5} className="text-[#0F8B8D] flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-label-sm font-semibold text-slate-900 dark:text-slate-100">Rx Verification Needed</p>
-                      <p className="text-[12px] text-slate-500 dark:text-slate-400">Central Pharmacy flagged Lisinopril interaction</p>
-                      <span className="text-[10px] text-slate-400">18 mins ago</span>
+                      <p className="text-label-sm font-semibold text-[#172B3A] dark:text-white">Rx Verification Needed</p>
+                      <p className="text-[12px] text-[#60727F] dark:text-[#92A6B5]">Central Pharmacy flagged Lisinopril interaction</p>
+                      <span className="text-[10px] text-[#A0B0BC]">18 mins ago</span>
                     </div>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex gap-2.5 items-start">
-                    <span className="material-symbols-outlined text-sky-600 dark:text-sky-400 text-[18px] flex-shrink-0 mt-0.5">how_to_reg</span>
+                  <div className="p-2.5 rounded-lg bg-[#F7F9FA] dark:bg-white/[0.03] border border-[#E2E8EC] dark:border-white/[0.06] flex gap-2.5 items-start">
+                    <ClinivaIcon name="how_to_reg" size={16} strokeWidth={1.5} className="text-[#0F8B8D] flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-label-sm font-semibold text-slate-900 dark:text-slate-100">New Inpatient Admission</p>
-                      <p className="text-[12px] text-slate-500 dark:text-slate-400">Bed A-02 occupied by Priya Mehta</p>
-                      <span className="text-[10px] text-slate-400">35 mins ago</span>
+                      <p className="text-label-sm font-semibold text-[#172B3A] dark:text-white">New Inpatient Admission</p>
+                      <p className="text-[12px] text-[#60727F] dark:text-[#92A6B5]">Bed A-02 occupied by Priya Mehta</p>
+                      <span className="text-[10px] text-[#A0B0BC]">35 mins ago</span>
                     </div>
                   </div>
                 </div>
@@ -253,16 +298,16 @@ export default function TopBar({
                 onClick={handlePrimaryAction}
                 className="btn-primary hidden sm:inline-flex touch-tap"
               >
-                <span className="material-symbols-outlined text-[18px]">{primaryAction.icon}</span>
+                <ClinivaIcon name={primaryAction.icon} size={16} strokeWidth={1.5} />
                 <span>{primaryAction.label}</span>
               </button>
               <button
                 onClick={handlePrimaryAction}
-                className="sm:hidden p-2 rounded-xl bg-primary hover:bg-primary-container text-white shadow-xs touch-tap flex items-center justify-center transition-colors"
+                className="sm:hidden p-2 rounded-xl bg-[#0F8B8D] hover:bg-[#0D7A7C] text-white touch-tap flex items-center justify-center transition-colors"
                 title={primaryAction.label}
                 aria-label={primaryAction.label}
               >
-                <span className="material-symbols-outlined text-[18px]">{primaryAction.icon}</span>
+                <ClinivaIcon name={primaryAction.icon} size={16} strokeWidth={1.5} />
               </button>
             </>
           )}
@@ -271,7 +316,7 @@ export default function TopBar({
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-space-sm pl-1.5 sm:pl-space-sm border-l border-slate-200 dark:border-slate-800 cursor-pointer group touch-tap"
+              className="flex items-center gap-space-sm pl-1.5 sm:pl-space-sm border-l border-[#E2E8EC] dark:border-white/[0.08] cursor-pointer group touch-tap"
               aria-label="User profile menu"
             >
               {userAvatar ? (
@@ -280,64 +325,79 @@ export default function TopBar({
                   alt="Profile"
                   width={32}
                   height={32}
-                  className="w-8 h-8 rounded-full object-cover ring-2 ring-primary/25"
+                  className="w-8 h-8 rounded-full object-cover ring-2 ring-[#0F8B8D]/25"
                 />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-800 dark:text-slate-200 font-semibold text-label-md">
+                <div className="w-8 h-8 rounded-full bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 border border-[#0F8B8D]/30 flex items-center justify-center text-[#0F8B8D] dark:text-[#28B5B7] font-semibold text-label-md">
                   {userName.charAt(0).toUpperCase()}
                 </div>
               )}
               <div className="flex-col text-left hidden lg:flex">
                 <div className="flex items-center gap-1">
-                  <span className="text-label-md text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors truncate max-w-[120px] font-medium">
+                  <span className="text-[13.5px] text-[#123047] dark:text-white group-hover:text-[#0F8B8D] transition-colors truncate max-w-[130px] font-semibold">
                     {userName}
                   </span>
-                  <span className="material-symbols-outlined text-slate-400 text-[16px]">expand_more</span>
+                  <ClinivaIcon name="expand_more" size={16} strokeWidth={1.5} className="text-[#4A5D6B] dark:text-[#9FB1C0]" />
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  <span className="text-label-sm text-slate-500 dark:text-slate-400 font-medium">{userRole}</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D5B]" />
+                  <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-semibold capitalize">{userRole}</span>
                 </div>
               </div>
             </button>
 
             {/* Dropdown menu */}
             {dropdownOpen && (
-              <div className="absolute right-0 top-12 w-[calc(100vw-1.5rem)] max-w-[16rem] bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-space-md py-1 border-b border-slate-100 dark:border-slate-800 mb-1">
-                  <p className="text-label-sm text-slate-400 dark:text-slate-500 uppercase font-semibold">Switch Workspace</p>
-                </div>
-                <div className="max-h-56 overflow-y-auto smooth-touch-scroll divide-y divide-slate-100 dark:divide-slate-800">
-                  {WORKSPACE_LIST.map((ws) => (
-                    <button
-                      key={ws.role}
-                      onClick={() => handleRoleSwitch(ws.role, ws.path)}
-                      className={`w-full flex items-center gap-space-sm px-space-md py-2 text-left text-label-md transition-colors touch-tap ${
-                        userRole?.toLowerCase().includes(ws.role) || (ws.role === 'nurse' && userRole?.toLowerCase().includes('nurs'))
-                          ? 'bg-primary/10 text-primary font-semibold'
-                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-[18px] flex-shrink-0">{ws.icon}</span>
-                      <span className="truncate">{ws.label}</span>
-                    </button>
-                  ))}
+              <div className="absolute right-0 top-12 w-[calc(100vw-1.5rem)] max-w-[16rem] bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] shadow-lg py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="px-space-md py-1 border-b border-[#E2E8EC] dark:border-white/[0.06] mb-1">
+                  <p className="text-label-sm text-[#123047] dark:text-white font-semibold">{userName}</p>
+                  <p className="text-[11px] text-[#60727F] dark:text-[#92A6B5] font-medium">{userRole}</p>
                 </div>
 
-                <div className="border-t border-slate-100 dark:border-slate-800 mt-1 pt-1">
-                  <Link
-                    href="/login?switch=true"
-                    onClick={() => setDropdownOpen(false)}
-                    className="flex items-center gap-space-sm px-space-md py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors text-label-md touch-tap"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">switch_account</span>
-                    Role Selection Screen
-                  </Link>
+                {/* Show Switch Workspace ONLY if user has multiple assigned roles */}
+                {authorizedWorkspaces.length > 1 && (
+                  <>
+                    <div className="px-space-md py-1 border-b border-[#E2E8EC] dark:border-white/[0.06] mb-1">
+                      <p className="text-[11px] text-[#60727F] dark:text-[#92A6B5] uppercase font-semibold">
+                        Switch Workspace
+                      </p>
+                    </div>
+                    <div className="max-h-56 overflow-y-auto smooth-touch-scroll divide-y divide-[#E2E8EC]/60 dark:divide-white/[0.04]">
+                      {authorizedWorkspaces.map((ws) => {
+                        const isCurrent = userRole?.toLowerCase().includes(ws.role) || (ws.role === 'nurse' && userRole?.toLowerCase().includes('nurs'))
+                        return (
+                          <button
+                            key={ws.role}
+                            onClick={() => handleRoleSwitch(ws.role, ws.path)}
+                            disabled={isCurrent}
+                            className={`w-full flex items-center justify-between px-space-md py-2 text-left text-label-md transition-colors touch-tap ${
+                              isCurrent
+                                ? 'bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 text-[#0F8B8D] dark:text-[#28B5B7] font-semibold cursor-default'
+                                : 'text-[#60727F] dark:text-[#92A6B5] hover:bg-[#F0F4F7] dark:hover:bg-white/5 hover:text-[#172B3A] dark:hover:text-white'
+                            }`}
+                          >
+                            <div className="flex items-center gap-space-sm min-w-0">
+                              <ClinivaIcon name={ws.icon} size={16} strokeWidth={1.5} className="flex-shrink-0" />
+                              <span className="truncate">{ws.label}</span>
+                            </div>
+                            {isCurrent && (
+                              <span className="text-[10px] text-[#0F8B8D] font-bold uppercase tracking-wider bg-[#0F8B8D]/10 px-1.5 py-0.5 rounded">
+                                Active
+                              </span>
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </>
+                )}
+
+                <div className="border-t border-[#E2E8EC] dark:border-white/[0.06] mt-1 pt-1">
                   <button
                     onClick={handleSignOut}
-                    className="w-full flex items-center gap-space-sm px-space-md py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors text-label-md touch-tap"
+                    className="w-full flex items-center gap-space-sm px-space-md py-2 text-[#C94A4A] hover:bg-[#C94A4A]/10 transition-colors text-label-md touch-tap"
                   >
-                    <span className="material-symbols-outlined text-[18px]">logout</span>
+                    <ClinivaIcon name="logout" size={16} strokeWidth={1.5} />
                     Sign out
                   </button>
                 </div>
@@ -349,7 +409,7 @@ export default function TopBar({
 
       {/* Expandable Mobile Search Drawer */}
       {mobileSearchOpen && (
-        <div className="md:hidden fixed top-16 left-0 right-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-3 shadow-md animate-in slide-in-from-top-2 duration-150">
+        <div className="md:hidden fixed top-16 left-0 right-0 z-30 bg-white dark:bg-[#122433] border-b border-[#E2E8EC] dark:border-white/[0.08] p-3 shadow-md animate-in slide-in-from-top-2 duration-150">
           <div className="flex items-center gap-2">
             <InstantPatientSearch
               autoFocus
@@ -358,10 +418,10 @@ export default function TopBar({
             />
             <button
               onClick={() => setMobileSearchOpen(false)}
-              className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+              className="p-2 text-[#60727F] hover:text-[#172B3A] dark:text-[#92A6B5] dark:hover:text-[#E8F0F5]"
               aria-label="Close search"
             >
-              <span className="material-symbols-outlined text-[20px]">close</span>
+              <ClinivaIcon name="close" size={18} strokeWidth={1.5} />
             </button>
           </div>
         </div>

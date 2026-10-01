@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import SubScreenHeader from './SubScreenHeader'
 import StatusBadge from '@/components/ui/StatusBadge'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import { fetchRecentVitals, type VitalsRow } from '@/lib/data'
 
@@ -100,10 +101,10 @@ export default function NursingSubScreens({ slug, userName }: Props) {
       else if (v.temperature <= 96.8 || v.temperature >= 100.5) score += 1
     }
 
-    if (score >= 7) return { score, label: `${score} (High Alert)`, color: 'bg-red-100 text-red-800' }
-    if (score >= 5) return { score, label: `${score} (Medium)`, color: 'bg-amber-100 text-amber-800' }
-    if (score >= 1) return { score, label: `${score} (Low)`, color: 'bg-emerald-100 text-emerald-800' }
-    return { score, label: '0 (Normal)', color: 'bg-emerald-100 text-emerald-800' }
+    if (score >= 7) return { score, label: `${score} (High Alert)`, color: 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200/60 dark:border-rose-900/40' }
+    if (score >= 5) return { score, label: `${score} (Medium)`, color: 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-200/60 dark:border-amber-900/40' }
+    if (score >= 1) return { score, label: `${score} (Low)`, color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-900/40' }
+    return { score, label: '0 (Normal)', color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-900/40' }
   }
 
   return (
@@ -122,91 +123,199 @@ export default function NursingSubScreens({ slug, userName }: Props) {
           />
 
           <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5 shadow-sm space-y-4">
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setSelectedWard('all')}
-                  className={`px-3 py-1.5 rounded-xl text-label-sm font-semibold transition-colors ${selectedWard === 'all' ? 'bg-primary text-on-primary' : 'bg-surface-container hover:bg-surface-container-high'}`}
-                >
-                  All Wards
-                </button>
-                <button
-                  onClick={() => setSelectedWard('Ward A')}
-                  className={`px-3 py-1.5 rounded-xl text-label-sm font-semibold transition-colors ${selectedWard === 'Ward A' ? 'bg-primary text-on-primary' : 'bg-surface-container hover:bg-surface-container-high'}`}
-                >
-                  Ward A (Medical)
-                </button>
-                <button
-                  onClick={() => setSelectedWard('Ward B')}
-                  className={`px-3 py-1.5 rounded-xl text-label-sm font-semibold transition-colors ${selectedWard === 'Ward B' ? 'bg-primary text-on-primary' : 'bg-surface-container hover:bg-surface-container-high'}`}
-                >
-                  Ward B (Surgical)
-                </button>
+            {/* Filter segmented controls + Legend */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-outline-variant/20">
+              {/* Segmented control */}
+              <div className="inline-flex items-center p-1 bg-surface-container rounded-xl border border-outline-variant/30">
+                {[
+                  { id: 'all', label: 'All Wards' },
+                  { id: 'Ward A', label: 'Ward A (Medical)' },
+                  { id: 'Ward B', label: 'Ward B (Surgical)' },
+                ].map((tab) => {
+                  const isSelected = selectedWard === tab.id
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setSelectedWard(tab.id as any)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                        isSelected
+                          ? 'bg-surface-container-lowest text-primary shadow-xs font-bold'
+                          : 'text-on-surface-variant hover:text-on-surface'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  )
+                })}
               </div>
 
-              <div className="flex items-center gap-4 text-label-sm">
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-red-500" /> Occupied</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Available</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Cleaning</span>
+              {/* Status pills legend */}
+              <div className="flex items-center gap-2 sm:gap-3 text-xs flex-wrap">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-900/40 font-medium">
+                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                  <span>Occupied ({beds.filter(b => b.status === 'occupied').length})</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-900/40 font-medium">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span>Available ({beds.filter(b => b.status === 'available').length})</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-900/40 font-medium">
+                  <span className="w-2 h-2 rounded-full bg-amber-500" />
+                  <span>Maintenance ({beds.filter(b => b.status === 'maintenance' || b.status === 'reserved').length})</span>
+                </span>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-2">
-              {filteredBeds.map((bed) => (
-                <div
-                  key={bed.id}
-                  className={`p-4 rounded-2xl border transition-all ${
-                    bed.status === 'occupied'
-                      ? 'bg-red-50/40 border-red-200'
-                      : bed.status === 'available'
-                      ? 'bg-emerald-50/40 border-emerald-200'
-                      : 'bg-amber-50/40 border-amber-200'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-on-surface text-body-md font-mono">{bed.id}</span>
-                    <span className={`text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                      bed.status === 'occupied'
-                        ? 'bg-red-100 text-red-800'
-                        : bed.status === 'available'
-                        ? 'bg-emerald-100 text-emerald-800'
-                        : 'bg-amber-100 text-amber-800'
-                    }`}>
-                      {bed.status}
-                    </span>
-                  </div>
+            {/* Beds Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-1">
+              {filteredBeds.map((bed) => {
+                const isOccupied = bed.status === 'occupied'
+                const isAvailable = bed.status === 'available'
+                const initials = bed.patient
+                  ? bed.patient
+                      .split(' ')
+                      .map((n) => n[0])
+                      .slice(0, 2)
+                      .join('')
+                      .toUpperCase()
+                  : ''
 
-                  <div className="mt-3 min-h-[60px]">
-                    {bed.patient ? (
-                      <div>
-                        <div className="font-semibold text-on-surface">{bed.patient}</div>
-                        <div className="text-body-sm text-on-surface-variant">{bed.condition} ({bed.age})</div>
+                return (
+                  <div
+                    key={bed.id}
+                    className={`group relative p-4 rounded-2xl border transition-all duration-200 flex flex-col justify-between ${
+                      isOccupied
+                        ? 'bg-surface-container-lowest border-outline-variant/40 shadow-xs hover:shadow-md hover:border-rose-300 dark:hover:border-rose-500/40'
+                        : isAvailable
+                        ? 'bg-surface-container-lowest border-outline-variant/40 shadow-xs hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-500/40'
+                        : 'bg-surface-container-lowest border-outline-variant/40 shadow-xs hover:shadow-md hover:border-amber-300 dark:hover:border-amber-500/40'
+                    }`}
+                  >
+                    {/* Top status line */}
+                    <div
+                      className={`absolute top-0 left-4 right-4 h-[2px] rounded-b ${
+                        isOccupied
+                          ? 'bg-rose-500/70'
+                          : isAvailable
+                          ? 'bg-emerald-500/70'
+                          : 'bg-amber-500/70'
+                      }`}
+                    />
+
+                    <div>
+                      {/* Bed ID & Status Pill */}
+                      <div className="flex items-center justify-between pt-1">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant">
+                            <ClinivaIcon name="bed" size={14} />
+                          </div>
+                          <span className="font-mono font-bold text-sm text-on-surface">
+                            {bed.id}
+                          </span>
+                        </div>
+                        <span
+                          className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                            isOccupied
+                              ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200/80 dark:border-rose-900/50'
+                              : isAvailable
+                              ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-900/50'
+                              : 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200/80 dark:border-amber-900/50'
+                          }`}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              isOccupied
+                                ? 'bg-rose-500 animate-pulse'
+                                : isAvailable
+                                ? 'bg-emerald-500'
+                                : 'bg-amber-500'
+                            }`}
+                          />
+                          {bed.status}
+                        </span>
                       </div>
-                    ) : (
-                      <div className="text-body-sm text-outline italic pt-2">Ready for incoming patient admission</div>
-                    )}
-                  </div>
 
-                  <div className="mt-3 pt-3 border-t border-outline-variant/30 flex items-center justify-between">
-                    <span className="text-label-sm text-outline">{bed.ward}</span>
-                    {bed.status === 'occupied' ? (
-                      <button
-                        onClick={() => releaseBed(bed.id)}
-                        className="text-label-sm font-semibold text-red-700 hover:text-red-900"
-                      >
-                        Discharge
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => openAssignBedModal(bed.id)}
-                        className="text-label-sm font-semibold text-primary hover:underline"
-                      >
-                        Assign Patient
-                      </button>
-                    )}
+                      {/* Patient / Bed Info */}
+                      <div className="mt-3.5 min-h-[58px]">
+                        {isOccupied && bed.patient ? (
+                          <div className="flex items-start gap-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                              {initials}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h4 className="font-semibold text-sm text-on-surface truncate leading-snug">
+                                {bed.patient}
+                              </h4>
+                              <div className="flex items-center gap-1.5 text-xs text-on-surface-variant mt-0.5">
+                                <span className="truncate">{bed.condition || 'Inpatient Care'}</span>
+                                {bed.age && (
+                                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface-container font-medium text-on-surface-variant flex-shrink-0">
+                                    {bed.age}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ) : isAvailable ? (
+                          <div className="py-2 px-2.5 rounded-xl border border-dashed border-emerald-300/60 dark:border-emerald-900/40 bg-emerald-50/40 dark:bg-emerald-950/10 flex items-center gap-2.5">
+                            <div className="w-6 h-6 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+                              <ClinivaIcon name="check" size={12} />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">
+                                Ready for Admission
+                              </div>
+                              <div className="text-[10px] text-emerald-600/80 dark:text-emerald-400/70">
+                                Sanitized & Inspected
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="py-2 px-2.5 rounded-xl border border-dashed border-amber-300/60 dark:border-amber-900/40 bg-amber-50/40 dark:bg-amber-950/10 flex items-center gap-2.5">
+                            <div className="w-6 h-6 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
+                              <ClinivaIcon name="refresh" size={12} className="animate-spin text-amber-600 dark:text-amber-400" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-xs font-semibold text-amber-800 dark:text-amber-300">
+                                Sanitization In Progress
+                              </div>
+                              <div className="text-[10px] text-amber-600/80 dark:text-amber-400/70">
+                                Deep cleaning & turnover
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Bottom Action Bar */}
+                    <div className="mt-3.5 pt-2.5 border-t border-outline-variant/20 flex items-center justify-between">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-on-surface-variant">
+                        <ClinivaIcon name="building" size={11} className="text-outline" />
+                        {bed.ward}
+                      </span>
+
+                      {isOccupied ? (
+                        <button
+                          onClick={() => releaseBed(bed.id)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 border border-rose-200/70 dark:border-rose-900/50 transition-colors"
+                        >
+                          <ClinivaIcon name="logout" size={11} />
+                          <span>Discharge</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => openAssignBedModal(bed.id)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-primary bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 border border-primary/30 transition-colors"
+                        >
+                          <ClinivaIcon name="person_add" size={11} />
+                          <span>Assign Patient</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </>
@@ -223,7 +332,7 @@ export default function NursingSubScreens({ slug, userName }: Props) {
             description="Continuous telemetry and intermittent vital signs observation log with early warning threshold alerts."
             actions={
               <button onClick={() => setVitalsOpen(true)} className="btn-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">monitor_heart</span>
+                <ClinivaIcon name="monitor_heart" size={16} strokeWidth={1.5} />
                 <span>Log Vitals Entry</span>
               </button>
             }
@@ -233,22 +342,22 @@ export default function NursingSubScreens({ slug, userName }: Props) {
             <div className="p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm">
               <span className="text-label-sm text-on-surface-variant font-medium">Blood Pressure</span>
               <div className="text-headline-md font-bold text-on-surface mt-1 font-mono">{vitals.bp}</div>
-              <span className="text-label-sm text-emerald-700 font-semibold">Normal MAP</span>
+              <span className="text-label-sm text-emerald-600 dark:text-emerald-400 font-semibold">Normal MAP</span>
             </div>
             <div className="p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm">
               <span className="text-label-sm text-on-surface-variant font-medium">Pulse Rate</span>
               <div className="text-headline-md font-bold text-primary mt-1 font-mono">{vitals.heartRate} bpm</div>
-              <span className="text-label-sm text-emerald-700 font-semibold">Normal Sinus</span>
+              <span className="text-label-sm text-emerald-600 dark:text-emerald-400 font-semibold">Normal Sinus</span>
             </div>
             <div className="p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm">
               <span className="text-label-sm text-on-surface-variant font-medium">SpO2 (Room Air)</span>
               <div className="text-headline-md font-bold text-on-surface mt-1 font-mono">{vitals.spo2}</div>
-              <span className="text-label-sm text-emerald-700 font-semibold">Adequate</span>
+              <span className="text-label-sm text-emerald-600 dark:text-emerald-400 font-semibold">Adequate</span>
             </div>
             <div className="p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm">
               <span className="text-label-sm text-on-surface-variant font-medium">Temperature</span>
               <div className="text-headline-md font-bold text-on-surface mt-1 font-mono">{vitals.temperature}°F</div>
-              <span className="text-label-sm text-emerald-700 font-semibold">Afebrile</span>
+              <span className="text-label-sm text-emerald-600 dark:text-emerald-400 font-semibold">Afebrile</span>
             </div>
           </div>
 

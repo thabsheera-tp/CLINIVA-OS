@@ -1,195 +1,10 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClientSideClient } from '@/lib/supabase/client'
 import ThemeToggle from '@/components/ui/ThemeToggle'
-
-type RoleCategory = 'all' | 'clinical' | 'operations' | 'admin'
-
-interface RoleCardItem {
-  role: string
-  label: string
-  department: string
-  badge: string
-  category: 'clinical' | 'operations' | 'admin'
-  icon: string
-  email: string
-  quickStat: string
-  features: string[]
-  accent: {
-    iconBg: string
-    badgeBg: string
-    ringColor: string
-    glowHover: string
-    launchBtn: string
-  }
-}
-
-const ROLE_CARDS: RoleCardItem[] = [
-  {
-    role: 'doctor',
-    label: 'Doctor Portal',
-    department: 'Clinical Consultation & OPD',
-    badge: 'Physician / CMO',
-    category: 'clinical',
-    icon: 'stethoscope',
-    email: 'doctor@cliniva.os',
-    quickStat: '14 Waiting OPD',
-    features: ['OPD Triage Queue', 'SOAP Clinical Notes', 'e-Prescriptions'],
-    accent: {
-      iconBg: 'bg-emerald-50 text-emerald-700 border border-emerald-200/60',
-      badgeBg: 'bg-emerald-50 text-emerald-800 border-emerald-200/50',
-      ringColor: 'hover:border-emerald-500 hover:shadow-emerald-500/10',
-      glowHover: 'group-hover:text-emerald-700',
-      launchBtn: 'bg-emerald-600 hover:bg-emerald-700 text-white',
-    },
-  },
-  {
-    role: 'front_desk',
-    label: 'Front Desk',
-    department: 'Registration & Queue Dispatch',
-    badge: 'Outpatient Reception',
-    category: 'operations',
-    icon: 'badge',
-    email: 'reception@cliniva.os',
-    quickStat: '32 Tokens Issued',
-    features: ['UHID Generation', 'Queue Dispatcher', 'Specialty Triage'],
-    accent: {
-      iconBg: 'bg-sky-50 text-sky-700 border border-sky-200/60',
-      badgeBg: 'bg-sky-50 text-sky-800 border-sky-200/50',
-      ringColor: 'hover:border-sky-500 hover:shadow-sky-500/10',
-      glowHover: 'group-hover:text-sky-700',
-      launchBtn: 'bg-sky-600 hover:bg-sky-700 text-white',
-    },
-  },
-  {
-    role: 'nurse',
-    label: 'Nursing Ward',
-    department: 'Inpatient Monitoring & MAR',
-    badge: 'Ward Station',
-    category: 'clinical',
-    icon: 'local_hospital',
-    email: 'nurse@cliniva.os',
-    quickStat: '24 Beds Occupied',
-    features: ['Bed Roster Map', 'Vitals Telemetry', 'Med Administration'],
-    accent: {
-      iconBg: 'bg-rose-50 text-rose-700 border border-rose-200/60',
-      badgeBg: 'bg-rose-50 text-rose-800 border-rose-200/50',
-      ringColor: 'hover:border-rose-500 hover:shadow-rose-500/10',
-      glowHover: 'group-hover:text-rose-700',
-      launchBtn: 'bg-rose-600 hover:bg-rose-700 text-white',
-    },
-  },
-  {
-    role: 'pharmacist',
-    label: 'Pharmacy & Stock',
-    department: 'Dispense & Inventory Control',
-    badge: 'Central Dispensary',
-    category: 'operations',
-    icon: 'pill',
-    email: 'pharmacy@cliniva.os',
-    quickStat: '9 Orders Due',
-    features: ['Prescription Dispense', 'Batch Expiry Alerts', 'Stock Purchase Orders'],
-    accent: {
-      iconBg: 'bg-violet-50 text-violet-700 border border-violet-200/60',
-      badgeBg: 'bg-violet-50 text-violet-800 border-violet-200/50',
-      ringColor: 'hover:border-violet-500 hover:shadow-violet-500/10',
-      glowHover: 'group-hover:text-violet-700',
-      launchBtn: 'bg-violet-600 hover:bg-violet-700 text-white',
-    },
-  },
-  {
-    role: 'lab_tech',
-    label: 'Lab & Diagnostics',
-    department: 'Pathology & Specimen Tracking',
-    badge: 'Diagnostics Lab',
-    category: 'clinical',
-    icon: 'science',
-    email: 'lab@cliniva.os',
-    quickStat: '11 Tests In-flight',
-    features: ['Specimen Accession', 'Analyzer HL7 Sync', 'Normal Range Verification'],
-    accent: {
-      iconBg: 'bg-amber-50 text-amber-700 border border-amber-200/60',
-      badgeBg: 'bg-amber-50 text-amber-800 border-amber-200/50',
-      ringColor: 'hover:border-amber-500 hover:shadow-amber-500/10',
-      glowHover: 'group-hover:text-amber-700',
-      launchBtn: 'bg-amber-600 hover:bg-amber-700 text-white',
-    },
-  },
-  {
-    role: 'cashier',
-    label: 'Billing & Cashier',
-    department: 'Invoicing & TPA Claims',
-    badge: 'Finance & Accounts',
-    category: 'operations',
-    icon: 'receipt_long',
-    email: 'billing@cliniva.os',
-    quickStat: '7 Invoices Pending',
-    features: ['Itemized Invoicing', 'Insurance Pre-Auth', 'Split Payment Receipts'],
-    accent: {
-      iconBg: 'bg-teal-50 text-teal-700 border border-teal-200/60',
-      badgeBg: 'bg-teal-50 text-teal-800 border-teal-200/50',
-      ringColor: 'hover:border-teal-500 hover:shadow-teal-500/10',
-      glowHover: 'group-hover:text-teal-700',
-      launchBtn: 'bg-teal-600 hover:bg-teal-700 text-white',
-    },
-  },
-  {
-    role: 'admin',
-    label: 'Admin Suite',
-    department: 'Governance & Operations Analytics',
-    badge: 'Administration',
-    category: 'admin',
-    icon: 'admin_panel_settings',
-    email: 'admin@cliniva.os',
-    quickStat: 'System Operational',
-    features: ['Department Analytics', 'Staff RBAC Security', 'Audit Trail Logs'],
-    accent: {
-      iconBg: 'bg-indigo-50 text-indigo-700 border border-indigo-200/60',
-      badgeBg: 'bg-indigo-50 text-indigo-800 border-indigo-200/50',
-      ringColor: 'hover:border-indigo-500 hover:shadow-indigo-500/10',
-      glowHover: 'group-hover:text-indigo-700',
-      launchBtn: 'bg-indigo-600 hover:bg-indigo-700 text-white',
-    },
-  },
-  {
-    role: 'canteen',
-    label: 'Canteen & Dietary',
-    department: 'Patient Nutrition & Cafeteria POS',
-    badge: 'Dietary Services',
-    category: 'admin',
-    icon: 'restaurant',
-    email: 'canteen@cliniva.os',
-    quickStat: '42 Trays Dispatched',
-    features: ['Ward Diet Schedules', 'Allergen Guard', 'Cafeteria Point-of-Sale'],
-    accent: {
-      iconBg: 'bg-orange-50 text-orange-700 border border-orange-200/60',
-      badgeBg: 'bg-orange-50 text-orange-800 border-orange-200/50',
-      ringColor: 'hover:border-orange-500 hover:shadow-orange-500/10',
-      glowHover: 'group-hover:text-orange-700',
-      launchBtn: 'bg-orange-600 hover:bg-orange-700 text-white',
-    },
-  },
-  {
-    role: 'patient',
-    label: 'Patient Portal',
-    department: 'Personal Health Records & Care',
-    badge: 'Patient Access',
-    category: 'admin',
-    icon: 'person_pin',
-    email: 'patient@cliniva.os',
-    quickStat: 'Self-Service Ready',
-    features: ['Unified Health Record', 'Prescription History', 'Lab Report Download'],
-    accent: {
-      iconBg: 'bg-cyan-50 text-cyan-700 border border-cyan-200/60',
-      badgeBg: 'bg-cyan-50 text-cyan-800 border-cyan-200/50',
-      ringColor: 'hover:border-cyan-500 hover:shadow-cyan-500/10',
-      glowHover: 'group-hover:text-cyan-700',
-      launchBtn: 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    },
-  },
-]
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 const ROLE_ROUTES: Record<string, string> = {
   doctor: '/doctor',
@@ -203,58 +18,105 @@ const ROLE_ROUTES: Record<string, string> = {
   patient: '/portal',
 }
 
-const CATEGORIES: { id: RoleCategory; label: string; count: number }[] = [
-  { id: 'all', label: 'All Workspaces', count: 9 },
-  { id: 'clinical', label: 'Clinical Care', count: 3 },
-  { id: 'operations', label: 'Operations', count: 3 },
-  { id: 'admin', label: 'Admin & Services', count: 3 },
+const DEMO_ACCOUNTS = [
+  {
+    role: 'doctor',
+    name: 'Dr. Sarah Jenkins, MD',
+    title: 'Physician / CMO',
+    department: 'Cardiology & OPD',
+    email: 'doctor@cliniva.os',
+    icon: 'stethoscope',
+    badge: 'Clinical',
+  },
+  {
+    role: 'admin',
+    name: 'Alexander Sterling',
+    title: 'Hospital Director',
+    department: 'Governance & Clinical Administration',
+    email: 'admin@cliniva.os',
+    icon: 'admin_panel_settings',
+    badge: 'Multi-Role (Admin + Doctor)',
+  },
+  {
+    role: 'front_desk',
+    name: 'Elena Rostova',
+    title: 'Receptionist',
+    department: 'Patient Check-in & Queue Dispatch',
+    email: 'reception@cliniva.os',
+    icon: 'badge',
+    badge: 'Operations',
+  },
+  {
+    role: 'nurse',
+    name: 'Nurse Priya Sharma, RN',
+    title: 'Charge Nurse',
+    department: 'Inpatient Ward & Bed Telemetry',
+    email: 'nurse@cliniva.os',
+    icon: 'local_hospital',
+    badge: 'Clinical',
+  },
+  {
+    role: 'pharmacist',
+    name: 'Marcus Vance, PharmD',
+    title: 'Head Pharmacist',
+    department: 'Dispensary & Stock Control',
+    email: 'pharmacy@cliniva.os',
+    icon: 'pill',
+    badge: 'Support',
+  },
+  {
+    role: 'lab_tech',
+    name: 'David Kalu, MLS',
+    title: 'Pathology Specialist',
+    department: 'Diagnostic Laboratory',
+    email: 'lab@cliniva.os',
+    icon: 'science',
+    badge: 'Support',
+  },
+  {
+    role: 'cashier',
+    name: 'Hannah Brooks',
+    title: 'Finance Cashier',
+    department: 'Invoicing & Claims POS',
+    email: 'billing@cliniva.os',
+    icon: 'receipt_long',
+    badge: 'Operations',
+  },
+  {
+    role: 'canteen',
+    name: 'Chef Marco Rossi',
+    title: 'Dietary Manager',
+    department: 'Dietary & Cafeteria',
+    email: 'canteen@cliniva.os',
+    icon: 'restaurant',
+    badge: 'Support',
+  },
+  {
+    role: 'patient',
+    name: 'Marcus Delacroix',
+    title: 'Registered Patient',
+    department: 'Personal Health Records',
+    email: 'patient@cliniva.os',
+    icon: 'person_pin',
+    badge: 'Self-Service',
+  },
 ]
 
 export default function LoginPage() {
   const router = useRouter()
   const supabase = createClientSideClient()
 
-  const [activeCategory, setActiveCategory] = useState<RoleCategory>('all')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [launchingRole, setLaunchingRole] = useState<string | null>(null)
-  
-  // Enterprise Sign In Modal state
-  const [showAuthModal, setShowAuthModal] = useState(false)
-  const [authRole, setAuthRole] = useState<RoleCardItem>(ROLE_CARDS[0])
-  const [email, setEmail] = useState(ROLE_CARDS[0].email)
+  const [email, setEmail] = useState('doctor@cliniva.os')
   const [password, setPassword] = useState('demo1234')
   const [trustDevice, setTrustDevice] = useState(true)
   const [authLoading, setAuthLoading] = useState(false)
   const [authError, setAuthError] = useState<string | null>(null)
+  const [showDemoCredentials, setShowDemoCredentials] = useState(false)
 
-  // Filtered role list
-  const filteredRoles = useMemo(() => {
-    return ROLE_CARDS.filter((item) => {
-      const matchesCategory = activeCategory === 'all' || item.category === activeCategory
-      const q = searchQuery.toLowerCase().trim()
-      const matchesSearch =
-        !q ||
-        item.label.toLowerCase().includes(q) ||
-        item.department.toLowerCase().includes(q) ||
-        item.badge.toLowerCase().includes(q) ||
-        item.features.some((f) => f.toLowerCase().includes(q))
-      return matchesCategory && matchesSearch
-    })
-  }, [activeCategory, searchQuery])
-
-  const handleQuickLaunch = (card: RoleCardItem) => {
-    setLaunchingRole(card.role)
-    document.cookie = `cliniva_demo_role=${card.role}; path=/; max-age=86400`
-    const dest = ROLE_ROUTES[card.role] ?? '/doctor'
-    window.location.href = dest
-  }
-
-  const openAuthModalForRole = (card: RoleCardItem) => {
-    setAuthRole(card)
-    setEmail(card.email)
+  const handleSelectDemoAccount = (acc: typeof DEMO_ACCOUNTS[0]) => {
+    setEmail(acc.email)
     setPassword('demo1234')
     setAuthError(null)
-    setShowAuthModal(true)
   }
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
@@ -262,374 +124,105 @@ export default function LoginPage() {
     setAuthLoading(true)
     setAuthError(null)
 
+    const trimmedEmail = email.trim().toLowerCase()
+
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-      if (!error && data?.session) {
-        const userRole = data.session.user.user_metadata?.role as string | undefined
-        const dest = userRole ? (ROLE_ROUTES[userRole] ?? '/') : '/'
-        window.location.href = dest
+      // 1. Attempt Supabase Auth with backend credentials
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: trimmedEmail,
+        password,
+      })
+
+      if (!error && data?.session?.user) {
+        const meta = data.session.user.user_metadata || {}
+        const userRole = meta.role as string | undefined
+
+        // Determine target workspace from the authenticated user's actual profile
+        const targetRoute = userRole ? (ROLE_ROUTES[userRole] ?? '/doctor') : '/doctor'
+        
+        // Sync cookies for client helpers
+        if (userRole) {
+          document.cookie = `cliniva_auth_user=${userRole}; path=/; max-age=86400; SameSite=Lax`
+          document.cookie = `cliniva_demo_role=${userRole}; path=/; max-age=86400; SameSite=Lax`
+        }
+
+        window.location.href = targetRoute
         return
       }
     } catch {
-      // Offline fallback
+      // Offline fallback handling
     }
 
-    // Demo role fallback
-    document.cookie = `cliniva_demo_role=${authRole.role}; path=/; max-age=86400`
-    const dest = ROLE_ROUTES[authRole.role] ?? '/doctor'
-    window.location.href = dest
+    // 2. Demo mode verification: Match email against authorized system accounts
+    const matchedAccount = DEMO_ACCOUNTS.find((acc) => acc.email.toLowerCase() === trimmedEmail)
+
+    if (matchedAccount) {
+      // Determine the assigned role strictly from the matched authorized account
+      const assignedRole = matchedAccount.role
+      const targetRoute = ROLE_ROUTES[assignedRole] ?? '/doctor'
+
+      document.cookie = `cliniva_auth_user=${assignedRole}; path=/; max-age=86400; SameSite=Lax`
+      document.cookie = `cliniva_demo_role=${assignedRole}; path=/; max-age=86400; SameSite=Lax`
+
+      window.location.href = targetRoute
+      return
+    }
+
+    setAuthLoading(false)
+    setAuthError('Unauthorized account. Please enter a valid authorized clinical email or select a verified test account.')
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-50 relative overflow-x-hidden flex flex-col justify-between selection:bg-primary/20 transition-colors duration-200">
-      {/* Dynamic Ambient Background Elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute -top-32 -right-32 w-[550px] h-[550px] bg-gradient-to-br from-primary/10 via-secondary-fixed/15 to-transparent rounded-full blur-3xl" />
-        <div className="absolute top-1/2 -left-48 w-[500px] h-[500px] bg-gradient-to-tr from-sky-400/10 via-primary-fixed/20 to-transparent rounded-full blur-3xl" />
-        <div className="absolute -bottom-32 right-1/4 w-[450px] h-[450px] bg-gradient-to-t from-emerald-500/10 via-transparent to-transparent rounded-full blur-3xl" />
-        <div className="absolute inset-0 bg-[radial-gradient(#bcc9c6_1px,transparent_1px)] [background-size:24px_24px] opacity-25" />
-      </div>
-
-      {/* Top Brand & Enterprise Status Bar */}
-      <header className="w-full border-b border-outline-variant/30 bg-surface-container-lowest/90 backdrop-blur-md sticky top-0 z-30 shadow-[0_1px_12px_rgba(0,0,0,0.02)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-          {/* Logo & Medical Facility Info */}
-          <a href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-[#008378] text-white flex items-center justify-center shadow-md shadow-primary/20 flex-shrink-0 group-hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined text-[24px]">vital_signs</span>
+    <div className="min-h-screen bg-[#F7F9FA] dark:bg-[#0D1B26] text-[#172B3A] dark:text-[#E8F0F5] flex flex-col justify-between selection:bg-[#0F8B8D]/20 transition-colors duration-200">
+      {/* Top Header */}
+      <header className="w-full border-b border-[#E2E8EC] dark:border-white/[0.08] bg-white/95 dark:bg-[#122433]/95 backdrop-blur-md sticky top-0 z-30">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+          <a href="/?intro=true" className="flex items-center gap-2.5 group">
+            <div className="w-8 h-8 rounded-lg bg-[#0F8B8D] text-white flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+              <ClinivaIcon name="vital_signs" size={20} strokeWidth={1.5} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-heading text-headline-sm sm:text-headline-md font-bold tracking-tight text-on-surface">
-                  Cliniva OS
+                <span className="font-heading font-bold text-sm tracking-tight text-[#123047] dark:text-white">
+                  CLINIVA OS
                 </span>
-                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-primary-fixed/50 text-on-primary-fixed-variant border border-primary-fixed">
-                  v2.4 Enterprise
+                <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 text-[#0F8B8D] dark:text-[#28B5B7] border border-[#0F8B8D]/30">
+                  Secure Gateway
                 </span>
               </div>
-              <p className="text-[12px] text-on-surface-variant font-medium leading-none hidden sm:block">
-                St. Jude Medical Center — Integrated Clinical Workstation
-              </p>
             </div>
           </a>
 
-          {/* Right Header Badges & Actions */}
-          <div className="flex items-center gap-2 sm:gap-4">
-            {/* Live Workspaces Indicator */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-low border border-outline-variant/40 text-[12px] text-on-surface-variant">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-semibold text-on-surface">9 Workspaces Ready</span>
-            </div>
-
-            {/* Dark / Light Mode Switcher */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium hidden sm:inline">
+              St. Jude Medical Center
+            </span>
             <ThemeToggle />
-
-            {/* Staff Sign-In Trigger */}
-            <button
-              onClick={() => openAuthModalForRole(ROLE_CARDS[0])}
-              className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-surface-container-lowest hover:bg-surface-container-low border border-outline-variant/60 text-on-surface font-semibold text-label-md transition-all shadow-sm hover:shadow active:scale-95"
-            >
-              <span className="material-symbols-outlined text-[18px] text-primary">key</span>
-              <span className="hidden sm:inline">Enterprise Staff Sign-In</span>
-              <span className="sm:hidden">Sign In</span>
-            </button>
           </div>
         </div>
       </header>
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
-        
-        {/* Hero Section */}
-        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-secondary-fixed/50 border border-secondary-fixed text-on-primary-fixed-variant text-[12px] font-semibold mb-3">
-            <span className="material-symbols-outlined text-[16px] text-primary">verified_user</span>
-            <span>Single Click Sandbox & Role Navigation</span>
-          </div>
-
-          <h1 className="font-heading text-headline-lg sm:text-display-lg text-on-surface font-bold tracking-tight mb-3">
-            Select Your Clinical Workspace
-          </h1>
-          <p className="text-body-lg text-on-surface-variant max-w-2xl mx-auto">
-            Experience role-tailored dashboards designed with high-contrast clinical typography, 
-            instant patient queues, and HL7-synchronized workflows.
-          </p>
-        </div>
-
-        {/* Filter and Search Bar Toolbar */}
-        <div className="bg-surface-container-lowest/90 backdrop-blur-md rounded-2xl p-2 sm:p-3 border border-outline-variant/40 shadow-card mb-8">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-            {/* Category Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto smooth-touch-scroll pb-1 sm:pb-0">
-              {CATEGORIES.map((cat) => {
-                const isActive = activeCategory === cat.id
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => setActiveCategory(cat.id)}
-                    className={`px-3.5 py-2 rounded-xl text-label-md font-semibold transition-all whitespace-nowrap flex items-center gap-2 touch-tap ${
-                      isActive
-                        ? 'bg-primary text-on-primary shadow-sm'
-                        : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low'
-                    }`}
-                  >
-                    <span>{cat.label}</span>
-                    <span
-                      className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${
-                        isActive
-                          ? 'bg-white/20 text-white'
-                          : 'bg-surface-container text-on-surface-variant'
-                      }`}
-                    >
-                      {cat.count}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-
-            {/* Live Search Box */}
-            <div className="relative w-full sm:w-72 md:w-80 flex-shrink-0">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">
-                search
-              </span>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search role or capability..."
-                className="w-full pl-9 pr-8 py-2 bg-surface-container-low border border-outline-variant/40 rounded-xl text-body-sm text-on-surface placeholder:text-on-surface-variant/70 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface text-[14px]"
-                >
-                  <span className="material-symbols-outlined text-[16px]">close</span>
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Roles Grid */}
-        {filteredRoles.length === 0 ? (
-          <div className="bg-surface-container-lowest rounded-2xl p-12 text-center border border-outline-variant/30 shadow-card max-w-md mx-auto">
-            <span className="material-symbols-outlined text-outline text-[48px] mb-2">search_off</span>
-            <h3 className="font-heading text-headline-sm font-semibold text-on-surface mb-1">No roles matched</h3>
-            <p className="text-body-sm text-on-surface-variant mb-4">
-              We couldn&apos;t find any roles matching &quot;{searchQuery}&quot;.
-            </p>
-            <button
-              onClick={() => {
-                setSearchQuery('')
-                setActiveCategory('all')
-              }}
-              className="btn-primary text-label-md py-2 px-4 inline-flex items-center gap-2"
-            >
-              <span className="material-symbols-outlined text-[18px]">refresh</span>
-              Reset Search & Filters
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-            {filteredRoles.map((card) => {
-              const isLaunching = launchingRole === card.role
-
-              return (
-                <div
-                  key={card.role}
-                  onClick={() => handleQuickLaunch(card)}
-                  className={`group relative bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/40 transition-all duration-200 cursor-pointer flex flex-col justify-between hover:-translate-y-1 hover:shadow-card-hover ${card.accent.ringColor}`}
-                >
-                  {/* Subtle top ambient glow */}
-                  <div className="absolute top-0 right-0 left-0 h-1 rounded-t-2xl bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                  {/* Top Row: Icon + Badge + Live Stat */}
-                  <div>
-                    <div className="flex items-start justify-between gap-3 mb-4">
-                      {/* Icon container */}
-                      <div
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 ${card.accent.iconBg}`}
-                      >
-                        <span className="material-symbols-outlined text-[26px]">{card.icon}</span>
-                      </div>
-
-                      {/* Badge and Quick Stat */}
-                      <div className="flex flex-col items-end gap-1">
-                        <span
-                          className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${card.accent.badgeBg}`}
-                        >
-                          {card.badge}
-                        </span>
-                        <span className="text-[11px] font-medium text-on-surface-variant flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                          {card.quickStat}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Role Title & Subtitle */}
-                    <div className="mb-4">
-                      <h3
-                        className={`font-heading text-headline-sm font-bold text-on-surface transition-colors ${card.accent.glowHover}`}
-                      >
-                        {card.label}
-                      </h3>
-                      <p className="text-body-sm text-on-surface-variant mt-0.5 line-clamp-1">
-                        {card.department}
-                      </p>
-                    </div>
-
-                    {/* Feature Capability Tags */}
-                    <div className="flex flex-wrap gap-1.5 mb-5">
-                      {card.features.map((feat, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2 py-0.5 bg-surface-container-low border border-outline-variant/30 rounded-md text-[11px] font-medium text-on-surface-variant group-hover:bg-surface-container transition-colors"
-                        >
-                          {feat}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Actions Bar */}
-                  <div className="pt-3 border-t border-outline-variant/20 flex items-center justify-between gap-2">
-                    {/* Launch Workspace Button */}
-                    <a
-                      href={ROLE_ROUTES[card.role] ?? '/doctor'}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleQuickLaunch(card)
-                      }}
-                      className={`flex-1 py-2.5 px-4 rounded-xl text-label-md font-semibold transition-all flex items-center justify-center gap-2 shadow-sm ${card.accent.launchBtn}`}
-                    >
-                      {isLaunching ? (
-                        <>
-                          <span className="material-symbols-outlined text-[18px] animate-spin">
-                            progress_activity
-                          </span>
-                          <span>Entering...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Launch Workspace</span>
-                          <span className="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">
-                            arrow_forward
-                          </span>
-                        </>
-                      )}
-                    </a>
-
-                    {/* Credentials Sign-In Shortcut Button */}
-                    <button
-                      type="button"
-                      title="Enter custom credentials for this role"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        openAuthModalForRole(card)
-                      }}
-                      className="w-10 h-10 rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center flex-shrink-0 touch-tap"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">lock</span>
-                    </button>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-
-        {/* Quick Helper Banner */}
-        <div className="mt-8 p-4 rounded-2xl bg-surface-container-lowest/80 border border-outline-variant/30 backdrop-blur-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-              <span className="material-symbols-outlined text-[18px]">lightbulb</span>
-            </div>
-            <div>
-              <p className="text-body-sm font-semibold text-on-surface">
-                Instant Sandbox Mode Active
-              </p>
-              <p className="text-[12px] text-on-surface-variant">
-                Every role opens a fully simulated dashboard pre-loaded with patient charts, live vitals telemetry, and sample clinical orders.
+      {/* Main Sign-In Screen */}
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-12">
+        <div className="w-full max-w-md">
+          {/* Card Container */}
+          <div className="bg-white dark:bg-[#122433] border border-[#E2E8EC] dark:border-white/[0.08] rounded-xl p-6 sm:p-8">
+            <div className="text-center mb-6">
+              <div className="w-10 h-10 rounded-xl bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 text-[#0F8B8D] dark:text-[#28B5B7] border border-[#0F8B8D]/30 flex items-center justify-center mx-auto mb-3">
+                <ClinivaIcon name="lock" size={20} strokeWidth={1.5} />
+              </div>
+              <h1 className="font-heading text-xl font-bold tracking-tight text-[#123047] dark:text-white">
+                Enterprise Clinical Sign-In
+              </h1>
+              <p className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium mt-1">
+                Enter your authorized clinical credentials to access your assigned workspace.
               </p>
             </div>
-          </div>
-          <a
-            href="/onboarding"
-            className="inline-flex items-center gap-1 text-primary font-semibold text-label-md hover:underline whitespace-nowrap"
-          >
-            <span>Clinic Setup Wizard</span>
-            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-          </a>
-        </div>
-      </main>
 
-      {/* Enterprise Staff Authentication Modal */}
-      {showAuthModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-surface/40 backdrop-blur-sm animate-fadeIn"
-          onClick={() => setShowAuthModal(false)}
-        >
-          <div
-            className="w-full max-w-md bg-surface-container-lowest rounded-2xl p-6 sm:p-7 shadow-modal border border-outline-variant/30 relative max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center ${authRole.accent.iconBg}`}
-                >
-                  <span className="material-symbols-outlined text-[22px]">{authRole.icon}</span>
-                </div>
-                <div>
-                  <h3 className="font-heading text-headline-sm font-bold text-on-surface">
-                    Enterprise Staff Sign In
-                  </h3>
-                  <p className="text-[12px] text-on-surface-variant">
-                    {authRole.label} • {authRole.department}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowAuthModal(false)}
-                className="w-8 h-8 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors"
-              >
-                <span className="material-symbols-outlined text-[20px]">close</span>
-              </button>
-            </div>
-
-            {/* Quick Role Switcher Chips inside Modal */}
-            <div className="mb-4">
-              <label className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1.5">
-                Switch Role Preset
-              </label>
-              <div className="flex gap-1.5 overflow-x-auto smooth-touch-scroll pb-1">
-                {ROLE_CARDS.map((c) => (
-                  <button
-                    key={c.role}
-                    type="button"
-                    onClick={() => {
-                      setAuthRole(c)
-                      setEmail(c.email)
-                    }}
-                    className={`px-2.5 py-1 rounded-lg text-[12px] font-semibold whitespace-nowrap transition-all border ${
-                      authRole.role === c.role
-                        ? 'bg-primary text-white border-primary shadow-xs'
-                        : 'bg-surface-container-low text-on-surface-variant border-outline-variant/30 hover:bg-surface-container'
-                    }`}
-                  >
-                    {c.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
+            {/* Error Message */}
             {authError && (
-              <div className="mb-4 p-3 rounded-xl bg-error-container text-on-error-container text-body-sm flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">error</span>
+              <div className="mb-4 p-3 rounded-lg bg-[#C94A4A]/10 border border-[#C94A4A]/25 text-[#C94A4A] text-xs flex items-center gap-2">
+                <ClinivaIcon name="error" size={18} strokeWidth={1.5} className="flex-shrink-0" />
                 <span>{authError}</span>
               </div>
             )}
@@ -637,130 +230,136 @@ export default function LoginPage() {
             {/* Form */}
             <form onSubmit={handleAuthSubmit} className="space-y-4">
               <div>
-                <label className="text-label-md text-on-surface font-semibold block mb-1">
-                  Enterprise Email / Hospital ID
+                <label className="block text-xs font-bold text-[#123047] dark:text-white mb-1">
+                  Clinical Email / Staff ID
                 </label>
                 <div className="relative">
-                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">
-                    mail
-                  </span>
+                  <ClinivaIcon name="mail" size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A5D6B] dark:text-[#9FB1C0]" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@cliniva.os"
-                    className="w-full pl-9 pr-3 py-2.5 bg-surface-container-lowest border border-outline-variant/50 rounded-xl text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all"
+                    placeholder="doctor@cliniva.os"
+                    className="w-full pl-9 pr-3 py-2 bg-[#F7F9FA] dark:bg-[#0D1B26] border border-[#E2E8EC] dark:border-white/[0.1] rounded-xl text-xs sm:text-sm text-[#123047] dark:text-white focus:outline-none focus:border-[#0F8B8D] focus:ring-1 focus:ring-[#0F8B8D]/20 transition-all font-medium"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-label-md text-on-surface font-semibold">
-                    Password / Passcode
+                  <label className="block text-xs font-bold text-[#123047] dark:text-white">
+                    Password / Clinical PIN
                   </label>
-                  <span className="text-[12px] text-primary hover:underline cursor-pointer">
-                    Forgot?
-                  </span>
                 </div>
                 <div className="relative">
-                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">
-                    lock
-                  </span>
+                  <ClinivaIcon name="key" size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A5D6B] dark:text-[#9FB1C0]" />
                   <input
                     type="password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-9 pr-3 py-2.5 bg-surface-container-lowest border border-outline-variant/50 rounded-xl text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all"
+                    className="w-full pl-9 pr-3 py-2 bg-[#F7F9FA] dark:bg-[#0D1B26] border border-[#E2E8EC] dark:border-white/[0.1] rounded-xl text-xs sm:text-sm text-[#123047] dark:text-white focus:outline-none focus:border-[#0F8B8D] focus:ring-1 focus:ring-[#0F8B8D]/20 transition-all font-medium"
                   />
                 </div>
               </div>
 
-              {/* MFA Trust Device */}
-              <label className="flex items-center gap-2.5 pt-1 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={trustDevice}
-                  onChange={(e) => setTrustDevice(e.target.checked)}
-                  className="w-4 h-4 rounded text-primary focus:ring-primary border-outline-variant/50"
-                />
-                <span className="text-body-sm text-on-surface-variant">
-                  Trust this clinical workstation (MFA bypass 8h)
-                </span>
-              </label>
-
-              {/* Submit Buttons */}
-              <div className="pt-2 flex flex-col gap-2">
-                <button
-                  type="submit"
-                  disabled={authLoading}
-                  className="w-full py-3 bg-primary hover:bg-primary-container text-white rounded-xl font-label-lg font-semibold transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  {authLoading ? (
-                    <>
-                      <span className="material-symbols-outlined text-[18px] animate-spin">
-                        progress_activity
-                      </span>
-                      <span>Verifying Credentials...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="material-symbols-outlined text-[18px]">login</span>
-                      <span>Authenticate & Launch Workspace</span>
-                    </>
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAuthModal(false)
-                    handleQuickLaunch(authRole)
-                  }}
-                  className="w-full py-2.5 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-xl font-label-md font-semibold transition-colors flex items-center justify-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-[16px]">bolt</span>
-                  <span>Bypass with Instant Preview Mode</span>
-                </button>
+              <div className="flex items-center justify-between pt-1">
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">
+                  <input
+                    type="checkbox"
+                    checked={trustDevice}
+                    onChange={(e) => setTrustDevice(e.target.checked)}
+                    className="w-3.5 h-3.5 rounded text-[#0F8B8D] focus:ring-[#0F8B8D] border-[#E2E8EC]"
+                  />
+                  <span>Trust clinical workstation (8h)</span>
+                </label>
               </div>
+
+              <button
+                type="submit"
+                disabled={authLoading}
+                className="w-full py-2.5 px-4 bg-[#0F8B8D] hover:bg-[#0D7A7C] active:scale-[0.98] text-white rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {authLoading ? (
+                  <>
+                    <ClinivaIcon name="progress_activity" size={18} strokeWidth={1.5} className="animate-spin" />
+                    <span>Verifying Credentials...</span>
+                  </>
+                ) : (
+                  <>
+                    <ClinivaIcon name="login" size={18} strokeWidth={1.5} />
+                    <span>Sign In & Open Workspace</span>
+                  </>
+                )}
+              </button>
             </form>
 
-            <div className="mt-5 pt-4 border-t border-outline-variant/20 text-center">
-              <p className="text-[12px] text-on-surface-variant">
-                Need card reader access or token reset? <br />
-                <span className="text-primary font-semibold">IT Biomedical Helpdesk (Ext. 4000)</span>
-              </p>
+            {/* Quick Demo Credentials Panel */}
+            <div className="mt-6 pt-5 border-t border-[#E2E8EC] dark:border-white/[0.06]">
+              <button
+                type="button"
+                onClick={() => setShowDemoCredentials(!showDemoCredentials)}
+                className="w-full flex items-center justify-between text-xs font-bold text-[#4A5D6B] dark:text-[#9FB1C0] hover:text-[#123047] dark:hover:text-white transition-colors"
+              >
+                <span className="flex items-center gap-1.5">
+                  <ClinivaIcon name="badge" size={16} strokeWidth={1.5} className="text-[#0F8B8D]" />
+                  <span>Demo Accounts for Testing</span>
+                </span>
+                <ClinivaIcon name={showDemoCredentials ? 'expand_less' : 'expand_more'} size={18} strokeWidth={1.5} />
+              </button>
+
+              {showDemoCredentials && (
+                <div className="mt-3 space-y-1.5 max-h-56 overflow-y-auto pr-1 smooth-touch-scroll text-left">
+                  <p className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium mb-2">
+                    Click any authorized account to fill credentials:
+                  </p>
+                  {DEMO_ACCOUNTS.map((acc) => {
+                    const isSelected = email.toLowerCase() === acc.email.toLowerCase()
+                    return (
+                      <button
+                        key={acc.email}
+                        type="button"
+                        onClick={() => handleSelectDemoAccount(acc)}
+                        className={`w-full flex items-center justify-between p-2.5 rounded-lg text-left text-xs transition-colors border ${
+                          isSelected
+                            ? 'bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 border-[#0F8B8D]/40 text-[#123047] dark:text-[#28B5B7]'
+                            : 'bg-[#F7F9FA] dark:bg-white/[0.03] border-[#E2E8EC] dark:border-white/[0.06] text-[#123047] dark:text-[#E8F0F5] hover:bg-[#F0F4F7] dark:hover:bg-white/5'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <ClinivaIcon name={acc.icon} size={18} strokeWidth={1.5} className="flex-shrink-0 text-[#0F8B8D]" />
+                          <div className="min-w-0">
+                            <p className="font-semibold text-xs text-[#123047] dark:text-white truncate">{acc.name}</p>
+                            <p className="text-[11px] text-[#4A5D6B] dark:text-[#9FB1C0] font-medium truncate">{acc.email}</p>
+                          </div>
+                        </div>
+                        {acc.badge && (
+                          <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-[#E2E8EC]/80 dark:bg-white/10 text-[#4A5D6B] dark:text-[#9FB1C0] flex-shrink-0">
+                            {acc.badge}
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
-      )}
+      </main>
 
-      {/* Compliance & Security Footer */}
-      <footer className="w-full border-t border-outline-variant/30 bg-surface-container-lowest/70 backdrop-blur-md py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-[12px] text-on-surface-variant">
-            <span className="flex items-center gap-1.5 font-medium">
-              <span className="material-symbols-outlined text-primary text-[16px]">verified</span>
-              HIPAA & SOC-2 Type II Certified
-            </span>
-            <span className="hidden sm:inline text-outline-variant">•</span>
-            <span className="flex items-center gap-1.5 font-medium">
-              <span className="material-symbols-outlined text-primary text-[16px]">hub</span>
-              HL7 v2.5 & FHIR R4 Ready
-            </span>
-            <span className="hidden sm:inline text-outline-variant">•</span>
-            <span className="flex items-center gap-1.5 font-medium">
-              <span className="material-symbols-outlined text-primary text-[16px]">lock</span>
-              AES-256 Multi-Tenant Isolation
-            </span>
-          </div>
-
-          <div className="text-[12px] text-on-surface-variant font-medium">
-            © {new Date().getFullYear()} Cliniva OS. St. Jude Medical Center.
-          </div>
+      {/* Footer */}
+      <footer className="w-full border-t border-[#E2E8EC] dark:border-white/[0.08] py-4 text-center">
+        <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">
+          <span className="flex items-center gap-1.5 justify-center">
+            <ClinivaIcon name="verified_user" size={16} strokeWidth={1.5} className="text-[#0F8B8D]" />
+            <span>Role-Based Access Control • HIPAA & SOC-2 Certified</span>
+          </span>
+          <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0]">
+            CLINIVA OS v2.4 Enterprise
+          </span>
         </div>
       </footer>
     </div>

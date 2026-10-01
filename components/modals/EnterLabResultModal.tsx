@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react'
 import ModalBackdrop from './ModalBackdrop'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import {
   fetchLabOrderDetails,
@@ -204,9 +205,7 @@ export default function EnterLabResultModal() {
       {/* Loading State */}
       {loading ? (
         <div className="py-12 flex flex-col items-center justify-center gap-3 text-on-surface-variant">
-          <span className="material-symbols-outlined text-primary text-[32px] animate-spin">
-            progress_activity
-          </span>
+          <ClinivaIcon name="progress_activity" size={32} strokeWidth={1.5} className="text-primary animate-spin" />
           <p className="text-body-md font-medium">Loading requisition details...</p>
         </div>
       ) : (
@@ -256,9 +255,7 @@ export default function EnterLabResultModal() {
           {/* Error Message */}
           {errorMsg && (
             <div className="p-3.5 bg-red-50 text-red-800 border border-red-200 rounded-xl text-body-sm flex items-start gap-2.5">
-              <span className="material-symbols-outlined text-[18px] text-red-600 mt-0.5">
-                error
-              </span>
+              <ClinivaIcon name="error" size={18} strokeWidth={1.5} className="text-red-600 mt-0.5" />
               <div className="flex-1">{errorMsg}</div>
             </div>
           )}
@@ -266,9 +263,7 @@ export default function EnterLabResultModal() {
           {/* Success Message */}
           {successInfo && (
             <div className="p-4 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-2xl text-body-sm flex items-start gap-3 animate-in fade-in zoom-in-95 duration-200">
-              <span className="material-symbols-outlined text-[22px] text-emerald-600 mt-0.5">
-                check_circle
-              </span>
+              <ClinivaIcon name="check_circle" size={22} strokeWidth={1.5} className="text-emerald-600 mt-0.5" />
               <div className="flex-1">
                 <p className="font-semibold text-emerald-900">
                   Result successfully saved & verified!
@@ -314,9 +309,7 @@ export default function EnterLabResultModal() {
                 Specimen Type
               </label>
               <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-surface-container-low border border-outline-variant/30 text-body-md text-on-surface">
-                <span className="material-symbols-outlined text-[18px] text-outline">
-                  colorize
-                </span>
+                <ClinivaIcon name="colorize" size={18} strokeWidth={1.5} className="text-outline" />
                 <span>{order?.sample_type || 'Blood'}</span>
               </div>
             </div>
@@ -439,9 +432,7 @@ export default function EnterLabResultModal() {
 
             {isCritical && (
               <div className="mt-3 pt-3 border-t border-red-200/80 flex items-center gap-2 text-red-800 text-label-sm font-medium animate-in fade-in duration-150">
-                <span className="material-symbols-outlined text-[18px] text-red-600 animate-pulse">
-                  notifications_active
-                </span>
+                <ClinivaIcon name="notifications_active" size={18} strokeWidth={1.5} className="text-red-600 animate-pulse" />
                 <span>Priority Realtime Telemetry alert will be dispatched on verification.</span>
               </div>
             )}
@@ -480,23 +471,17 @@ export default function EnterLabResultModal() {
             >
               {isSubmitting ? (
                 <>
-                  <span className="material-symbols-outlined text-[18px] animate-spin">
-                    progress_activity
-                  </span>
+                  <ClinivaIcon name="progress_activity" size={18} strokeWidth={1.5} className="animate-spin" />
                   <span>Saving Result...</span>
                 </>
               ) : successInfo ? (
                 <>
-                  <span className="material-symbols-outlined text-[18px]">
-                    check
-                  </span>
+                  <ClinivaIcon name="check" size={18} strokeWidth={1.5} />
                   <span>Verified</span>
                 </>
               ) : (
                 <>
-                  <span className="material-symbols-outlined text-[18px]">
-                    verified
-                  </span>
+                  <ClinivaIcon name="verified" size={18} strokeWidth={1.5} />
                   <span>Verify & Save Result</span>
                 </>
               )}

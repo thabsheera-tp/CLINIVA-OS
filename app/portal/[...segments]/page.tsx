@@ -1,35 +1,24 @@
-import { redirect } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
-import {
-  PortalQueue,
-  PortalRecords,
-  PortalPrescriptions,
-  PortalProfile,
-  PortalSymptomChecker,
-  PortalFamilyLocker,
-  PortalReminders,
-} from '@/components/dashboard/PortalDashboardView'
-import PortalDashboardView from '@/components/dashboard/PortalDashboardView'
+import PatientPortalApp, { type PortalTab } from '@/components/portal/PatientPortalApp'
 
-export const metadata = { title: 'Patient Portal — My Health' }
+export const metadata = { title: 'Patient Portal — Cliniva OS' }
 
-export default async function PortalSubPage({ params }: { params: { segments: string[] } }) {
-  const supabase = createServerClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session && process.env.NEXT_PUBLIC_DEMO_MODE === 'false') redirect('/login')
+export default function PortalSubPage({ params }: { params: { segments: string[] } }) {
+  const slug = params.segments?.[0] || 'dashboard'
 
-  const patientName = session?.user?.user_metadata?.display_name ?? 'Marcus Delacroix'
-  const firstName = patientName.split(' ')[0]
+  let tab: PortalTab = 'dashboard'
+  if (slug === 'appointments' || slug === 'queue') {
+    tab = 'appointments'
+  } else if (slug === 'consultations') {
+    tab = 'consultations'
+  } else if (slug === 'prescriptions' || slug === 'medications' || slug === 'reminders') {
+    tab = 'prescriptions'
+  } else if (slug === 'labs' || slug === 'lab-reports' || slug === 'records') {
+    tab = 'labs'
+  } else if (slug === 'billing' || slug === 'payments' || slug === 'invoices') {
+    tab = 'billing'
+  } else if (slug === 'profile') {
+    tab = 'profile'
+  }
 
-  const slug = params.segments?.[0]
-
-  if (slug === 'reminders' || slug === 'medications') return <PortalReminders firstName={firstName} />
-  if (slug === 'locker'    || slug === 'family')      return <PortalFamilyLocker firstName={firstName} />
-  if (slug === 'symptoms'  || slug === 'checker')     return <PortalSymptomChecker firstName={firstName} />
-  if (slug === 'queue')                               return <PortalQueue firstName={firstName} />
-  if (slug === 'records')                             return <PortalRecords firstName={firstName} />
-  if (slug === 'prescriptions')                       return <PortalPrescriptions firstName={firstName} />
-  if (slug === 'profile')                             return <PortalProfile firstName={firstName} />
-
-  return <PortalDashboardView firstName={firstName} />
+  return <PatientPortalApp initialTab={tab} />
 }

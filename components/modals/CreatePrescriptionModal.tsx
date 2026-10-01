@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import ModalBackdrop from './ModalBackdrop'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import { createClientSideClient } from '@/lib/supabase/client'
 
@@ -182,7 +183,7 @@ export default function CreatePrescriptionModal() {
       {success ? (
         <div className="py-8 text-center space-y-3">
           <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mx-auto">
-            <span className="material-symbols-outlined text-[36px]">verified</span>
+            <ClinivaIcon name="verified" size={32} strokeWidth={1.5} />
           </div>
           <h3 className="font-heading text-headline-md font-bold text-on-surface">
             Prescription Dispatched!
@@ -328,7 +329,7 @@ export default function CreatePrescriptionModal() {
               disabled={submitting || !drugName}
               className="btn-primary flex items-center gap-2"
             >
-              <span className="material-symbols-outlined text-[18px]">send</span>
+              <ClinivaIcon name="send" size={18} strokeWidth={1.5} />
               <span>{submitting ? 'Transmitting...' : 'Issue e-Prescription'}</span>
             </button>
           </div>

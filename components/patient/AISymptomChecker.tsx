@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import { usePortalLang } from '@/context/PortalLanguageContext'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export type SymptomItem = {
@@ -193,7 +194,7 @@ export default function AISymptomChecker({ className = '', initialSymptom, onBoo
       {/* ── Card Header ─────────────────────────────────────────────── */}
       <div className="px-4 py-4 border-b border-outline-variant/20 flex items-center gap-3">
         <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-          <span className="material-symbols-outlined text-primary text-[20px]">smart_toy</span>
+          <ClinivaIcon name="smart_toy" size={20} strokeWidth={1.5} className="text-primary" />
         </div>
         <div className="min-w-0">
           <p className="text-[10px] font-bold uppercase tracking-widest text-primary">{t('ai_badge')}</p>
@@ -220,7 +221,7 @@ export default function AISymptomChecker({ className = '', initialSymptom, onBoo
                     : 'bg-surface-container-low text-on-surface-variant border-transparent hover:border-outline-variant/40'
                 }`}
               >
-                <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
+                <ClinivaIcon name={tab.icon} size={18} strokeWidth={1.5} />
                 {t(tab.tKey)}
               </button>
             ))}
@@ -260,7 +261,7 @@ export default function AISymptomChecker({ className = '', initialSymptom, onBoo
                   }`}
                 >
                   {isSelected
-                    ? <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                    ? <ClinivaIcon name="check_circle" size={14} strokeWidth={1.5} className="text-primary" />
                     : <span className="w-1.5 h-1.5 rounded-full bg-outline-variant/60 flex-shrink-0" />
                   }
                   {SYM_KEY_MAP[chip.id] ? t(SYM_KEY_MAP[chip.id] as any) : chip.label}
@@ -345,7 +346,7 @@ export default function AISymptomChecker({ className = '', initialSymptom, onBoo
             </>
           ) : (
             <>
-              <span className="material-symbols-outlined text-[18px]">psychology</span>
+              <ClinivaIcon name="psychology" size={18} strokeWidth={1.5} />
               {t('ai_analyze_btn')}
             </>
           )}
@@ -353,15 +354,15 @@ export default function AISymptomChecker({ className = '', initialSymptom, onBoo
 
         {/* ── Result Card ──────────────────────────────────────────── */}
         {analysisResult && (
-          <div className="rounded-2xl border-2 border-primary/25 bg-gradient-to-b from-surface-container-low to-surface-container-lowest p-4 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="rounded-xl border border-border-subtle bg-white p-4 space-y-4 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
 
             {/* Emergency Banner */}
             {analysisResult.urgency === 'emergency' && (
-              <div className="flex items-start gap-3 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl">
-                <span className="material-symbols-outlined text-rose-500 text-[20px] flex-shrink-0 mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>emergency</span>
+              <div className="flex items-start gap-3 p-3 bg-[#FDF2F2] border border-[#F8D7D7] rounded-xl">
+                <ClinivaIcon name="emergency" size={20} strokeWidth={1.5} className="text-[#C94A4A] flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-bold text-rose-600 dark:text-rose-400">{t('ai_emergency_title')}</p>
-                  <p className="text-xs text-rose-500 mt-0.5">{t('ai_emergency_body')}</p>
+                  <p className="text-sm font-bold text-[#C94A4A]">{t('ai_emergency_title')}</p>
+                  <p className="text-xs text-[#C94A4A] mt-0.5">{t('ai_emergency_body')}</p>
                 </div>
               </div>
             )}
@@ -369,10 +370,10 @@ export default function AISymptomChecker({ className = '', initialSymptom, onBoo
             {/* Dept + Confidence */}
             <div className="flex items-start justify-between gap-2">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{t('ai_result_dept')}</p>
-                <h3 className="font-heading font-extrabold text-primary text-xl leading-tight mt-0.5">{analysisResult.department}</h3>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-secondary-text">{t('ai_result_dept')}</p>
+                <h3 className="font-heading font-bold text-primary-navy text-xl leading-tight mt-0.5">{analysisResult.department}</h3>
               </div>
-              <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 flex-shrink-0">
+              <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#EBF7F2] text-[#2E7D5B] border border-[#C3ECD8] flex-shrink-0">
                 {analysisResult.confidence}% {t('ai_result_match')}
               </span>
             </div>
@@ -431,7 +432,7 @@ export default function AISymptomChecker({ className = '', initialSymptom, onBoo
               onClick={handleBook}
               className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-all shadow-md flex items-center justify-center gap-2 active:scale-[0.98]"
             >
-              <span className="material-symbols-outlined text-[18px]">calendar_add_on</span>
+              <ClinivaIcon name="calendar_add_on" size={18} strokeWidth={1.5} />
               {t('ai_book_btn')} {analysisResult.department}
             </button>
             <p className="text-center text-[11px] text-on-surface-variant -mt-2">
@@ -443,7 +444,7 @@ export default function AISymptomChecker({ className = '', initialSymptom, onBoo
         {/* Empty state (before analysis) */}
         {!analysisResult && !isAnalyzing && (
           <div className="flex items-center gap-3 p-3 rounded-xl border border-dashed border-outline-variant/40 bg-surface-container-low/30 text-on-surface-variant text-xs">
-            <span className="material-symbols-outlined text-[20px] flex-shrink-0">info</span>
+            <ClinivaIcon name="info" size={20} strokeWidth={1.5} className="flex-shrink-0" />
             {t('ai_info_hint')} <strong className="text-on-surface mx-1">{t('ai_info_hint2')}</strong> {t('ai_info_hint3')}
           </div>
         )}

@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import SubScreenHeader from './SubScreenHeader'
 import StatusBadge from '@/components/ui/StatusBadge'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import StartConsultationModal from '@/components/modals/StartConsultationModal'
 import RegisterPatientModal from '@/components/modals/RegisterPatientModal'
@@ -77,26 +78,26 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
             description="Complete clinical patient registry across Outpatient & Inpatient departments."
             actions={
               <button onClick={() => setConsultOpen(true)} className="btn-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">add</span>
+                <ClinivaIcon name="add" size={16} strokeWidth={1.5} />
                 <span>Open Clinical Chart</span>
               </button>
             }
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 overflow-hidden shadow-sm">
-            <div className="p-4 border-b border-outline-variant/20 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="bg-white rounded-xl border border-border-subtle overflow-hidden shadow-sm">
+            <div className="p-4 border-b border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="relative w-full sm:w-80">
-                <span className="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[20px]">search</span>
+                <ClinivaIcon name="search" size={16} strokeWidth={1.5} className="absolute left-3 top-2.5 text-secondary-text" />
                 <input
                   type="text"
                   placeholder="Filter by name, MRN..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-surface-container-low rounded-xl text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 border border-transparent focus:border-primary/30"
+                  className="w-full pl-10 pr-4 py-2 bg-slate-50/70 rounded-xl text-body-sm text-primary-text focus:outline-none focus:ring-2 focus:ring-medical-teal/20 border border-border-subtle focus:border-medical-teal"
                 />
               </div>
-              <div className="flex items-center gap-2 text-label-sm text-on-surface-variant">
-                <span className="px-3 py-1 rounded-lg bg-surface-container font-medium">All Patients</span>
+              <div className="flex items-center gap-2 text-label-sm text-secondary-text">
+                <span className="px-3 py-1 rounded-lg bg-slate-100 font-medium text-primary-navy">All Patients</span>
               </div>
             </div>
 
@@ -106,7 +107,7 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-body-sm">
-                <thead className="bg-surface-container-low/50 text-label-sm text-on-surface-variant uppercase tracking-wider border-b border-outline-variant/20">
+                <thead className="bg-slate-50/80 text-label-sm text-secondary-text uppercase tracking-wider border-b border-border-subtle">
                   <tr>
                     <th className="px-5 py-3">Patient / MRN</th>
                     <th className="px-5 py-3">Gender</th>
@@ -118,28 +119,28 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
                 {patients.loading ? (
                   <TableSkeleton rows={6} cols={5} />
                 ) : (
-                  <tbody className="divide-y divide-outline-variant/20">
+                  <tbody className="divide-y divide-border-subtle">
                     {patients.data.length === 0 && !patients.error && (
                       <tr>
-                        <td colSpan={5} className="px-5 py-10 text-center text-on-surface-variant text-body-sm">
+                        <td colSpan={5} className="px-5 py-10 text-center text-secondary-text text-body-sm">
                           No patients found{searchTerm ? ` matching "${searchTerm}"` : ''}. {' '}
-                          <button onClick={patients.refetch} className="text-primary underline">Refresh</button>
+                          <button onClick={patients.refetch} className="text-medical-teal hover:underline font-medium">Refresh</button>
                         </td>
                       </tr>
                     )}
                     {patients.data.map((p) => (
-                      <tr key={p.id} className="hover:bg-surface-container-low/30 transition-colors">
+                      <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
                         <td className="px-5 py-3.5">
-                          <div className="font-semibold text-on-surface">{p.first_name} {p.last_name}</div>
-                          <div className="text-label-sm text-outline font-mono">MRN #{p.mrn}</div>
+                          <div className="font-semibold text-primary-navy">{p.first_name} {p.last_name}</div>
+                          <div className="text-label-sm text-secondary-text font-mono">MRN #{p.mrn}</div>
                         </td>
-                        <td className="px-5 py-3.5 text-on-surface-variant font-medium capitalize">{p.gender}</td>
-                        <td className="px-5 py-3.5 text-on-surface-variant">{p.dob}</td>
-                        <td className="px-5 py-3.5 text-on-surface-variant">{p.phone}</td>
+                        <td className="px-5 py-3.5 text-secondary-text font-medium capitalize">{p.gender}</td>
+                        <td className="px-5 py-3.5 text-secondary-text">{p.dob}</td>
+                        <td className="px-5 py-3.5 text-secondary-text">{p.phone}</td>
                         <td className="px-5 py-3.5 text-right">
                           <Link
                             href={`/doctor/patients/${p.mrn}`}
-                            className="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-primary hover:text-on-primary text-label-sm font-medium transition-colors inline-block"
+                            className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-medical-teal hover:text-white text-label-sm font-semibold transition-colors inline-block"
                           >
                             View Chart
                           </Link>
@@ -166,11 +167,11 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
             actions={
               <>
                 <Link href="/doctor/appointments/new" className="btn-primary flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[18px]">add</span>
+                  <ClinivaIcon name="add" size={16} strokeWidth={1.5} />
                   <span>Book New</span>
                 </Link>
                 <button onClick={() => callNextPatient()} className="btn-secondary flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[18px]">play_arrow</span>
+                  <ClinivaIcon name="play_arrow" size={16} strokeWidth={1.5} />
                   <span>Call Next Slot</span>
                 </button>
               </>
@@ -182,24 +183,24 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
           {appointments.loading ? (
             <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)}</div>
           ) : appointments.data.length === 0 ? (
-            <div className="text-center py-16 text-on-surface-variant text-body-sm">
-              <span className="material-symbols-outlined text-[40px] block mb-2 text-outline">calendar_today</span>
+            <div className="text-center py-16 text-secondary-text text-body-sm">
+              <ClinivaIcon name="calendar_today" size={40} strokeWidth={1.5} className="mx-auto block mb-2 text-secondary-text" />
               No appointments scheduled for today.
-              <Link href="/doctor/appointments/new" className="text-primary underline ml-1">Book one now →</Link>
+              <Link href="/doctor/appointments/new" className="text-medical-teal hover:underline ml-1 font-medium">Book one now →</Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-3">
               {appointments.data.map((apt) => {
                 const time = new Date(apt.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 return (
-                  <div key={apt.id} className="p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div key={apt.id} className="p-4 bg-white rounded-xl border border-border-subtle flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm hover:border-slate-300 transition-colors">
                     <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-xl bg-surface-container flex flex-col items-center justify-center text-primary flex-shrink-0">
+                      <div className="w-14 h-14 rounded-xl bg-slate-50 border border-border-subtle flex flex-col items-center justify-center text-primary-navy flex-shrink-0">
                         <span className="text-label-sm font-bold">{time}</span>
                       </div>
                       <div>
-                        <div className="font-semibold text-on-surface text-body-md">Token #{apt.queue_token}</div>
-                        <div className="text-body-sm text-on-surface-variant mt-0.5">{apt.chief_complaint ?? 'General consultation'}</div>
+                        <div className="font-semibold text-primary-navy text-body-md">Token #{apt.queue_token}</div>
+                        <div className="text-body-sm text-secondary-text mt-0.5">{apt.chief_complaint ?? 'General consultation'}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
@@ -231,40 +232,40 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
             description="Real-time sequence of checked-in patients waiting for consultation in Suite 304."
             actions={
               <button onClick={() => callNextPatient()} className="btn-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">campaign</span>
+                <ClinivaIcon name="campaign" size={16} strokeWidth={1.5} />
                 <span>Call Next Patient</span>
               </button>
             }
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5 shadow-sm space-y-4">
+          <div className="bg-white rounded-xl border border-border-subtle p-5 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-label-lg font-semibold text-on-surface">Queue Sequence</span>
-              <span className="text-body-sm text-on-surface-variant">Live telemetry active</span>
+              <span className="text-label-lg font-semibold text-primary-navy">Queue Sequence</span>
+              <span className="text-body-sm text-secondary-text">Live telemetry active</span>
             </div>
             <div className="space-y-3">
               {queue.map((p) => (
-                <div key={p.id} className="p-4 rounded-xl border border-outline-variant/30 bg-surface-container-low/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div key={p.id} className="p-4 rounded-xl border border-border-subtle bg-slate-50/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary text-on-primary flex items-center justify-center font-heading font-bold text-headline-sm">
+                    <div className="w-12 h-12 rounded-xl bg-primary-navy text-white flex items-center justify-center font-heading font-bold text-headline-sm">
                       #{p.token}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-on-surface">{p.name}</span>
-                        <span className="text-label-sm text-outline">({p.age})</span>
+                        <span className="font-semibold text-primary-navy">{p.name}</span>
+                        <span className="text-label-sm text-secondary-text">({p.age})</span>
                       </div>
-                      <p className="text-body-sm text-on-surface-variant mt-0.5">{p.complaint}</p>
+                      <p className="text-body-sm text-secondary-text mt-0.5">{p.complaint}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-label-sm font-semibold px-2.5 py-1 rounded-full bg-secondary-fixed text-on-primary-fixed-variant">{p.wait}</span>
+                    <span className="text-label-sm font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-secondary-text border border-border-subtle">{p.wait}</span>
                     <button onClick={() => setConsultOpen(true)} className="btn-secondary text-label-sm py-1.5 px-3">Start Exam</button>
                   </div>
                 </div>
               ))}
               {queue.length === 0 && (
-                <p className="text-body-sm text-on-surface-variant text-center py-8">Queue is empty. All patients have been seen.</p>
+                <p className="text-body-sm text-secondary-text text-center py-8">Queue is empty. All patients have been seen.</p>
               )}
             </div>
           </div>
@@ -290,29 +291,29 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
           ) : (
             <div className="grid grid-cols-1 gap-3">
               {labOrders.data.length === 0 && (
-                <div className="text-center py-12 text-on-surface-variant text-body-sm">
-                  <span className="material-symbols-outlined text-[40px] block mb-2 text-outline">biotech</span>
+                <div className="text-center py-12 text-secondary-text text-body-sm">
+                  <ClinivaIcon name="biotech" size={40} strokeWidth={1.5} className="mx-auto block mb-2 text-secondary-text" />
                   No pending lab results.
                 </div>
               )}
               {labOrders.data.map((lab) => (
-                <div key={lab.id} className={`p-4 rounded-2xl border shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${lab.is_critical ? 'bg-red-50/50 border-red-200' : 'bg-surface-container-lowest border-outline-variant/30'}`}>
+                <div key={lab.id} className={`p-4 rounded-xl border shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${lab.is_critical ? 'bg-[#FDF2F2] border-[#F8D7D7]' : 'bg-white border-border-subtle'}`}>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-label-sm font-mono text-outline">{lab.id.slice(0, 12)}</span>
-                      {lab.is_critical && <span className="text-label-sm font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-full">CRITICAL</span>}
+                      <span className="text-label-sm font-mono text-secondary-text">{lab.id.slice(0, 12)}</span>
+                      {lab.is_critical && <span className="text-label-sm font-bold text-[#C94A4A] bg-[#FCE8E8] border border-[#F8D7D7] px-2 py-0.5 rounded-full">CRITICAL</span>}
                     </div>
-                    <div className="text-body-md font-semibold text-primary mt-1">{lab.test_name}</div>
+                    <div className="text-body-md font-semibold text-primary-navy mt-1">{lab.test_name}</div>
                     <div className="flex items-center gap-3 text-body-sm mt-1">
-                      {lab.result_value && <span>Result: <strong className={lab.is_critical ? 'text-red-700' : 'text-on-surface'}>{lab.result_value} {lab.result_unit}</strong></span>}
-                      {lab.reference_range && <span className="text-outline">Ref: {lab.reference_range}</span>}
+                      {lab.result_value && <span>Result: <strong className={lab.is_critical ? 'text-[#C94A4A]' : 'text-primary-text'}>{lab.result_value} {lab.result_unit}</strong></span>}
+                      {lab.reference_range && <span className="text-secondary-text">Ref: {lab.reference_range}</span>}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={`px-3 py-1 rounded-full text-label-sm font-bold ${lab.is_critical ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800'}`}>
+                    <span className={`px-3 py-1 rounded-full text-label-sm font-semibold border ${lab.is_critical ? 'bg-[#FDF2F2] text-[#C94A4A] border-[#F8D7D7]' : 'bg-[#EBF7F2] text-[#2E7D5B] border-[#C3ECD8]'}`}>
                       {lab.status}
                     </span>
-                    <button className="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-label-sm font-medium">
+                    <button className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-label-sm font-semibold text-primary-navy">
                       Sign & Acknowledge
                     </button>
                   </div>
@@ -334,7 +335,7 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
             description="Manage electronic prescriptions, drug dosages, and outpatient pharmacy dispatches."
             actions={
               <button onClick={() => setConsultOpen(true)} className="btn-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">add</span>
+                <ClinivaIcon name="add" size={16} strokeWidth={1.5} />
                 <span>Issue New Rx</span>
               </button>
             }
@@ -342,10 +343,10 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
 
           {prescriptions.error && <DataError message="Could not load prescriptions." retry={prescriptions.refetch} />}
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 overflow-hidden shadow-sm">
+          <div className="bg-white rounded-xl border border-border-subtle overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-body-sm">
-                <thead className="bg-surface-container-low/50 text-label-sm text-on-surface-variant uppercase tracking-wider border-b border-outline-variant/20">
+                <thead className="bg-slate-50/80 text-label-sm text-secondary-text uppercase tracking-wider border-b border-border-subtle">
                   <tr>
                     <th className="px-5 py-3">Prescription ID</th>
                     <th className="px-5 py-3">Medication & Dosage</th>
@@ -358,28 +359,28 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
                 {prescriptions.loading ? (
                   <TableSkeleton rows={5} cols={6} />
                 ) : (
-                  <tbody className="divide-y divide-outline-variant/20">
+                  <tbody className="divide-y divide-border-subtle">
                     {prescriptions.data.length === 0 && (
                       <tr>
-                        <td colSpan={6} className="px-5 py-10 text-center text-on-surface-variant text-body-sm">No active prescriptions found.</td>
+                        <td colSpan={6} className="px-5 py-10 text-center text-secondary-text text-body-sm">No active prescriptions found.</td>
                       </tr>
                     )}
                     {prescriptions.data.map((rx) => (
-                      <tr key={rx.id} className="hover:bg-surface-container-low/30">
-                        <td className="px-5 py-3.5 font-mono text-outline font-medium">{rx.id.slice(0, 12)}</td>
+                      <tr key={rx.id} className="hover:bg-slate-50/60 transition-colors">
+                        <td className="px-5 py-3.5 font-mono text-secondary-text font-medium">{rx.id.slice(0, 12)}</td>
                         <td className="px-5 py-3.5">
-                          <div className="font-semibold text-on-surface">{rx.drug_name}</div>
-                          <div className="text-label-sm text-on-surface-variant">{rx.dose}</div>
+                          <div className="font-semibold text-primary-navy">{rx.drug_name}</div>
+                          <div className="text-label-sm text-secondary-text">{rx.dose}</div>
                         </td>
-                        <td className="px-5 py-3.5 text-on-surface-variant">{rx.frequency}</td>
-                        <td className="px-5 py-3.5">{rx.quantity} (Refills: {rx.refills})</td>
+                        <td className="px-5 py-3.5 text-secondary-text">{rx.frequency}</td>
+                        <td className="px-5 py-3.5 text-primary-text">{rx.quantity} (Refills: {rx.refills})</td>
                         <td className="px-5 py-3.5">
-                          <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold ${rx.status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-surface-container text-on-surface-variant'}`}>
+                          <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold border ${rx.status === 'active' ? 'bg-[#EBF7F2] text-[#2E7D5B] border-[#C3ECD8]' : 'bg-slate-100 text-secondary-text border-border-subtle'}`}>
                             {rx.status}
                           </span>
                         </td>
                         <td className="px-5 py-3.5 text-right">
-                          <button className="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-label-sm font-medium">
+                          <button className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-label-sm font-semibold text-primary-navy transition-colors">
                             Print Rx
                           </button>
                         </td>
@@ -404,19 +405,19 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
             description="Secure communication channels between physicians, ward nurses, lab techs, and pharmacy."
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5 shadow-sm space-y-4">
+          <div className="bg-white rounded-xl border border-border-subtle p-5 shadow-sm space-y-4">
             {[
               { sender: 'Nurse Priya Sharma (Ward A)', time: '12m ago', text: 'Bed A-01 patient reported mild dizziness after morning medication. Vitals logged.', unread: true },
               { sender: 'David Kalu (Central Lab)', time: '40m ago', text: 'Critical lab alert: Troponin sample verified at 0.04 ng/mL — requires physician acknowledgement.', unread: true },
               { sender: 'Marcus Vance (Pharmacy)', time: '2h ago', text: 'Alternative brand dispensed for Atorvastatin 40mg due to primary stock lot rotation.', unread: false },
               { sender: 'OPD Reception', time: '3h ago', text: 'Patient checked in for routine diabetes review. Token issued.', unread: false },
             ].map((msg, i) => (
-              <div key={i} className={`p-4 rounded-xl border ${msg.unread ? 'bg-primary-fixed/20 border-primary/30' : 'bg-surface-container-low/30 border-outline-variant/20'}`}>
+              <div key={i} className={`p-4 rounded-xl border ${msg.unread ? 'bg-[#F2F9F9] border-[#D1ECEB]' : 'bg-slate-50/60 border-border-subtle'}`}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-semibold text-on-surface text-body-md">{msg.sender}</span>
-                  <span className="text-label-sm text-outline">{msg.time}</span>
+                  <span className="font-semibold text-primary-navy text-body-md">{msg.sender}</span>
+                  <span className="text-label-sm text-secondary-text">{msg.time}</span>
                 </div>
-                <p className="text-body-sm text-on-surface-variant">{msg.text}</p>
+                <p className="text-body-sm text-secondary-text">{msg.text}</p>
               </div>
             ))}
           </div>

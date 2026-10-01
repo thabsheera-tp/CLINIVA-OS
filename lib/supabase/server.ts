@@ -26,16 +26,16 @@ export type Database = {
   }
 }
 
-const DEMO_USERS: Record<string, { role: string; display_name: string; email: string }> = {
-  doctor: { role: 'doctor', display_name: 'Dr. Sarah Jenkins, MD', email: 'doctor@cliniva.os' },
-  front_desk: { role: 'front_desk', display_name: 'Elena Rostova', email: 'reception@cliniva.os' },
-  nurse: { role: 'nurse', display_name: 'Nurse Priya Sharma, RN', email: 'nurse@cliniva.os' },
-  pharmacist: { role: 'pharmacist', display_name: 'Marcus Vance, PharmD', email: 'pharmacy@cliniva.os' },
-  lab_tech: { role: 'lab_tech', display_name: 'David Kalu, MLS', email: 'lab@cliniva.os' },
-  cashier: { role: 'cashier', display_name: 'Hannah Brooks', email: 'billing@cliniva.os' },
-  admin: { role: 'admin', display_name: 'Alexander Sterling', email: 'admin@cliniva.os' },
-  canteen: { role: 'canteen', display_name: 'Chef Marco Rossi', email: 'canteen@cliniva.os' },
-  patient: { role: 'patient', display_name: 'Marcus Delacroix', email: 'patient@cliniva.os' },
+export const DEMO_USERS: Record<string, { role: string; roles: string[]; display_name: string; email: string }> = {
+  doctor: { role: 'doctor', roles: ['doctor'], display_name: 'Dr. Sarah Jenkins, MD', email: 'doctor@cliniva.os' },
+  front_desk: { role: 'front_desk', roles: ['front_desk'], display_name: 'Elena Rostova', email: 'reception@cliniva.os' },
+  nurse: { role: 'nurse', roles: ['nurse'], display_name: 'Nurse Priya Sharma, RN', email: 'nurse@cliniva.os' },
+  pharmacist: { role: 'pharmacist', roles: ['pharmacist'], display_name: 'Marcus Vance, PharmD', email: 'pharmacy@cliniva.os' },
+  lab_tech: { role: 'lab_tech', roles: ['lab_tech'], display_name: 'David Kalu, MLS', email: 'lab@cliniva.os' },
+  cashier: { role: 'cashier', roles: ['cashier'], display_name: 'Hannah Brooks', email: 'billing@cliniva.os' },
+  admin: { role: 'admin', roles: ['admin', 'doctor'], display_name: 'Alexander Sterling', email: 'admin@cliniva.os' },
+  canteen: { role: 'canteen', roles: ['canteen'], display_name: 'Chef Marco Rossi', email: 'canteen@cliniva.os' },
+  patient: { role: 'patient', roles: ['patient'], display_name: 'Marcus Delacroix', email: 'patient@cliniva.os' },
 }
 
 /**
@@ -93,10 +93,14 @@ export function createServerClient() {
     }
 
     const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE !== 'false'
-    const demoRole = cookieStore.get('cliniva_demo_role')?.value || 'doctor'
+    const authUser = cookieStore.get('cliniva_auth_user')?.value
+    const demoRole = cookieStore.get('cliniva_demo_role')?.value
+    const activeKey = authUser || demoRole
 
-    if (isDemoMode && DEMO_USERS[demoRole]) {
-      const demoUser = DEMO_USERS[demoRole]
+    if (isDemoMode && activeKey && DEMO_USERS[activeKey]) {
+      const demoUser = DEMO_USERS[activeKey]
+      // For multi-role users (e.g. admin switching to doctor workspace)
+      const effectiveRole = demoRole && demoUser.roles.includes(demoRole) ? demoRole : demoUser.role
       return {
         data: {
           session: {
@@ -108,7 +112,8 @@ export function createServerClient() {
               id: `demo-${demoUser.role}-id`,
               app_metadata: {},
               user_metadata: {
-                role: demoUser.role,
+                role: effectiveRole,
+                roles: demoUser.roles,
                 display_name: demoUser.display_name,
               },
               aud: 'authenticated',

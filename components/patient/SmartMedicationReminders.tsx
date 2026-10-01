@@ -3,13 +3,14 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { createClientSideClient } from '@/lib/supabase/client'
 import { usePortalLang } from '@/context/PortalLanguageContext'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 const REMINDERS_I18N = {
   en: {
     badge: 'Smart Adherence Engine',
     title: 'Medication & Health Reminders',
     subtitle: 'Set custom schedules, receive browser alerts, and track daily dose adherence.',
-    testAlarm: '🔔 Test Alarm',
+    testAlarm: 'Test Alarm',
     setReminder: '+ Set Reminder',
     alertsTitle: 'Browser Audio-Visual Alerts',
     activeBadge: 'Active',
@@ -24,11 +25,11 @@ const REMINDERS_I18N = {
     alarmTriggered: 'Medication Alarm Triggered Now',
     timeToTake: (med: string, dose: string) => `Time to take ${med} (${dose})`,
     schedFor: (time: string) => `Scheduled for ${time} • Please take with water`,
-    markTaken: '✓ Mark as Taken',
+    markTaken: 'Mark as Taken',
     snooze: 'Snooze 15m',
     takeDose: 'Take Dose',
-    completed: '✓ Completed',
-    takenAt: (time: string) => `✓ Taken at ${time}`,
+    completed: 'Completed',
+    takenAt: (time: string) => `Taken at ${time}`,
     rxTitle: 'Active Prescriptions & Pill Inventory',
     rxSub: 'Manage custom dosage frequency and refill stock count.',
     addRx: '+ Add Prescription',
@@ -87,7 +88,7 @@ const REMINDERS_I18N = {
     badge: 'സ്മാർട്ട് മരുന്ന് ട്രാക്കർ',
     title: 'മരുന്ന് & ആരോഗ്യ ഓർക്കാം',
     subtitle: 'കൃത്യസമയത്ത് മരുന്ന് കഴിക്കാൻ സമയക്രമവും ബ്രൗസർ അലാറങ്ങളും സജ്ജമാക്കുക.',
-    testAlarm: '🔔 അലാറം പരിശോധിക്കൂ',
+    testAlarm: 'അലാറം പരിശോധിക്കൂ',
     setReminder: '+ ഓർമ്മപ്പെടുത്തൽ ചേർക്കൂ',
     alertsTitle: 'ബ്രൗസർ അലാറം മുന്നറിയിപ്പുകൾ',
     activeBadge: 'പ്രവർത്തനക്ഷമം',
@@ -102,11 +103,11 @@ const REMINDERS_I18N = {
     alarmTriggered: 'മരുന്ന് കഴിക്കാനുള്ള സമയം!',
     timeToTake: (med: string, dose: string) => `${med} (${dose}) കഴിക്കാനുള്ള സമയം`,
     schedFor: (time: string) => `സമയക്രമം: ${time} • വെള്ളത്തോടൊപ്പം കഴിക്കുക`,
-    markTaken: '✓ കഴിച്ചതായി അടയാളപ്പെടുത്തൂ',
+    markTaken: 'കഴിച്ചതായി അടയാളപ്പെടുത്തൂ',
     snooze: '15 മി. മാറ്റിവെക്കൂ',
     takeDose: 'മരുന്ന് കഴിച്ചു',
-    completed: '✓ പൂർത്തിയായി',
-    takenAt: (time: string) => `✓ സമയം: ${time}`,
+    completed: 'പൂർത്തിയായി',
+    takenAt: (time: string) => `സമയം: ${time}`,
     rxTitle: 'നിലവിലെ മരുന്നുകളും ബാക്കി ഗുളികകളും',
     rxSub: 'മരുന്നിന്റെ അളവും ബാക്കി സ്റ്റോക്കും പരിശോധിക്കുക.',
     addRx: '+ മരുന്ന് ചേർക്കൂ',
@@ -594,19 +595,19 @@ export default function SmartMedicationReminders({ className = '' }: { className
 
       {/* ── Active Live Alert Banner (Triggered when alarm rings) ── */}
       {isAlertActive && (
-        <div className="p-4 bg-gradient-to-r from-amber-500/20 via-primary/15 to-emerald-500/20 border-2 border-primary rounded-2xl shadow-lg animate-pulse flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="p-4 bg-white border border-[#FCE6BD] rounded-xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-label-lg flex-shrink-0 animate-bounce">
-              🔔
+            <div className="w-10 h-10 rounded-xl bg-[#FFF8E6] text-[#C58A24] border border-[#FCE6BD] flex items-center justify-center font-bold text-label-lg flex-shrink-0">
+              <ClinivaIcon name="bell" size={20} className="text-[#C58A24]" />
             </div>
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#C58A24]">
                 {i18n.alarmTriggered}
               </span>
-              <h3 className="font-heading text-title-md font-extrabold text-on-surface">
+              <h3 className="font-heading text-title-md font-bold text-primary-navy">
                 {i18n.timeToTake(isAlertActive.medicine, isAlertActive.dosage)}
               </h3>
-              <p className="text-body-xs text-on-surface-variant">
+              <p className="text-body-xs text-secondary-text">
                 {i18n.schedFor(formatTimeDisplay(isAlertActive.time))}
               </p>
             </div>
@@ -621,6 +622,7 @@ export default function SmartMedicationReminders({ className = '' }: { className
               }}
               className="py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-label-sm transition-all flex items-center gap-1.5 shadow-sm"
             >
+              <ClinivaIcon name="check" size={15} />
               <span>{i18n.markTaken}</span>
             </button>
             <button
@@ -677,6 +679,7 @@ export default function SmartMedicationReminders({ className = '' }: { className
             title="Test notification sound and banner alert"
             className="btn-secondary py-2 px-3 rounded-xl text-label-xs font-semibold flex items-center gap-1.5"
           >
+            <ClinivaIcon name="bell" size={13} className="text-secondary-text" />
             <span>{i18n.testAlarm}</span>
           </button>
 
@@ -855,6 +858,7 @@ export default function SmartMedicationReminders({ className = '' }: { className
 
                       {isTaken && dose.taken_at && (
                         <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold mt-1 flex items-center gap-1">
+                          <ClinivaIcon name="check" size={12} className="flex-shrink-0" />
                           <span>{i18n.takenAt(dose.taken_at)}</span>
                         </p>
                       )}
@@ -863,8 +867,9 @@ export default function SmartMedicationReminders({ className = '' }: { className
                     {/* Dose Actions */}
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {isTaken ? (
-                        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold text-label-sm border border-emerald-500/30">
-                          {i18n.completed}
+                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold text-label-sm border border-emerald-500/30">
+                          <ClinivaIcon name="check" size={13} />
+                          <span>{i18n.completed}</span>
                         </span>
                       ) : (
                         <>
@@ -979,9 +984,10 @@ export default function SmartMedicationReminders({ className = '' }: { className
               </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-on-surface-variant hover:text-on-surface p-1"
+                className="text-on-surface-variant hover:text-on-surface p-1 rounded-lg"
+                aria-label="Close modal"
               >
-                ✕
+                <ClinivaIcon name="close" size={16} />
               </button>
             </div>
 

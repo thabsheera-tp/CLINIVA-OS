@@ -25,12 +25,17 @@ export default async function NursingDashboard() {
   const { data: { session } } = await supabase.auth.getSession()
   if (!session && process.env.NEXT_PUBLIC_DEMO_MODE === 'false') redirect('/login')
   const userName = session?.user?.user_metadata?.display_name ?? 'Nurse Priya Sharma, RN'
+  const userMeta = session?.user?.user_metadata || {}
+  const assignedRoles = (Array.isArray(userMeta.roles) && userMeta.roles.length > 0)
+    ? userMeta.roles
+    : (userMeta.role ? [userMeta.role] : ['nurse'])
 
   return (
     <DashboardShell
       role="nurse"
-      roleLabel="Nursing / IP Ward"
+      roleLabel="Nursing / Ward"
       userName={userName}
+      assignedRoles={assignedRoles}
       clinicName="St. Jude Medical Center — Ward Block"
       clinicIcon="local_hospital"
       searchPlaceholder="Search patients, beds, medications..."

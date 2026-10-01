@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 interface VoiceNoteRecorderProps {
   onAppendNote?: (text: string, targetSection?: string) => void
@@ -120,13 +121,11 @@ export default function VoiceNoteRecorder({ onAppendNote, className = '' }: Voic
             className={`relative flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 ${
               isRecording
                 ? 'bg-red-500 text-white shadow-lg shadow-red-500/30 animate-pulse'
-                : 'bg-primary text-on-primary hover:bg-primary-container hover-lift'
+                : 'bg-[#0F8B8D] text-white hover:bg-[#0D7A7C] hover-lift'
             }`}
             title={isRecording ? 'Stop Recording' : 'Start Clinical Voice Dictation'}
           >
-            <span className="material-symbols-outlined text-[18px]">
-              {isRecording ? 'mic' : 'mic_none'}
-            </span>
+            <ClinivaIcon name={isRecording ? 'mic' : 'mic_none'} size={18} strokeWidth={1.5} />
           </button>
 
           <div>
@@ -167,7 +166,7 @@ export default function VoiceNoteRecorder({ onAppendNote, className = '' }: Voic
               onClick={handleAppend}
               className="btn-primary text-label-sm py-1 px-2.5 flex items-center gap-1"
             >
-              <span className="material-symbols-outlined text-[14px]">add</span>
+              <ClinivaIcon name="add" size={14} strokeWidth={1.5} />
               <span>Insert</span>
             </button>
           </div>
@@ -187,7 +186,7 @@ export default function VoiceNoteRecorder({ onAppendNote, className = '' }: Voic
               className="text-outline hover:text-on-surface p-1"
               title="Clear transcript"
             >
-              <span className="material-symbols-outlined text-[14px]">close</span>
+              <ClinivaIcon name="close" size={14} strokeWidth={1.5} />
             </button>
           )}
         </div>

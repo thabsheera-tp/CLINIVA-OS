@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import SubScreenHeader from './SubScreenHeader'
 import StatusBadge from '@/components/ui/StatusBadge'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import DispenseMedicationModal from '@/components/modals/DispenseMedicationModal'
 import { SkeletonRow } from '@/components/ui/LoadingSkeleton'
@@ -68,7 +69,7 @@ export default function PharmacySubScreens({ slug, userName }: Props) {
             description="Verified e-prescriptions awaiting pharmacist safety checks, drug-drug interaction screening, and patient handover."
             actions={
               <button onClick={() => setDispenseOpen(true)} className="btn-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">prescriptions</span>
+                <ClinivaIcon name="prescriptions" size={16} strokeWidth={1.5} />
                 <span>Open Dispense Dialog</span>
               </button>
             }
@@ -78,20 +79,20 @@ export default function PharmacySubScreens({ slug, userName }: Props) {
             {dispenseQueue.loading && Array.from({ length: 4 }).map((_, i) => <SkeletonRow key={i} />)}
             {!dispenseQueue.loading && dispenseQueue.data.length === 0 && (
               SAMPLE_DISPENSE_QUEUE.map((order) => (
-                <div key={order.id} className="p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div key={order.id} className="p-4 bg-white rounded-xl border border-border-subtle shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-label-sm font-bold text-primary">{order.id}</span>
-                      <span className="font-semibold text-on-surface text-body-md">{order.patient}</span>
-                      <span className="text-label-sm text-outline">• {order.time}</span>
+                      <span className="font-mono text-label-sm font-bold text-primary-navy">{order.id}</span>
+                      <span className="font-semibold text-primary-navy text-body-md">{order.patient}</span>
+                      <span className="text-label-sm text-secondary-text">• {order.time}</span>
                     </div>
-                    <div className="text-body-sm font-medium text-on-surface mt-1">{order.meds}</div>
-                    <div className="text-label-sm text-on-surface-variant mt-0.5">Prescribed by {order.doc}</div>
+                    <div className="text-body-sm font-semibold text-primary-text mt-1">{order.meds}</div>
+                    <div className="text-label-sm text-secondary-text mt-0.5">Prescribed by {order.doc}</div>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold ${
-                      order.status === 'Ready for Pickup' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                    <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold border ${
+                      order.status === 'Ready for Pickup' ? 'bg-[#EBF7F2] text-[#2E7D5B] border-[#C3ECD8]' : 'bg-[#FFF8E6] text-[#C58A24] border-[#FCE6BD]'
                     }`}>
                       {order.status}
                     </span>
@@ -104,20 +105,20 @@ export default function PharmacySubScreens({ slug, userName }: Props) {
             )}
             {!dispenseQueue.loading && dispenseQueue.data.length > 0 && (
               dispenseQueue.data.map((order) => (
-                <div key={order.id} className="p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div key={order.id} className="p-4 bg-white rounded-xl border border-border-subtle shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-label-sm font-bold text-primary">{order.id.slice(0, 8).toUpperCase()}</span>
-                      <span className="font-semibold text-on-surface text-body-md">Patient #{order.patient_id.slice(0, 8)}</span>
-                      <span className="text-label-sm text-outline">• {order.prescribed_at ? new Date(order.prescribed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recent'}</span>
+                      <span className="font-mono text-label-sm font-bold text-primary-navy">{order.id.slice(0, 8).toUpperCase()}</span>
+                      <span className="font-semibold text-primary-navy text-body-md">Patient #{order.patient_id.slice(0, 8)}</span>
+                      <span className="text-label-sm text-secondary-text">• {order.prescribed_at ? new Date(order.prescribed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recent'}</span>
                     </div>
-                    <div className="text-body-sm font-medium text-on-surface mt-1">{order.drug_name} {order.dose} — {order.frequency} (Qty: {order.quantity})</div>
-                    <div className="text-label-sm text-on-surface-variant mt-0.5">Doctor #{order.doctor_id.slice(0, 8)} • Refills: {order.refills}</div>
+                    <div className="text-body-sm font-semibold text-primary-text mt-1">{order.drug_name} {order.dose} — {order.frequency} (Qty: {order.quantity})</div>
+                    <div className="text-label-sm text-secondary-text mt-0.5">Doctor #{order.doctor_id.slice(0, 8)} • Refills: {order.refills}</div>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold ${
-                      order.status === 'Ready for Pickup' || order.status === 'completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                    <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold border ${
+                      order.status === 'Ready for Pickup' || order.status === 'completed' ? 'bg-[#EBF7F2] text-[#2E7D5B] border-[#C3ECD8]' : 'bg-[#FFF8E6] text-[#C58A24] border-[#FCE6BD]'
                     }`}>
                       {order.status}
                     </span>
@@ -143,21 +144,21 @@ export default function PharmacySubScreens({ slug, userName }: Props) {
             description="Hospital central dispensary stock catalog, storage bin mapping, and reorder levels."
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 overflow-hidden shadow-sm space-y-4 p-4">
+          <div className="bg-white rounded-xl border border-border-subtle overflow-hidden shadow-sm space-y-4 p-4">
             <div className="relative max-w-sm">
-              <span className="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[20px]">search</span>
+              <ClinivaIcon name="search" size={16} strokeWidth={1.5} className="absolute left-3 top-2.5 text-secondary-text" />
               <input
                 type="text"
                 placeholder="Search drug name, code, form..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-surface-container-low rounded-xl text-body-sm text-on-surface border border-transparent focus:border-primary/30"
+                className="w-full pl-10 pr-4 py-2 bg-slate-50/70 rounded-xl text-body-sm text-primary-text border border-border-subtle focus:border-medical-teal focus:outline-none"
               />
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-body-sm">
-                <thead className="bg-surface-container-low/50 text-label-sm text-on-surface-variant uppercase border-b border-outline-variant/20">
+                <thead className="bg-slate-50/80 text-label-sm text-secondary-text uppercase border-b border-border-subtle">
                   <tr>
                     <th className="px-4 py-3">Code</th>
                     <th className="px-4 py-3">Drug Name</th>
@@ -167,17 +168,17 @@ export default function PharmacySubScreens({ slug, userName }: Props) {
                     <th className="px-4 py-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-outline-variant/20">
+                <tbody className="divide-y divide-border-subtle">
                   {SAMPLE_INVENTORY.filter(i => i.name.toLowerCase().includes(searchTerm.toLowerCase()) || i.code.includes(searchTerm)).map((i) => (
-                    <tr key={i.code} className="hover:bg-surface-container-low/30">
-                      <td className="px-4 py-3 font-mono text-outline font-medium">{i.code}</td>
-                      <td className="px-4 py-3 font-semibold text-on-surface">{i.name}</td>
-                      <td className="px-4 py-3">{i.strength} • {i.form}</td>
-                      <td className="px-4 py-3 font-mono font-bold text-on-surface">{i.stock}</td>
-                      <td className="px-4 py-3 text-on-surface-variant">{i.bin}</td>
+                    <tr key={i.code} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-4 py-3 font-mono text-secondary-text font-medium">{i.code}</td>
+                      <td className="px-4 py-3 font-semibold text-primary-navy">{i.name}</td>
+                      <td className="px-4 py-3 text-primary-text">{i.strength} • {i.form}</td>
+                      <td className="px-4 py-3 font-mono font-bold text-primary-navy">{i.stock}</td>
+                      <td className="px-4 py-3 text-secondary-text">{i.bin}</td>
                       <td className="px-4 py-3">
-                        <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold ${
-                          i.status === 'In Stock' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                        <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold border ${
+                          i.status === 'In Stock' ? 'bg-[#EBF7F2] text-[#2E7D5B] border-[#C3ECD8]' : 'bg-[#FDF2F2] text-[#C94A4A] border-[#F8D7D7]'
                         }`}>
                           {i.status}
                         </span>
@@ -202,24 +203,24 @@ export default function PharmacySubScreens({ slug, userName }: Props) {
             description="Requisitions sent to certified pharmaceutical distributors and stock receipt logs."
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5 shadow-sm space-y-3">
+          <div className="bg-white rounded-xl border border-border-subtle p-5 shadow-sm space-y-3">
             {[
               { po: 'PO-2026-081', vendor: 'Amerisource Health Logistics', items: '40 items (Cardiovascular & Antibiotics)', total: '$4,280.00', status: 'In Transit', expected: 'Tomorrow 10:00' },
               { po: 'PO-2026-079', vendor: 'McKesson Medical Supply', items: '12 items (Surgical Disposables & IV fluids)', total: '$1,850.50', status: 'Delivered', expected: 'Received Today' },
               { po: 'PO-2026-077', vendor: 'Cardinal Health Pharmaceuticals', items: '25 items (Controlled Substances / Schedule II)', total: '$6,120.00', status: 'Audit Pending', expected: 'In Verification' },
             ].map((po) => (
-              <div key={po.po} className="p-4 rounded-xl border border-outline-variant/30 bg-surface-container-low/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div key={po.po} className="p-4 rounded-xl border border-border-subtle bg-slate-50/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-primary">{po.po}</span>
-                    <span className="font-semibold text-on-surface">{po.vendor}</span>
+                    <span className="font-mono font-bold text-primary-navy">{po.po}</span>
+                    <span className="font-semibold text-primary-navy">{po.vendor}</span>
                   </div>
-                  <div className="text-body-sm text-on-surface-variant mt-1">{po.items}</div>
-                  <div className="text-label-sm text-outline mt-0.5">Delivery: {po.expected}</div>
+                  <div className="text-body-sm text-secondary-text mt-1">{po.items}</div>
+                  <div className="text-label-sm text-secondary-text mt-0.5">Delivery: {po.expected}</div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-mono font-bold text-body-md text-on-surface">{po.total}</span>
-                  <span className="px-2.5 py-1 rounded-full text-label-sm font-semibold bg-blue-100 text-blue-800">
+                  <span className="font-mono font-bold text-body-md text-primary-navy">{po.total}</span>
+                  <span className="px-2.5 py-1 rounded-full text-label-sm font-semibold bg-slate-100 text-secondary-text border border-border-subtle">
                     {po.status}
                   </span>
                 </div>
@@ -241,10 +242,10 @@ export default function PharmacySubScreens({ slug, userName }: Props) {
             description="Automatic batch surveillance for formulations reaching 30, 60, and 90-day expiry thresholds."
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 overflow-hidden shadow-sm">
+          <div className="bg-white rounded-xl border border-border-subtle overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-body-sm">
-                <thead className="bg-surface-container-low/50 text-label-sm text-on-surface-variant uppercase border-b border-outline-variant/20">
+                <thead className="bg-slate-50/80 text-label-sm text-secondary-text uppercase border-b border-border-subtle">
                   <tr>
                     <th className="px-5 py-3">Lot Number</th>
                     <th className="px-5 py-3">Formulation</th>
@@ -254,22 +255,22 @@ export default function PharmacySubScreens({ slug, userName }: Props) {
                     <th className="px-5 py-3 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-outline-variant/20">
+                <tbody className="divide-y divide-border-subtle">
                   {SAMPLE_EXPIRY.map((exp) => (
-                    <tr key={exp.lot} className="hover:bg-surface-container-low/30">
-                      <td className="px-5 py-3.5 font-mono text-outline font-medium">{exp.lot}</td>
-                      <td className="px-5 py-3.5 font-semibold text-on-surface">{exp.drug}</td>
-                      <td className="px-5 py-3.5">{exp.qty}</td>
-                      <td className="px-5 py-3.5 font-bold text-red-700">{exp.exp}</td>
+                    <tr key={exp.lot} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-5 py-3.5 font-mono text-secondary-text font-medium">{exp.lot}</td>
+                      <td className="px-5 py-3.5 font-semibold text-primary-navy">{exp.drug}</td>
+                      <td className="px-5 py-3.5 text-primary-text">{exp.qty}</td>
+                      <td className="px-5 py-3.5 font-bold text-[#C94A4A]">{exp.exp}</td>
                       <td className="px-5 py-3.5">
-                        <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold ${
-                          exp.status === 'Expired' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'
+                        <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold border ${
+                          exp.status === 'Expired' ? 'bg-[#FDF2F2] text-[#C94A4A] border-[#F8D7D7]' : 'bg-[#FFF8E6] text-[#C58A24] border-[#FCE6BD]'
                         }`}>
                           {exp.status}
                         </span>
                       </td>
                       <td className="px-5 py-3.5 text-right">
-                        <button className="px-3 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-label-sm font-medium">
+                        <button className="px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-label-sm font-semibold text-primary-navy transition-colors">
                           {exp.action}
                         </button>
                       </td>
@@ -295,15 +296,18 @@ export default function PharmacySubScreens({ slug, userName }: Props) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
-              { name: 'Amerisource Health Corp', contact: 'Sarah Lin (+1 555 491-0021)', terms: 'Net 30 Days', lead: '24 Hours', rating: '4.9 ★' },
-              { name: 'McKesson Medical Distribution', contact: 'David Rossi (+1 555 330-9182)', terms: 'Net 45 Days', lead: '48 Hours', rating: '4.8 ★' },
-              { name: 'Cardinal Health Systems', contact: 'Rachel Adams (+1 555 902-1144)', terms: 'Net 30 Days', lead: 'Same Day Emergency', rating: '5.0 ★' },
-              { name: 'Medline Industries', contact: 'Thomas Wright (+1 555 611-3091)', terms: 'Net 60 Days', lead: '72 Hours', rating: '4.7 ★' },
+              { name: 'Amerisource Health Corp', contact: 'Sarah Lin (+1 555 491-0021)', terms: 'Net 30 Days', lead: '24 Hours', rating: '4.9' },
+              { name: 'McKesson Medical Distribution', contact: 'David Rossi (+1 555 330-9182)', terms: 'Net 45 Days', lead: '48 Hours', rating: '4.8' },
+              { name: 'Cardinal Health Systems', contact: 'Rachel Adams (+1 555 902-1144)', terms: 'Net 30 Days', lead: 'Same Day Emergency', rating: '5.0' },
+              { name: 'Medline Industries', contact: 'Thomas Wright (+1 555 611-3091)', terms: 'Net 60 Days', lead: '72 Hours', rating: '4.7' },
             ].map((v) => (
               <div key={v.name} className="p-5 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-on-surface text-body-md">{v.name}</h3>
-                  <span className="text-label-sm font-bold text-primary">{v.rating}</span>
+                  <span className="inline-flex items-center gap-1 text-label-sm font-bold text-primary">
+                    <ClinivaIcon name="star" size={13} className="text-amber-500 fill-amber-500" />
+                    {v.rating}
+                  </span>
                 </div>
                 <div className="text-body-sm text-on-surface-variant space-y-0.5">
                   <div>Contact: {v.contact}</div>

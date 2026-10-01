@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect } from 'react'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 type Props = {
   error: Error & { digest?: string }
@@ -19,7 +20,7 @@ export default function DashboardErrorFallback({ error, reset, homeHref = '/', h
   return (
     <div className="flex flex-col items-center justify-center py-20 px-6 text-center space-y-6">
       <div className="w-16 h-16 rounded-2xl bg-error/10 flex items-center justify-center">
-        <span className="material-symbols-outlined text-error text-[36px]">error_med</span>
+        <ClinivaIcon name="error" size={36} strokeWidth={1.5} className="text-[#C94A4A]" />
       </div>
       <div className="space-y-2">
         <h2 className="font-heading text-headline-md font-bold text-on-surface">
@@ -36,11 +37,11 @@ export default function DashboardErrorFallback({ error, reset, homeHref = '/', h
       </div>
       <div className="flex gap-3">
         <button onClick={reset} className="btn-primary flex items-center gap-2">
-          <span className="material-symbols-outlined text-[18px]">refresh</span>
+          <ClinivaIcon name="refresh" size={18} strokeWidth={1.5} />
           Retry
         </button>
         <Link href={homeHref} className="btn-secondary flex items-center gap-2">
-          <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+          <ClinivaIcon name="arrow_back" size={18} strokeWidth={1.5} />
           {homeLabel}
         </Link>
       </div>

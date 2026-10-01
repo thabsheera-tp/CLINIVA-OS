@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import SubScreenHeader from './SubScreenHeader'
 import StatusBadge from '@/components/ui/StatusBadge'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import { SkeletonRow } from '@/components/ui/LoadingSkeleton'
 import { usePendingLabOrders, useCriticalLabResults } from '@/hooks/useClinicData'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
@@ -117,46 +118,46 @@ export default function LabSubScreens({ slug }: Props) {
               ? activeOrders.map((o) => (
                   <div
                     key={o.id}
-                    className={`p-4 rounded-2xl border shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+                    className={`p-4 rounded-xl border shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
                       o.priority === 'stat'
-                        ? 'bg-red-50/40 border-red-200'
-                        : 'bg-surface-container-lowest border-outline-variant/30'
+                        ? 'bg-[#FDF2F2] border-[#F8D7D7]'
+                        : 'bg-white border-border-subtle'
                     }`}
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-primary">
+                        <span className="font-mono font-bold text-primary-navy">
                           #{o.id.slice(0, 8).toUpperCase()}
                         </span>
-                        <span className="font-semibold text-on-surface text-body-md">
+                        <span className="font-bold text-primary-navy text-sm">
                           {o.patient_name || 'Patient'}
                         </span>
-                        <span className="text-label-sm text-outline">
-                          #{o.mrn || '00482910'} • {o.sample_type || 'Blood'}
+                        <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">
+                          #{o.mrn || '00482910'} &bull; {o.sample_type || 'Blood'}
                         </span>
                       </div>
-                      <div className="text-body-sm font-medium text-on-surface mt-1">
+                      <div className="text-sm font-semibold text-[#123047] dark:text-white mt-1">
                         {o.test_name}
                       </div>
-                      <div className="text-label-sm text-on-surface-variant mt-0.5">
+                      <div className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] mt-0.5">
                         Ordered by: {o.doctor_name || 'Dr. Sarah Jenkins'}
-                        {o.clinical_info && ` • ${o.clinical_info}`}
+                        {o.clinical_info && ` &bull; ${o.clinical_info}`}
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <span
-                        className={`px-2.5 py-1 rounded-full text-label-sm font-bold ${
+                        className={`px-2.5 py-1 rounded-full text-label-sm font-semibold border ${
                           o.priority === 'stat'
-                            ? 'bg-red-100 text-red-800 animate-pulse'
-                            : 'bg-surface-container text-on-surface'
+                            ? 'bg-[#FDF2F2] text-[#C94A4A] border-[#F8D7D7]'
+                            : 'bg-slate-100 text-[#4A5D6B] border-border-subtle'
                         }`}
                       >
                         {o.priority ? o.priority.toUpperCase() : 'ROUTINE'}
                       </span>
                       <button
                         onClick={() => openLabResultModal(o.id)}
-                        className="btn-primary text-label-sm py-1.5 px-3 touch-tap"
+                        className="btn-primary text-xs font-semibold py-1.5 px-3 touch-tap"
                       >
                         Enter Results
                       </button>
@@ -166,30 +167,30 @@ export default function LabSubScreens({ slug }: Props) {
               : SAMPLE_LAB_ORDERS.map((o) => (
                   <div
                     key={o.orderId}
-                    className={`p-4 rounded-2xl border shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+                    className={`p-4 rounded-xl border shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
                       o.priority === 'STAT'
-                        ? 'bg-red-50/40 border-red-200'
-                        : 'bg-surface-container-lowest border-outline-variant/30'
+                        ? 'bg-[#FDF2F2] border-[#F8D7D7]'
+                        : 'bg-white border-border-subtle'
                     }`}
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-primary">{o.orderId}</span>
-                        <span className="font-semibold text-on-surface text-body-md">{o.patient}</span>
-                        <span className="text-label-sm text-outline">#{o.mrn} • {o.time}</span>
+                        <span className="font-mono font-bold text-primary-navy text-xs">{o.orderId}</span>
+                        <span className="font-bold text-primary-navy text-sm">{o.patient}</span>
+                        <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">#{o.mrn} &bull; {o.time}</span>
                       </div>
-                      <div className="text-body-sm font-medium text-on-surface mt-1">{o.tests}</div>
-                      <div className="text-label-sm text-on-surface-variant mt-0.5">Ordered by: {o.doc}</div>
+                      <div className="text-sm font-semibold text-[#123047] dark:text-white mt-1">{o.tests}</div>
+                      <div className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] mt-0.5">Ordered by: {o.doc}</div>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <span
-                        className={`px-2.5 py-1 rounded-full text-label-sm font-bold ${
+                        className={`px-2.5 py-1 rounded-full text-label-sm font-semibold border ${
                           o.priority === 'STAT'
-                            ? 'bg-red-100 text-red-800 animate-pulse'
+                            ? 'bg-[#FDF2F2] text-[#C94A4A] border-[#F8D7D7]'
                             : o.priority === 'Urgent'
-                            ? 'bg-amber-100 text-amber-800'
-                            : 'bg-surface-container text-on-surface'
+                            ? 'bg-[#FFF8E6] text-[#C58A24] border-[#FCE6BD]'
+                            : 'bg-slate-100 text-secondary-text border-border-subtle'
                         }`}
                       >
                         {o.priority}
@@ -218,10 +219,10 @@ export default function LabSubScreens({ slug }: Props) {
             description="Phlebotomy collection log, barcode labeling, tube centrifuge status, and incubator tracking."
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 overflow-hidden shadow-sm">
+          <div className="bg-white rounded-xl border border-border-subtle overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-body-sm">
-                <thead className="bg-surface-container-low/50 text-label-sm text-on-surface-variant uppercase border-b border-outline-variant/20">
+                <thead className="bg-slate-50/80 text-label-sm text-secondary-text uppercase border-b border-border-subtle">
                   <tr>
                     <th className="px-5 py-3">Barcode</th>
                     <th className="px-5 py-3">Patient</th>
@@ -231,21 +232,21 @@ export default function LabSubScreens({ slug }: Props) {
                     <th className="px-5 py-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-outline-variant/20">
+                <tbody className="divide-y divide-border-subtle">
                   {[
                     { bar: 'SMP-99014', patient: 'Marcus Delacroix', type: 'Whole Blood', container: 'Lavender Top (EDTA)', time: '08:15 AM', status: 'Centrifuged' },
                     { bar: 'SMP-99015', patient: 'Marcus Delacroix', type: 'Venous Blood', container: 'Gold Top (SST Gel)', time: '08:15 AM', status: 'Analyzing' },
                     { bar: 'SMP-99016', patient: 'Priya Mehta', type: 'Serum / Clot', container: 'Red Top (No additive)', time: '08:30 AM', status: 'Accessioned' },
                     { bar: 'SMP-99017', patient: 'George Tanner', type: 'Clean Catch Urine', container: 'Sterile Urine Cup', time: '08:45 AM', status: 'Completed' },
                   ].map((s) => (
-                    <tr key={s.bar} className="hover:bg-surface-container-low/30">
-                      <td className="px-5 py-3.5 font-mono font-bold text-primary">{s.bar}</td>
-                      <td className="px-5 py-3.5 font-semibold text-on-surface">{s.patient}</td>
-                      <td className="px-5 py-3.5">{s.type}</td>
-                      <td className="px-5 py-3.5 text-on-surface-variant">{s.container}</td>
-                      <td className="px-5 py-3.5 font-mono text-outline">{s.time}</td>
+                    <tr key={s.bar} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-5 py-3.5 font-mono font-bold text-medical-teal">{s.bar}</td>
+                      <td className="px-5 py-3.5 font-semibold text-primary-navy">{s.patient}</td>
+                      <td className="px-5 py-3.5 text-primary-text">{s.type}</td>
+                      <td className="px-5 py-3.5 text-secondary-text">{s.container}</td>
+                      <td className="px-5 py-3.5 font-mono text-secondary-text">{s.time}</td>
                       <td className="px-5 py-3.5">
-                        <span className="px-2.5 py-1 rounded-full text-label-sm font-semibold bg-blue-100 text-blue-800">
+                        <span className="px-2.5 py-1 rounded-full text-label-sm font-semibold bg-slate-100 text-secondary-text border border-border-subtle">
                           {s.status}
                         </span>
                       </td>
@@ -268,34 +269,37 @@ export default function LabSubScreens({ slug }: Props) {
             description="Enter test readings from automated hematology and clinical chemistry analyzers with abnormal range flags."
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 shadow-sm space-y-4 max-w-3xl">
+          <div className="bg-white rounded-xl border border-border-subtle p-6 shadow-sm space-y-4 max-w-3xl">
             {/* Feedback alert */}
             {inlineFeedback && (
               <div
                 className={`p-3.5 rounded-xl border text-body-sm flex items-start gap-2.5 ${
                   inlineFeedback.success
-                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                    : 'bg-red-50 text-red-800 border-red-200'
+                    ? 'bg-[#EBF7F2] text-[#2E7D5B] border-[#C3ECD8]'
+                    : 'bg-[#FDF2F2] text-[#C94A4A] border-[#F8D7D7]'
                 }`}
               >
-                <span className="material-symbols-outlined text-[18px] mt-0.5">
-                  {inlineFeedback.success ? 'check_circle' : 'error'}
-                </span>
+                <ClinivaIcon
+                  name={inlineFeedback.success ? 'check_circle' : 'error'}
+                  size={18}
+                  strokeWidth={1.5}
+                  className="mt-0.5"
+                />
                 <span>{inlineFeedback.msg}</span>
               </div>
             )}
 
             {/* Select Order Banner */}
-            <div className="p-3.5 bg-surface-container-low rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="p-3.5 bg-slate-50/70 border border-border-subtle rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <span className="font-semibold text-on-surface text-body-md">
+                <span className="font-semibold text-primary-navy text-body-md">
                   {currentOrder?.patient_name || 'Marcus Delacroix (54M)'}
                 </span>
-                <span className="text-label-sm text-outline ml-2 font-mono">
+                <span className="text-label-sm text-secondary-text ml-2 font-mono">
                   #{currentOrder?.mrn || '00482910'}
                 </span>
                 {currentOrder?.doctor_name && (
-                  <span className="text-label-sm text-on-surface-variant block mt-0.5">
+                  <span className="text-label-sm text-secondary-text block mt-0.5">
                     Attending: {currentOrder.doctor_name}
                   </span>
                 )}
@@ -306,7 +310,7 @@ export default function LabSubScreens({ slug }: Props) {
                   <select
                     value={selectedOrderId}
                     onChange={(e) => setSelectedOrderId(e.target.value)}
-                    className="px-2.5 py-1 text-label-sm rounded-lg border border-outline-variant/30 bg-surface-container-lowest text-on-surface"
+                    className="px-2.5 py-1 text-label-sm rounded-lg border border-border-subtle bg-white text-primary-text"
                   >
                     {activeOrders.map((o) => (
                       <option key={o.id} value={o.id}>
@@ -315,60 +319,60 @@ export default function LabSubScreens({ slug }: Props) {
                     ))}
                   </select>
                 )}
-                <span className="text-label-sm font-bold text-red-700 uppercase bg-red-100/70 px-2 py-0.5 rounded-full">
+                <span className="text-label-sm font-semibold text-[#C94A4A] uppercase bg-[#FDF2F2] border border-[#F8D7D7] px-2 py-0.5 rounded-full">
                   {currentOrder?.priority === 'stat' ? 'STAT Panel' : 'Priority Specimen'}
                 </span>
               </div>
             </div>
 
             <div className="space-y-3">
-              <div className="grid grid-cols-3 gap-3 items-center text-body-sm font-medium text-on-surface-variant pb-2 border-b border-outline-variant/20">
+              <div className="grid grid-cols-3 gap-3 items-center text-body-sm font-medium text-secondary-text pb-2 border-b border-border-subtle">
                 <span>Analyte / Parameter</span>
                 <span>Measured Value</span>
                 <span>Biological Reference</span>
               </div>
 
               <div className="grid grid-cols-3 gap-3 items-center">
-                <span className="font-semibold text-on-surface">hs-Troponin I</span>
+                <span className="font-semibold text-primary-navy">hs-Troponin I</span>
                 <input
                   type="text"
                   value={troponinVal}
                   onChange={(e) => setTroponinVal(e.target.value)}
-                  className="px-3 py-1.5 rounded-lg bg-surface-container-low border border-red-300 text-red-700 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-red-400"
+                  className="px-3 py-1.5 rounded-lg bg-slate-50 border border-red-300 text-[#C94A4A] font-mono font-bold focus:outline-none focus:ring-2 focus:ring-red-400"
                 />
-                <span className="text-label-sm text-outline">&lt; 0.04 ng/mL</span>
+                <span className="text-label-sm text-secondary-text">&lt; 0.04 ng/mL</span>
               </div>
 
               <div className="grid grid-cols-3 gap-3 items-center">
-                <span className="font-semibold text-on-surface">Serum Potassium (K+)</span>
+                <span className="font-semibold text-primary-navy">Serum Potassium (K+)</span>
                 <input
                   type="text"
                   value={potassiumVal}
                   onChange={(e) => setPotassiumVal(e.target.value)}
-                  className="px-3 py-1.5 rounded-lg bg-surface-container-low border border-outline-variant/30 font-mono focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  className="px-3 py-1.5 rounded-lg bg-slate-50 border border-border-subtle font-mono focus:outline-none focus:ring-2 focus:ring-medical-teal/40"
                 />
-                <span className="text-label-sm text-outline">3.5 - 5.0 mEq/L</span>
+                <span className="text-label-sm text-secondary-text">3.5 - 5.0 mEq/L</span>
               </div>
 
               <div className="grid grid-cols-3 gap-3 items-center">
-                <span className="font-semibold text-on-surface">Serum Creatinine</span>
+                <span className="font-semibold text-primary-navy">Serum Creatinine</span>
                 <input
                   type="text"
                   value={creatinineVal}
                   onChange={(e) => setCreatinineVal(e.target.value)}
-                  className="px-3 py-1.5 rounded-lg bg-surface-container-low border border-outline-variant/30 font-mono focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  className="px-3 py-1.5 rounded-lg bg-slate-50 border border-border-subtle font-mono focus:outline-none focus:ring-2 focus:ring-medical-teal/40"
                 />
-                <span className="text-label-sm text-outline">0.7 - 1.3 mg/dL</span>
+                <span className="text-label-sm text-secondary-text">0.7 - 1.3 mg/dL</span>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-outline-variant/20 flex flex-wrap items-center justify-between gap-3">
+            <div className="pt-4 border-t border-border-subtle flex flex-wrap items-center justify-between gap-3">
               <button
                 type="button"
                 onClick={() => openLabResultModal(currentOrder?.id)}
                 className="btn-secondary touch-tap text-label-sm"
               >
-                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+                <ClinivaIcon name="open_in_new" size={16} strokeWidth={1.5} />
                 <span>Open Detailed Dialog</span>
               </button>
 
@@ -381,9 +385,7 @@ export default function LabSubScreens({ slug }: Props) {
                 >
                   {isInlineSubmitting ? (
                     <>
-                      <span className="material-symbols-outlined text-[16px] animate-spin">
-                        progress_activity
-                      </span>
+                      <ClinivaIcon name="progress_activity" size={16} strokeWidth={1.5} className="animate-spin" />
                       <span>Saving...</span>
                     </>
                   ) : (
@@ -408,23 +410,23 @@ export default function LabSubScreens({ slug }: Props) {
             description="Verified pathologist reports ready for real-time electronic dispatch to Doctor Workspace and Patient Portal."
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5 shadow-sm space-y-3">
+          <div className="bg-white rounded-xl border border-border-subtle p-5 shadow-sm space-y-3">
             {[
               { repId: 'REP-1092', patient: 'Marcus Delacroix', test: 'Acute Coronary Biomarker Panel', authBy: 'David Kalu, MLS', status: 'Dispatched to Doctor' },
               { repId: 'REP-1091', patient: 'George Tanner', test: 'Comprehensive Glycemic Index (HbA1c)', authBy: 'Dr. Helen Frost, Pathologist', status: 'Available in Portal' },
               { repId: 'REP-1088', patient: 'David Chen', test: 'Complete Lipid Profile & Apolipoproteins', authBy: 'David Kalu, MLS', status: 'Available in Portal' },
             ].map((r) => (
-              <div key={r.repId} className="p-4 rounded-xl border border-outline-variant/30 bg-surface-container-low/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div key={r.repId} className="p-4 rounded-xl border border-border-subtle bg-slate-50/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-primary">{r.repId}</span>
-                    <span className="font-semibold text-on-surface">{r.patient}</span>
+                    <span className="font-mono font-bold text-primary-navy">{r.repId}</span>
+                    <span className="font-semibold text-primary-navy">{r.patient}</span>
                   </div>
-                  <div className="text-body-sm text-on-surface-variant mt-1">{r.test}</div>
-                  <div className="text-label-sm text-outline mt-0.5">Signed by: {r.authBy}</div>
+                  <div className="text-body-sm text-secondary-text mt-1">{r.test}</div>
+                  <div className="text-label-sm text-secondary-text mt-0.5">Signed by: {r.authBy}</div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="px-2.5 py-1 rounded-full text-label-sm font-semibold bg-emerald-100 text-emerald-800">
+                  <span className="px-2.5 py-1 rounded-full text-label-sm font-semibold bg-[#EBF7F2] text-[#2E7D5B] border border-[#C3ECD8]">
                     {r.status}
                   </span>
                   <button className="btn-secondary text-label-sm py-1 px-3">

@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import ModalBackdrop from './ModalBackdrop'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import { createClientSideClient } from '@/lib/supabase/client'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 export const DEPARTMENTS = [
   { id: 'cardio', name: 'Cardiology', doctor: 'Dr. Sarah Jenkins' },
@@ -112,7 +113,7 @@ export default function InstantBookingModal() {
       {success ? (
         <div className="py-8 text-center space-y-3">
           <div className="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary mx-auto animate-bounce">
-            <span className="material-symbols-outlined text-[36px]">how_to_reg</span>
+            <ClinivaIcon name="how_to_reg" size={36} strokeWidth={1.5} />
           </div>
           <h3 className="font-heading text-headline-md font-bold text-on-surface">
             Appointment Booked!
@@ -229,7 +230,7 @@ export default function InstantBookingModal() {
               disabled={submitting || !patientName}
               className="btn-primary flex items-center gap-2"
             >
-              <span className="material-symbols-outlined text-[18px]">add_task</span>
+              <ClinivaIcon name="add_task" size={16} strokeWidth={1.5} />
               <span>{submitting ? 'Confirming...' : 'Book & Allocate Token'}</span>
             </button>
           </div>

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import ModalBackdrop from './ModalBackdrop'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import { recordInvoicePayment } from '@/lib/data'
 
@@ -76,7 +77,7 @@ export default function CollectPaymentModal() {
       {paid ? (
         <div className="py-8 flex flex-col items-center justify-center text-center space-y-3">
           <div className="w-16 h-16 rounded-full bg-secondary-fixed flex items-center justify-center text-primary animate-bounce">
-            <span className="material-symbols-outlined text-[36px]">paid</span>
+            <ClinivaIcon name="paid" size={32} strokeWidth={1.5} />
           </div>
           <h3 className="font-heading text-headline-md text-on-surface font-bold">
             Payment Settled — ${(settledResult?.amount ?? total).toFixed(2)}
@@ -92,7 +93,7 @@ export default function CollectPaymentModal() {
         <form onSubmit={handlePay} className="space-y-space-md">
           {errorMsg && (
             <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-body-sm flex items-center gap-2">
-              <span className="material-symbols-outlined text-[18px]">error</span>
+              <ClinivaIcon name="error" size={18} strokeWidth={1.5} />
               <span>{errorMsg}</span>
             </div>
           )}
@@ -148,7 +149,7 @@ export default function CollectPaymentModal() {
                       : 'bg-surface-container-low hover:bg-surface-container border-transparent text-on-surface-variant'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[22px] mb-1 text-primary">{m.icon}</span>
+                  <ClinivaIcon name={m.icon} size={22} strokeWidth={1.5} className="mb-1 text-primary" />
                   <span className="text-label-sm">{m.label}</span>
                 </button>
               ))}
@@ -184,12 +185,12 @@ export default function CollectPaymentModal() {
             >
               {processing ? (
                 <>
-                  <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+                  <ClinivaIcon name="progress_activity" size={18} strokeWidth={1.5} className="animate-spin" />
                   Processing…
                 </>
               ) : (
                 <>
-                  <span className="material-symbols-outlined text-[18px]">check</span>
+                  <ClinivaIcon name="check" size={18} strokeWidth={1.5} />
                   Collect ${total.toFixed(2)} & Issue Receipt
                 </>
               )}

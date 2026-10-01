@@ -74,7 +74,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
         />
       </head>
-      <body className="font-body bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-50 antialiased transition-colors duration-200">
+      <body className="font-body bg-[#F7F9FA] dark:bg-[#0D1B26] text-[#172B3A] dark:text-[#E8F0F5] antialiased transition-colors duration-200">
         <ThemeProvider>
           <ClinicRealtimeProvider>
             <GlobalModalRoot />

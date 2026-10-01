@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 interface QuickActionBarProps {
   className?: string
@@ -47,60 +48,60 @@ export default function QuickActionBar({ className = '' }: QuickActionBarProps) 
 
   return (
     <div
-      className={`flex items-center gap-2 p-1.5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-x-auto smooth-touch-scroll ${className}`}
+      className={`flex items-center gap-2 p-1.5 bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] shadow-xs overflow-x-auto smooth-touch-scroll ${className}`}
     >
-        <div className="flex items-center gap-1.5 px-2.5 py-1 text-label-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex-shrink-0">
-          <span className="material-symbols-outlined text-primary text-[18px]">bolt</span>
-          <span>Quick Actions</span>
-        </div>
-
-        <button
-          onClick={() => setBookingOpen(true)}
-          className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap flex-shrink-0"
-          title="Instant Book (⌘B)"
-        >
-          <span className="material-symbols-outlined text-[16px] text-primary">event_available</span>
-          <span>Book Appt</span>
-          <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-            ⌘B
-          </kbd>
-        </button>
-
-        <button
-          onClick={() => setPrescriptionOpen(true)}
-          className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap flex-shrink-0"
-          title="Write Prescription (⌘P)"
-        >
-          <span className="material-symbols-outlined text-[16px] text-primary">prescriptions</span>
-          <span>e-Prescription</span>
-          <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-            ⌘P
-          </kbd>
-        </button>
-
-        <button
-          onClick={() => setRegisterOpen(true)}
-          className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap flex-shrink-0"
-          title="Emergency Intake (⌘E)"
-        >
-          <span className="material-symbols-outlined text-[16px] text-rose-600 dark:text-rose-400">emergency</span>
-          <span>Emergency Intake</span>
-          <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-            ⌘E
-          </kbd>
-        </button>
-
-        <button
-          onClick={() => setVitalsOpen(true)}
-          className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap flex-shrink-0"
-          title="Record Vitals (⌘V)"
-        >
-          <span className="material-symbols-outlined text-[16px] text-sky-600 dark:text-sky-400">monitor_heart</span>
-          <span>Record Vitals</span>
-          <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-            ⌘V
-          </kbd>
-        </button>
+      <div className="flex items-center gap-1.5 px-2.5 py-1 text-label-sm font-semibold text-[#60727F] dark:text-[#92A6B5] uppercase tracking-wider flex-shrink-0">
+        <ClinivaIcon name="bolt" size={16} strokeWidth={1.5} className="text-[#0F8B8D]" />
+        <span>Quick Actions</span>
       </div>
+
+      <button
+        onClick={() => setBookingOpen(true)}
+        className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap flex-shrink-0"
+        title="Instant Book (⌘B)"
+      >
+        <ClinivaIcon name="event_available" size={16} strokeWidth={1.5} className="text-[#0F8B8D]" />
+        <span>Book Appt</span>
+        <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] bg-[#F0F4F7] dark:bg-white/10 font-mono text-[#60727F] dark:text-[#92A6B5] border border-[#E2E8EC] dark:border-white/[0.08]">
+          ⌘B
+        </kbd>
+      </button>
+
+      <button
+        onClick={() => setPrescriptionOpen(true)}
+        className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap flex-shrink-0"
+        title="Write Prescription (⌘P)"
+      >
+        <ClinivaIcon name="prescriptions" size={16} strokeWidth={1.5} className="text-[#0F8B8D]" />
+        <span>e-Prescription</span>
+        <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] bg-[#F0F4F7] dark:bg-white/10 font-mono text-[#60727F] dark:text-[#92A6B5] border border-[#E2E8EC] dark:border-white/[0.08]">
+          ⌘P
+        </kbd>
+      </button>
+
+      <button
+        onClick={() => setRegisterOpen(true)}
+        className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap flex-shrink-0"
+        title="Emergency Intake (⌘E)"
+      >
+        <ClinivaIcon name="emergency" size={16} strokeWidth={1.5} className="text-[#C94A4A]" />
+        <span>Emergency Intake</span>
+        <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] bg-[#F0F4F7] dark:bg-white/10 font-mono text-[#60727F] dark:text-[#92A6B5] border border-[#E2E8EC] dark:border-white/[0.08]">
+          ⌘E
+        </kbd>
+      </button>
+
+      <button
+        onClick={() => setVitalsOpen(true)}
+        className="btn-secondary text-label-sm py-1.5 px-3 whitespace-nowrap flex-shrink-0"
+        title="Record Vitals (⌘V)"
+      >
+        <ClinivaIcon name="monitor_heart" size={16} strokeWidth={1.5} className="text-[#0F8B8D]" />
+        <span>Record Vitals</span>
+        <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] bg-[#F0F4F7] dark:bg-white/10 font-mono text-[#60727F] dark:text-[#92A6B5] border border-[#E2E8EC] dark:border-white/[0.08]">
+          ⌘V
+        </kbd>
+      </button>
+    </div>
   )
 }

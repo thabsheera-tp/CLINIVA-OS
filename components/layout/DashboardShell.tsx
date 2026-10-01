@@ -20,6 +20,7 @@ type DashboardShellProps = {
   primaryAction?: { label: string; icon: string; href?: string; onClick?: () => void }
   contextLabel?: string
   contextIcon?: string
+  assignedRoles?: string[]
 }
 
 /**
@@ -42,6 +43,7 @@ export default function DashboardShell({
   primaryAction,
   contextLabel,
   contextIcon,
+  assignedRoles,
 }: DashboardShellProps) {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
 
@@ -67,6 +69,7 @@ export default function DashboardShell({
         <TopBar
           userName={userName}
           userRole={roleLabel}
+          assignedRoles={assignedRoles}
           userAvatar={userAvatar}
           clinicName={clinicName}
           clinicIcon={clinicIcon}

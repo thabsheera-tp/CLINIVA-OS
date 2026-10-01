@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import ModalBackdrop from './ModalBackdrop'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import { recordPatientVitals } from '@/lib/data'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 export default function RecordVitalsModal() {
   const { isVitalsOpen, setVitalsOpen, updateVitals, activePatient, queue, beds } = useClinicRealtime()
@@ -109,7 +110,7 @@ export default function RecordVitalsModal() {
       {saved ? (
         <div className="py-8 flex flex-col items-center justify-center text-center space-y-3">
           <div className="w-16 h-16 rounded-full bg-status-success/20 flex items-center justify-center text-status-success animate-bounce">
-            <span className="material-symbols-outlined text-[36px]">check_circle</span>
+            <ClinivaIcon name="check_circle" size={36} strokeWidth={1.5} />
           </div>
           <h3 className="font-heading text-headline-md text-on-surface font-bold">
             Vitals Saved & Telemetry Streamed!
@@ -122,7 +123,7 @@ export default function RecordVitalsModal() {
         <form onSubmit={handleSubmit} className="space-y-space-md">
           {errorMsg && (
             <div className="p-3 rounded-xl bg-status-critical/10 border border-status-critical/30 text-status-critical text-body-sm flex items-start gap-2">
-              <span className="material-symbols-outlined text-[18px] flex-shrink-0 mt-0.5">error</span>
+              <ClinivaIcon name="error" size={18} strokeWidth={1.5} className="flex-shrink-0 mt-0.5" />
               <span>{errorMsg}</span>
             </div>
           )}
@@ -131,7 +132,7 @@ export default function RecordVitalsModal() {
           <div className="p-space-md bg-surface-container-low rounded-xl border border-outline-variant/30 space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-label-md text-on-surface font-semibold flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-primary text-[18px]">person</span>
+                <ClinivaIcon name="person" size={18} strokeWidth={1.5} className="text-primary" />
                 Patient
               </label>
               <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-label-sm font-semibold">
@@ -180,7 +181,7 @@ export default function RecordVitalsModal() {
           <div className="p-space-md bg-surface-container-low/50 rounded-xl border border-outline-variant/20 space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-label-md text-on-surface font-semibold flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-primary text-[18px]">favorite</span>
+                <ClinivaIcon name="favorite" size={18} strokeWidth={1.5} className="text-primary" />
                 Blood Pressure (mmHg) *
               </label>
               {isHighBp && (
@@ -223,7 +224,7 @@ export default function RecordVitalsModal() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
             <div>
               <label className="text-label-md text-on-surface font-semibold flex items-center gap-1.5 mb-1">
-                <span className="material-symbols-outlined text-primary text-[18px]">ecg_heart</span>
+                <ClinivaIcon name="ecg_heart" size={18} strokeWidth={1.5} className="text-primary" />
                 Heart Rate (bpm) *
               </label>
               <input
@@ -241,7 +242,7 @@ export default function RecordVitalsModal() {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-label-md text-on-surface font-semibold flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-primary text-[18px]">air</span>
+                  <ClinivaIcon name="air" size={18} strokeWidth={1.5} className="text-primary" />
                   Oxygen Saturation SpO₂ (%) *
                 </label>
                 {isLowSpo2 && (
@@ -269,7 +270,7 @@ export default function RecordVitalsModal() {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-label-md text-on-surface font-semibold flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-primary text-[18px]">thermometer</span>
+                  <ClinivaIcon name="thermometer" size={18} strokeWidth={1.5} className="text-primary" />
                   Body Temperature (°F) *
                 </label>
                 {isFever && (
@@ -293,7 +294,7 @@ export default function RecordVitalsModal() {
             </div>
             <div>
               <label className="text-label-md text-on-surface font-semibold flex items-center gap-1.5 mb-1">
-                <span className="material-symbols-outlined text-primary text-[18px]">pulmonology</span>
+                <ClinivaIcon name="pulmonology" size={18} strokeWidth={1.5} className="text-primary" />
                 Respiratory Rate
               </label>
               <input
@@ -374,12 +375,12 @@ export default function RecordVitalsModal() {
             >
               {isSubmitting ? (
                 <>
-                  <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+                  <ClinivaIcon name="progress_activity" size={18} strokeWidth={1.5} className="animate-spin" />
                   <span>Saving Vitals...</span>
                 </>
               ) : (
                 <>
-                  <span className="material-symbols-outlined text-[18px]">sync_saved_locally</span>
+                  <ClinivaIcon name="sync_saved_locally" size={18} strokeWidth={1.5} />
                   <span>Sync & Save Vitals</span>
                 </>
               )}

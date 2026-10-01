@@ -5,6 +5,7 @@ import SubScreenHeader from './SubScreenHeader'
 import StatusBadge from '@/components/ui/StatusBadge'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import CollectPaymentModal from '@/components/modals/CollectPaymentModal'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import { SkeletonRow } from '@/components/ui/LoadingSkeleton'
 import { useRecentInvoices, useOutstandingInvoices } from '@/hooks/useClinicData'
 
@@ -54,29 +55,29 @@ export default function BillingSubScreens({ slug, userName }: Props) {
             description="Hospital billing ledger, inpatient discharge bills, and outpatient encounter invoices."
             actions={
               <button onClick={() => setPaymentOpen(true)} className="btn-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">add_card</span>
+                <ClinivaIcon name="add_card" size={18} strokeWidth={1.5} />
                 <span>Receive Payment</span>
               </button>
             }
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 overflow-hidden shadow-sm">
-            <div className="p-4 border-b border-outline-variant/20 flex items-center justify-between gap-3">
+          <div className="bg-white rounded-xl border border-border-subtle overflow-hidden shadow-sm">
+            <div className="p-4 border-b border-border-subtle flex items-center justify-between gap-3">
               <div className="relative w-full sm:w-72">
-                <span className="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[20px]">search</span>
+                <ClinivaIcon name="search" size={18} strokeWidth={1.5} className="absolute left-3 top-2.5 text-secondary-text" />
                 <input
                   type="text"
                   placeholder="Filter invoice, MRN, patient..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-surface-container-low rounded-xl text-body-sm text-on-surface border border-transparent focus:border-primary/30"
+                  className="w-full pl-10 pr-4 py-2 bg-slate-50/70 rounded-xl text-body-sm text-primary-text border border-border-subtle focus:border-medical-teal focus:outline-none"
                 />
               </div>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-body-sm">
-                <thead className="bg-surface-container-low/50 text-label-sm text-on-surface-variant uppercase border-b border-outline-variant/20">
+                <thead className="bg-slate-50/80 text-label-sm text-secondary-text uppercase border-b border-border-subtle">
                   <tr>
                     <th className="px-5 py-3">Invoice #</th>
                     <th className="px-5 py-3">Patient / MRN</th>
@@ -87,26 +88,26 @@ export default function BillingSubScreens({ slug, userName }: Props) {
                     <th className="px-5 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-outline-variant/20">
+                <tbody className="divide-y divide-border-subtle">
                   {SAMPLE_INVOICES.filter(i => i.patient.toLowerCase().includes(searchTerm.toLowerCase()) || i.inv.includes(searchTerm)).map((inv) => (
-                    <tr key={inv.inv} className="hover:bg-surface-container-low/30">
-                      <td className="px-5 py-3.5 font-mono text-primary font-bold">{inv.inv}</td>
+                    <tr key={inv.inv} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-5 py-3.5 font-mono text-medical-teal font-bold">{inv.inv}</td>
                       <td className="px-5 py-3.5">
-                        <div className="font-semibold text-on-surface">{inv.patient}</div>
-                        <div className="text-label-sm text-outline font-mono">#{inv.mrn}</div>
+                        <div className="font-semibold text-primary-navy">{inv.patient}</div>
+                        <div className="text-label-sm text-secondary-text font-mono">#{inv.mrn}</div>
                       </td>
-                      <td className="px-5 py-3.5 text-on-surface-variant">{inv.dept}</td>
-                      <td className="px-5 py-3.5 font-mono font-bold text-on-surface">{inv.total}</td>
-                      <td className="px-5 py-3.5 font-mono font-bold text-red-600">{inv.due}</td>
+                      <td className="px-5 py-3.5 text-secondary-text">{inv.dept}</td>
+                      <td className="px-5 py-3.5 font-mono font-bold text-primary-navy">{inv.total}</td>
+                      <td className="px-5 py-3.5 font-mono font-bold text-[#C94A4A]">{inv.due}</td>
                       <td className="px-5 py-3.5">
-                        <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold ${
-                          inv.status === 'Paid in Full' ? 'bg-emerald-100 text-emerald-800' : inv.status === 'Outstanding' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'
+                        <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold border ${
+                          inv.status === 'Paid in Full' ? 'bg-[#EBF7F2] text-[#2E7D5B] border-[#C3ECD8]' : inv.status === 'Outstanding' ? 'bg-[#FDF2F2] text-[#C94A4A] border-[#F8D7D7]' : 'bg-[#FFF8E6] text-[#C58A24] border-[#FCE6BD]'
                         }`}>
                           {inv.status}
                         </span>
                       </td>
                       <td className="px-5 py-3.5 text-right">
-                        <button className="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-label-sm font-medium">
+                        <button className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-label-sm font-semibold text-primary-navy transition-colors">
                           Receipt PDF
                         </button>
                       </td>
@@ -131,8 +132,8 @@ export default function BillingSubScreens({ slug, userName }: Props) {
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5 shadow-sm space-y-4">
-              <span className="text-label-lg font-semibold text-on-surface">Quick Service Items</span>
+            <div className="lg:col-span-2 bg-white rounded-xl border border-border-subtle p-5 shadow-sm space-y-4">
+              <span className="text-label-lg font-semibold text-primary-navy">Quick Service Items</span>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {[
                   { name: 'General OPD Token', price: '$50.00' },
@@ -142,33 +143,33 @@ export default function BillingSubScreens({ slug, userName }: Props) {
                   { name: 'Emergency Triage Fee', price: '$150.00' },
                   { name: 'Standard ECG', price: '$65.00' },
                 ].map((item) => (
-                  <button key={item.name} className="p-4 rounded-xl border border-outline-variant/30 bg-surface-container-low/40 hover:bg-primary/10 hover:border-primary/40 text-left transition-all">
-                    <div className="font-semibold text-on-surface text-body-sm">{item.name}</div>
-                    <div className="font-mono font-bold text-primary mt-1">{item.price}</div>
+                  <button key={item.name} className="p-4 rounded-xl border border-border-subtle bg-slate-50/60 hover:bg-[#F2F9F9] hover:border-medical-teal text-left transition-all">
+                    <div className="font-semibold text-primary-navy text-body-sm">{item.name}</div>
+                    <div className="font-mono font-bold text-medical-teal mt-1">{item.price}</div>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="lg:col-span-1 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5 shadow-sm flex flex-col justify-between space-y-4">
+            <div className="lg:col-span-1 bg-white rounded-xl border border-border-subtle p-5 shadow-sm flex flex-col justify-between space-y-4">
               <div>
-                <span className="text-label-lg font-semibold text-on-surface">Current Cart</span>
-                <div className="mt-3 space-y-2 text-body-sm border-b border-outline-variant/20 pb-3">
-                  <div className="flex justify-between"><span>Specialist Consult (Cardiology)</span><span className="font-mono font-semibold">$120.00</span></div>
-                  <div className="flex justify-between"><span>Troponin I Panel</span><span className="font-mono font-semibold">$85.00</span></div>
+                <span className="text-label-lg font-semibold text-primary-navy">Current Cart</span>
+                <div className="mt-3 space-y-2 text-body-sm border-b border-border-subtle pb-3">
+                  <div className="flex justify-between text-primary-text"><span>Specialist Consult (Cardiology)</span><span className="font-mono font-semibold">$120.00</span></div>
+                  <div className="flex justify-between text-primary-text"><span>Troponin I Panel</span><span className="font-mono font-semibold">$85.00</span></div>
                 </div>
                 <div className="pt-3 space-y-1.5">
-                  <div className="flex justify-between text-body-sm text-on-surface-variant"><span>Subtotal:</span><span className="font-mono">$205.00</span></div>
-                  <div className="flex justify-between text-body-sm text-on-surface-variant"><span>Tax (0%):</span><span className="font-mono">$0.00</span></div>
-                  <div className="flex justify-between text-headline-sm font-bold text-on-surface pt-1 border-t border-outline-variant/20">
+                  <div className="flex justify-between text-body-sm text-secondary-text"><span>Subtotal:</span><span className="font-mono">$205.00</span></div>
+                  <div className="flex justify-between text-body-sm text-secondary-text"><span>Tax (0%):</span><span className="font-mono">$0.00</span></div>
+                  <div className="flex justify-between text-headline-sm font-bold text-primary-navy pt-1 border-t border-border-subtle">
                     <span>Total Due:</span>
-                    <span className="text-primary font-mono">$205.00</span>
+                    <span className="text-medical-teal font-mono">$205.00</span>
                   </div>
                 </div>
               </div>
 
               <button onClick={() => setPaymentOpen(true)} className="btn-primary w-full justify-center py-3">
-                <span className="material-symbols-outlined text-[20px]">point_of_sale</span>
+                <ClinivaIcon name="point_of_sale" size={20} strokeWidth={1.5} />
                 <span>Collect $205.00</span>
               </button>
             </div>
@@ -193,18 +194,18 @@ export default function BillingSubScreens({ slug, userName }: Props) {
               { claim: 'CLM-7689', patient: 'George Tanner', insurer: 'Aetna Senior Gold', auth: 'PRE-11029', amount: '$3,850.00', status: 'Claim Settled', time: 'Yesterday' },
               { claim: 'CLM-7640', patient: 'David Chen', insurer: 'Cigna Global Health', auth: 'PRE-99231', amount: '$420.00', status: 'Documentation Requested', time: '2 days ago' },
             ].map((clm) => (
-              <div key={clm.claim} className="p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div key={clm.claim} className="p-4 bg-white rounded-xl border border-border-subtle shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-primary">{clm.claim}</span>
-                    <span className="font-semibold text-on-surface">{clm.patient}</span>
-                    <span className="text-label-sm text-outline">• {clm.insurer}</span>
+                    <span className="font-mono font-bold text-primary-navy">{clm.claim}</span>
+                    <span className="font-semibold text-primary-navy">{clm.patient}</span>
+                    <span className="text-label-sm text-secondary-text">• {clm.insurer}</span>
                   </div>
-                  <div className="text-body-sm text-on-surface-variant mt-1">Pre-Auth Code: <strong className="font-mono">{clm.auth}</strong></div>
+                  <div className="text-body-sm text-secondary-text mt-1">Pre-Auth Code: <strong className="font-mono text-primary-navy">{clm.auth}</strong></div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-mono font-bold text-body-md text-on-surface">{clm.amount}</span>
-                  <span className="px-2.5 py-1 rounded-full text-label-sm font-semibold bg-emerald-100 text-emerald-800">
+                  <span className="font-mono font-bold text-body-md text-primary-navy">{clm.amount}</span>
+                  <span className="px-2.5 py-1 rounded-full text-label-sm font-semibold bg-[#EBF7F2] text-[#2E7D5B] border border-[#C3ECD8]">
                     {clm.status}
                   </span>
                 </div>
@@ -226,21 +227,21 @@ export default function BillingSubScreens({ slug, userName }: Props) {
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div className="p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm">
-              <span className="text-label-sm text-on-surface-variant">Cash in Drawer</span>
-              <div className="text-headline-md font-bold text-on-surface font-mono mt-1">$1,840.00</div>
+            <div className="p-4 bg-white rounded-xl border border-border-subtle shadow-sm">
+              <span className="text-label-sm text-secondary-text">Cash in Drawer</span>
+              <div className="text-headline-md font-bold text-primary-navy font-mono mt-1">$1,840.00</div>
             </div>
-            <div className="p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm">
-              <span className="text-label-sm text-on-surface-variant">Credit / Debit Card</span>
-              <div className="text-headline-md font-bold text-primary font-mono mt-1">$3,150.00</div>
+            <div className="p-4 bg-white rounded-xl border border-border-subtle shadow-sm">
+              <span className="text-label-sm text-secondary-text">Credit / Debit Card</span>
+              <div className="text-headline-md font-bold text-medical-teal font-mono mt-1">$3,150.00</div>
             </div>
-            <div className="p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm">
-              <span className="text-label-sm text-on-surface-variant">Insurance Settled</span>
-              <div className="text-headline-md font-bold text-on-surface font-mono mt-1">$1,850.00</div>
+            <div className="p-4 bg-white rounded-xl border border-border-subtle shadow-sm">
+              <span className="text-label-sm text-secondary-text">Insurance Settled</span>
+              <div className="text-headline-md font-bold text-primary-navy font-mono mt-1">$1,850.00</div>
             </div>
-            <div className="p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm">
-              <span className="text-label-sm text-on-surface-variant">Total Shift Revenue</span>
-              <div className="text-headline-md font-bold text-emerald-700 font-mono mt-1">$6,840.00</div>
+            <div className="p-4 bg-white rounded-xl border border-border-subtle shadow-sm">
+              <span className="text-label-sm text-secondary-text">Total Shift Revenue</span>
+              <div className="text-headline-md font-bold text-[#2E7D5B] font-mono mt-1">$6,840.00</div>
             </div>
           </div>
         </>
@@ -257,10 +258,10 @@ export default function BillingSubScreens({ slug, userName }: Props) {
             description="Published standard service tariffs, bed stay rates, procedure costs, and laboratory tests."
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 overflow-hidden shadow-sm">
+          <div className="bg-white rounded-xl border border-border-subtle overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-body-sm">
-                <thead className="bg-surface-container-low/50 text-label-sm text-on-surface-variant uppercase border-b border-outline-variant/20">
+                <thead className="bg-slate-50/80 text-label-sm text-secondary-text uppercase border-b border-border-subtle">
                   <tr>
                     <th className="px-5 py-3">Code</th>
                     <th className="px-5 py-3">Service / Procedure</th>
@@ -269,14 +270,14 @@ export default function BillingSubScreens({ slug, userName }: Props) {
                     <th className="px-5 py-3">Tax Policy</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-outline-variant/20">
+                <tbody className="divide-y divide-border-subtle">
                   {SAMPLE_PRICE_LIST.map((item) => (
-                    <tr key={item.code} className="hover:bg-surface-container-low/30">
-                      <td className="px-5 py-3.5 font-mono text-outline font-medium">{item.code}</td>
-                      <td className="px-5 py-3.5 font-semibold text-on-surface">{item.service}</td>
-                      <td className="px-5 py-3.5 text-on-surface-variant">{item.category}</td>
-                      <td className="px-5 py-3.5 font-mono font-bold text-primary">{item.rate}</td>
-                      <td className="px-5 py-3.5 text-label-sm text-outline">{item.tax}</td>
+                    <tr key={item.code} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-5 py-3.5 font-mono text-secondary-text font-medium">{item.code}</td>
+                      <td className="px-5 py-3.5 font-semibold text-primary-navy">{item.service}</td>
+                      <td className="px-5 py-3.5 text-secondary-text">{item.category}</td>
+                      <td className="px-5 py-3.5 font-mono font-bold text-medical-teal">{item.rate}</td>
+                      <td className="px-5 py-3.5 text-label-sm text-secondary-text">{item.tax}</td>
                     </tr>
                   ))}
                 </tbody>

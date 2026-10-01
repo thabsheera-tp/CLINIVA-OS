@@ -12,6 +12,7 @@ import RegisterPatientModal from '@/components/modals/RegisterPatientModal'
 import StatusBadge from '@/components/ui/StatusBadge'
 import { usePatientByMrn, usePatientVitals, useActivePrescriptions } from '@/hooks/useClinicData'
 import { SkeletonCard, SkeletonRow } from '@/components/ui/LoadingSkeleton'
+import ClinivaIcon from '@/components/ui/ClinivaIcon'
 
 // ─── Shared Data ─────────────────────────────────────────────────────────────
 
@@ -33,7 +34,7 @@ function PatientDetailView({ mrn }: { mrn: string }) {
   if (!patient) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-on-surface-variant space-y-2">
-        <span className="material-symbols-outlined text-[48px] text-outline">person_off</span>
+        <ClinivaIcon name="person_off" size={48} strokeWidth={1.5} className="text-outline" />
         <p className="font-semibold text-body-lg">Patient MRN #{mrn} not found in registry.</p>
         <Link href="/doctor/patients" className="text-primary underline text-body-sm">Back to Patient List</Link>
       </div>
@@ -55,35 +56,35 @@ function PatientDetailView({ mrn }: { mrn: string }) {
       </div>
 
       {/* Patient Header Card */}
-      <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5 shadow-sm flex flex-col sm:flex-row items-start gap-5">
-        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-heading font-bold text-headline-md flex-shrink-0">
+      <div className="bg-surface-container-lowest rounded-xl border border-border-subtle p-5 shadow-sm flex flex-col sm:flex-row items-start gap-5">
+        <div className="w-16 h-16 rounded-xl bg-light-accent flex items-center justify-center text-medical-teal font-heading font-bold text-headline-md flex-shrink-0">
           {patient.name.split(' ').map(n => n[0]).join('')}
         </div>
         <div className="flex-1 space-y-1">
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="font-heading text-headline-md font-bold text-on-surface">{patient.name}</h1>
-            <span className={`px-2.5 py-0.5 rounded-full text-label-sm font-bold ${patient.triage === 'Urgent' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}`}>
+            <h1 className="font-heading text-headline-md font-bold text-primary-navy">{patient.name}</h1>
+            <span className={`px-2.5 py-0.5 rounded-full text-label-sm font-semibold border ${patient.triage === 'Urgent' ? 'bg-[#FFF8E6] text-[#C58A24] border-[#FCE6BD]' : 'bg-[#EBF7F2] text-[#2E7D5B] border-[#C3ECD8]'}`}>
               {patient.triage}
             </span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-1 text-body-sm pt-1">
-            <div><span className="text-outline">MRN:</span> <strong className="font-mono">{patient.mrn}</strong></div>
-            <div><span className="text-outline">Age/Sex:</span> <strong>{patient.age}</strong></div>
-            <div><span className="text-outline">DOB:</span> <strong>{patient.dob}</strong></div>
-            <div><span className="text-outline">Blood:</span> <strong className="text-red-700">{patient.blood}</strong></div>
-            <div><span className="text-outline">Phone:</span> <strong>{patient.phone}</strong></div>
-            <div><span className="text-outline">Weight:</span> <strong>{patient.weight}</strong></div>
-            <div><span className="text-outline">Height:</span> <strong>{patient.height}</strong></div>
-            <div className="col-span-2 sm:col-span-1"><span className="text-outline">Allergy:</span> <strong className="text-red-600">{patient.allergy}</strong></div>
+            <div><span className="text-secondary-text">MRN:</span> <strong className="font-mono text-primary-text">{patient.mrn}</strong></div>
+            <div><span className="text-secondary-text">Age/Sex:</span> <strong className="text-primary-text">{patient.age}</strong></div>
+            <div><span className="text-secondary-text">DOB:</span> <strong className="text-primary-text">{patient.dob}</strong></div>
+            <div><span className="text-secondary-text">Blood:</span> <strong className="text-[#C94A4A]">{patient.blood}</strong></div>
+            <div><span className="text-secondary-text">Phone:</span> <strong className="text-primary-text">{patient.phone}</strong></div>
+            <div><span className="text-secondary-text">Weight:</span> <strong className="text-primary-text">{patient.weight}</strong></div>
+            <div><span className="text-secondary-text">Height:</span> <strong className="text-primary-text">{patient.height}</strong></div>
+            <div className="col-span-2 sm:col-span-1"><span className="text-secondary-text">Allergy:</span> <strong className="text-[#C94A4A]">{patient.allergy}</strong></div>
           </div>
         </div>
         <div className="flex flex-col gap-2">
           <button onClick={() => setConsultOpen(true)} className="btn-primary text-label-sm py-1.5 px-4 flex items-center gap-2">
-            <span className="material-symbols-outlined text-[16px]">stethoscope</span>
+            <ClinivaIcon name="stethoscope" size={16} strokeWidth={1.5} />
             Start Consult
           </button>
           <button onClick={() => setVitalsOpen(true)} className="btn-secondary text-label-sm py-1.5 px-4 flex items-center gap-2">
-            <span className="material-symbols-outlined text-[16px]">monitor_heart</span>
+            <ClinivaIcon name="monitor_heart" size={16} strokeWidth={1.5} />
             Record Vitals
           </button>
         </div>
@@ -97,21 +98,21 @@ function PatientDetailView({ mrn }: { mrn: string }) {
           { label: 'SpO2', value: patient.spo2, unit: '', icon: 'air', ok: parseInt(patient.spo2) >= 96 },
           { label: 'Temperature', value: patient.temp, unit: '', icon: 'device_thermostat', ok: parseFloat(patient.temp) < 99.5 },
         ].map(v => (
-          <div key={v.label} className={`p-3.5 rounded-xl border shadow-sm ${v.ok ? 'bg-surface-container-lowest border-outline-variant/30' : 'bg-red-50/40 border-red-200'}`}>
-            <span className="text-label-sm text-on-surface-variant font-medium">{v.label}</span>
-            <div className="font-bold font-mono text-headline-sm text-on-surface mt-1">{v.value}</div>
+          <div key={v.label} className={`p-3.5 rounded-xl border shadow-sm ${v.ok ? 'bg-white border-border-subtle' : 'bg-[#FDF2F2] border-[#F8D7D7]'}`}>
+            <span className="text-label-sm text-secondary-text font-medium">{v.label}</span>
+            <div className={`font-bold font-mono text-headline-sm mt-1 ${v.ok ? 'text-primary-navy' : 'text-[#C94A4A]'}`}>{v.value}</div>
           </div>
         ))}
       </div>
 
       {/* Tab Navigation */}
-      <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden">
-        <div className="flex border-b border-outline-variant/20">
+      <div className="bg-white rounded-xl border border-border-subtle shadow-sm overflow-hidden">
+        <div className="flex border-b border-border-subtle bg-slate-50/50">
           {(['overview', 'history', 'prescriptions', 'labs'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-5 py-3 text-label-md font-semibold capitalize transition-colors ${activeTab === tab ? 'border-b-2 border-primary text-primary' : 'text-on-surface-variant hover:text-on-surface'}`}
+              className={`px-5 py-3 text-label-md font-semibold capitalize transition-colors ${activeTab === tab ? 'border-b-2 border-medical-teal text-medical-teal bg-white' : 'text-secondary-text hover:text-primary-text'}`}
             >
               {tab === 'labs' ? 'Lab Results' : tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
@@ -121,22 +122,22 @@ function PatientDetailView({ mrn }: { mrn: string }) {
         <div className="p-5">
           {activeTab === 'overview' && (
             <div className="space-y-3">
-              <div className="p-4 bg-surface-container-low/50 rounded-xl">
-                <h3 className="font-semibold text-on-surface text-body-md mb-2">Primary Diagnosis</h3>
-                <p className="text-body-md font-medium text-primary">{patient.condition}</p>
+              <div className="p-4 bg-slate-50/80 rounded-xl border border-border-subtle">
+                <h3 className="font-semibold text-primary-navy text-body-md mb-2">Primary Diagnosis</h3>
+                <p className="text-body-md font-medium text-medical-teal">{patient.condition}</p>
               </div>
-              <div className="p-4 bg-surface-container-low/50 rounded-xl">
-                <h3 className="font-semibold text-on-surface text-body-md mb-2">Attending Physician Notes</h3>
-                <p className="text-body-sm text-on-surface-variant">Patient presenting with {patient.condition.toLowerCase()}. Vitals within acceptable range. Continue current management plan with scheduled follow-up in 2 weeks.</p>
+              <div className="p-4 bg-slate-50/80 rounded-xl border border-border-subtle">
+                <h3 className="font-semibold text-primary-navy text-body-md mb-2">Attending Physician Notes</h3>
+                <p className="text-body-sm text-secondary-text">Patient presenting with {patient.condition.toLowerCase()}. Vitals within acceptable range. Continue current management plan with scheduled follow-up in 2 weeks.</p>
               </div>
             </div>
           )}
           {activeTab === 'history' && (
             <div className="space-y-2">
               {patient.history.map((h, i) => (
-                <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low/40">
-                  <span className="material-symbols-outlined text-outline text-[18px]">history</span>
-                  <span className="text-body-sm text-on-surface font-medium">{h}</span>
+                <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50/70 border border-border-subtle">
+                  <ClinivaIcon name="history" size={18} strokeWidth={1.5} className="text-secondary-text" />
+                  <span className="text-body-sm text-primary-text font-medium">{h}</span>
                 </div>
               ))}
             </div>
@@ -144,19 +145,19 @@ function PatientDetailView({ mrn }: { mrn: string }) {
           {activeTab === 'prescriptions' && (
             <div className="space-y-2">
               {patient.prescriptions.map((rx, i) => (
-                <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-surface-container-low/40">
+                <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-slate-50/70 border border-border-subtle">
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-primary text-[18px]">prescriptions</span>
-                    <span className="text-body-sm font-semibold text-on-surface">{rx}</span>
+                    <ClinivaIcon name="prescriptions" size={18} strokeWidth={1.5} className="text-[#0F8B8D]" />
+                    <span className="text-body-sm font-semibold text-primary-text">{rx}</span>
                   </div>
-                  <span className="text-label-sm font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Active</span>
+                  <span className="text-label-sm font-semibold px-2.5 py-0.5 rounded-full bg-[#EBF7F2] text-[#2E7D5B] border border-[#C3ECD8]">Active</span>
                 </div>
               ))}
             </div>
           )}
           {activeTab === 'labs' && (
-            <div className="text-body-sm text-on-surface-variant p-4 bg-surface-container-low/50 rounded-xl">
-              <Link href="/doctor/lab-results" className="text-primary font-semibold underline">View full lab results panel →</Link>
+            <div className="text-body-sm text-secondary-text p-4 bg-slate-50/70 rounded-xl border border-border-subtle">
+              <Link href="/doctor/lab-results" className="text-medical-teal font-semibold hover:underline">View full lab results panel →</Link>
             </div>
           )}
         </div>
@@ -208,7 +209,7 @@ function NewAppointmentView() {
         {done ? (
           <div className="text-center py-10 space-y-3">
             <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
-              <span className="material-symbols-outlined text-emerald-700 text-[36px]">check_circle</span>
+              <ClinivaIcon name="check_circle" size={36} strokeWidth={1.5} className="text-emerald-700" />
             </div>
             <h2 className="font-semibold text-on-surface text-body-lg">Appointment Confirmed!</h2>
             <p className="text-body-sm text-on-surface-variant">{done.patientQuery} scheduled with {done.doctor} on {done.date} at {done.time}.</p>
@@ -310,14 +311,14 @@ export default function DoctorDeepRoutes({ segments, userName }: Props) {
   return (
     <div className="flex flex-col items-center justify-center py-20 space-y-4 text-center">
       <div className="w-16 h-16 rounded-2xl bg-secondary-fixed/30 flex items-center justify-center text-primary">
-        <span className="material-symbols-outlined text-[36px]">construction</span>
+        <ClinivaIcon name="construction" size={36} strokeWidth={1.5} />
       </div>
       <h2 className="font-heading text-headline-md font-semibold text-on-surface">Feature Coming Soon</h2>
       <p className="text-body-md text-on-surface-variant max-w-sm">
         The <strong>{routeLabel}</strong> section is currently under development for this workspace.
       </p>
       <Link href="/doctor" className="btn-secondary inline-flex items-center gap-2">
-        <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+        <ClinivaIcon name="arrow_back" size={18} strokeWidth={1.5} />
         Back to Doctor Dashboard
       </Link>
     </div>

@@ -25,21 +25,26 @@ export default async function BillingDashboard() {
   const { data: { session } } = await supabase.auth.getSession()
   if (!session && process.env.NEXT_PUBLIC_DEMO_MODE === 'false') redirect('/login')
   const userName = session?.user?.user_metadata?.display_name ?? 'Hannah Brooks'
+  const userMeta = session?.user?.user_metadata || {}
+  const assignedRoles = (Array.isArray(userMeta.roles) && userMeta.roles.length > 0)
+    ? userMeta.roles
+    : (userMeta.role ? [userMeta.role] : ['cashier'])
 
   return (
     <DashboardShell
       role="cashier"
       roleLabel="Billing & Cashier"
       userName={userName}
+      assignedRoles={assignedRoles}
       clinicName="St. Jude Medical Center — Billing Office"
       clinicIcon="receipt_long"
       searchPlaceholder="Search invoices, patients, transactions..."
       liveSyncLabel="Payments Sync"
       notificationCount={2}
       navSections={NAV_SECTIONS}
-      contextLabel="Cashier Counter 1"
+      contextLabel="Cashier Station"
       contextIcon="point_of_sale"
-      primaryAction={{ label: 'New Invoice', icon: 'add' }}
+      primaryAction={{ label: 'Collect Payment', icon: 'receipt_long' }}
     >
       <BillingDashboardView userName={userName} />
     </DashboardShell>

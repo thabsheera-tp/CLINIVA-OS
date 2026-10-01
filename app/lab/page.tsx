@@ -25,19 +25,24 @@ export default async function LabDashboard() {
   const { data: { session } } = await supabase.auth.getSession()
   if (!session && process.env.NEXT_PUBLIC_DEMO_MODE === 'false') redirect('/login')
   const userName = session?.user?.user_metadata?.display_name ?? 'David Kalu, MLS'
+  const userMeta = session?.user?.user_metadata || {}
+  const assignedRoles = (Array.isArray(userMeta.roles) && userMeta.roles.length > 0)
+    ? userMeta.roles
+    : (userMeta.role ? [userMeta.role] : ['lab_tech'])
 
   return (
     <DashboardShell
       role="lab_tech"
       roleLabel="Lab & Diagnostics"
       userName={userName}
+      assignedRoles={assignedRoles}
       clinicName="St. Jude Medical Center — Clinical Lab"
       clinicIcon="biotech"
       searchPlaceholder="Search test orders, samples, patients..."
       liveSyncLabel="Lab Live"
       notificationCount={3}
       navSections={NAV_SECTIONS}
-      contextLabel="Main Lab — Bench 1"
+      contextLabel="Clinical Laboratory"
       contextIcon="science"
       primaryAction={{ label: 'Enter Results', icon: 'edit_note' }}
     >
@@ -45,4 +50,3 @@ export default async function LabDashboard() {
     </DashboardShell>
   )
 }
-

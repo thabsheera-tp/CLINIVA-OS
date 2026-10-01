@@ -1,1050 +1,348 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
-import Link from 'next/link'
+import React, { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import {
   Activity,
-  Stethoscope,
   Users,
-  BedDouble,
-  Pill,
+  Stethoscope,
   FlaskConical,
+  Pill,
+  BedDouble,
   Receipt,
-  Building2,
-  HeartPulse,
-  Coffee,
   ArrowRight,
-  CheckCircle2,
-  Sparkles,
-  ShieldCheck,
-  Smartphone,
-  Zap,
   ChevronRight,
-  Clock,
-  Search,
-  Menu,
+  Info,
   X,
-  Layers,
-  Shield,
-  Check,
-  FileText,
-  HelpCircle,
-  ExternalLink,
-  ChevronDown,
+  ShieldCheck,
 } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 
-export interface DepartmentWorkspace {
-  id: string
-  title: string
-  subtitle: string
-  category: 'clinical' | 'operations' | 'support'
-  simpleDescription: string
-  icon: any
-  route: string
-  badge: string
-  color: {
-    bg: string
-    darkBg: string
-    text: string
-    darkText: string
-    border: string
-    darkBorder: string
-    badgeBg: string
-    badgeText: string
-  }
-  whatItDoes: string[]
-  sampleAction: string
-}
+const INTRO_FLAG_KEY = 'cliniva_intro_seen'
 
-const WORKSPACES: DepartmentWorkspace[] = [
+const FEATURES = [
   {
-    id: 'front-desk',
-    title: 'Front Desk & Reception',
-    subtitle: 'Patient Registration & Token Queue',
-    category: 'operations',
-    simpleDescription: 'Welcomes patients, creates digital patient profiles (UHID), and issues live waiting tokens for doctor OPD.',
+    title: 'Patient Management',
+    desc: 'Registration, UHID profiles, and queue dispatch.',
     icon: Users,
-    route: '/front-desk',
-    badge: 'Front Desk',
-    color: {
-      bg: 'bg-sky-500/10',
-      darkBg: 'dark:bg-sky-500/20',
-      text: 'text-sky-700',
-      darkText: 'dark:text-sky-400',
-      border: 'border-sky-200',
-      darkBorder: 'dark:border-sky-800',
-      badgeBg: 'bg-sky-50 dark:bg-sky-950/60',
-      badgeText: 'text-sky-700 dark:text-sky-300',
-    },
-    whatItDoes: [
-      'Fast 1-minute patient check-in',
-      'Instant unique patient ID (UHID)',
-      'Live queue token tracking',
-    ],
-    sampleAction: 'Register & queue patient',
+    iconColor: 'text-[#0F8B8D] dark:text-[#28B5B7]',
+    iconBg: 'bg-[#E8F6F5] dark:bg-[#0F8B8D]/15 border-[#0F8B8D]/25',
   },
   {
-    id: 'doctor',
-    title: 'Doctor Consultation (OPD)',
-    subtitle: 'Clinical Notes, Diagnoses & e-Prescriptions',
-    category: 'clinical',
-    simpleDescription: 'Where doctors examine patients, write digital SOAP notes, record diagnoses, and issue instant digital prescriptions.',
+    title: 'Doctor Consultation',
+    desc: 'SOAP clinical notes, diagnosis, and e-prescriptions.',
     icon: Stethoscope,
-    route: '/doctor',
-    badge: 'Doctors & OPD',
-    color: {
-      bg: 'bg-emerald-500/10',
-      darkBg: 'dark:bg-emerald-500/20',
-      text: 'text-emerald-700',
-      darkText: 'dark:text-emerald-400',
-      border: 'border-emerald-200',
-      darkBorder: 'dark:border-emerald-800',
-      badgeBg: 'bg-emerald-50 dark:bg-emerald-950/60',
-      badgeText: 'text-emerald-700 dark:text-emerald-300',
-    },
-    whatItDoes: [
-      'View waiting patients in real-time',
-      'Type easy clinical notes & SOAP records',
-      '1-click digital prescriptions to pharmacy',
-    ],
-    sampleAction: 'Consult & write prescription',
+    iconColor: 'text-[#0F8B8D] dark:text-[#28B5B7]',
+    iconBg: 'bg-[#E8F6F5] dark:bg-[#0F8B8D]/15 border-[#0F8B8D]/25',
   },
   {
-    id: 'nursing',
-    title: 'Nursing & Inpatient Ward',
-    subtitle: 'Bed Management & Patient Vitals',
-    category: 'clinical',
-    simpleDescription: 'Helps nurses record patient vitals (BP, pulse, temp), manage inpatient bed allocation, and coordinate daily bedside care.',
-    icon: BedDouble,
-    route: '/nursing',
-    badge: 'Nursing Ward',
-    color: {
-      bg: 'bg-rose-500/10',
-      darkBg: 'dark:bg-rose-500/20',
-      text: 'text-rose-700',
-      darkText: 'dark:text-rose-400',
-      border: 'border-rose-200',
-      darkBorder: 'dark:border-rose-800',
-      badgeBg: 'bg-rose-50 dark:bg-rose-950/60',
-      badgeText: 'text-rose-700 dark:text-rose-300',
-    },
-    whatItDoes: [
-      'Visual bed occupancy map',
-      'Fast vital signs entry at bedside',
-      'Medication administration tracking',
-    ],
-    sampleAction: 'Check vitals & ward beds',
-  },
-  {
-    id: 'pharmacy',
-    title: 'Pharmacy & Dispensary',
-    subtitle: 'Prescription Dispensing & Stock',
-    category: 'support',
-    simpleDescription: 'Receives prescriptions directly from doctors, dispenses medicines to patients, and keeps track of medicine inventory.',
-    icon: Pill,
-    route: '/pharmacy',
-    badge: 'Dispensary',
-    color: {
-      bg: 'bg-violet-500/10',
-      darkBg: 'dark:bg-violet-500/20',
-      text: 'text-violet-700',
-      darkText: 'dark:text-violet-400',
-      border: 'border-violet-200',
-      darkBorder: 'dark:border-violet-800',
-      badgeBg: 'bg-violet-50 dark:bg-violet-950/60',
-      badgeText: 'text-violet-700 dark:text-violet-300',
-    },
-    whatItDoes: [
-      'Instant alerts when doctor writes Rx',
-      '1-click medicine dispensing',
-      'Stock counts & expiration tracking',
-    ],
-    sampleAction: 'Dispense medicines',
-  },
-  {
-    id: 'lab',
-    title: 'Diagnostic Laboratory',
-    subtitle: 'Pathology, Test Orders & Reports',
-    category: 'support',
-    simpleDescription: 'Processes doctor test orders, accepts patient samples, enters pathology findings, and generates clear test reports.',
+    title: 'Laboratory',
+    desc: 'Pathology orders, specimen status, and verified results.',
     icon: FlaskConical,
-    route: '/lab',
-    badge: 'Lab & Diagnostics',
-    color: {
-      bg: 'bg-amber-500/10',
-      darkBg: 'dark:bg-amber-500/20',
-      text: 'text-amber-700',
-      darkText: 'dark:text-amber-400',
-      border: 'border-amber-200',
-      darkBorder: 'dark:border-amber-800',
-      badgeBg: 'bg-amber-50 dark:bg-amber-950/60',
-      badgeText: 'text-amber-700 dark:text-amber-300',
-    },
-    whatItDoes: [
-      'Real-time lab request queue',
-      'Fast entry of lab test results',
-      'Instant report release to doctor & patient',
-    ],
-    sampleAction: 'Review tests & enter results',
+    iconColor: 'text-[#0F8B8D] dark:text-[#28B5B7]',
+    iconBg: 'bg-[#E8F6F5] dark:bg-[#0F8B8D]/15 border-[#0F8B8D]/25',
   },
   {
-    id: 'billing',
-    title: 'Billing & Cashier POS',
-    subtitle: 'Consolidated Invoices & Receipts',
-    category: 'operations',
-    simpleDescription: 'Combines doctor fees, bed charges, medicines, and lab tests into a single transparent bill with immediate receipt printing.',
+    title: 'Pharmacy',
+    desc: 'Prescription dispensing, batch tracking, and inventory.',
+    icon: Pill,
+    iconColor: 'text-[#0F8B8D] dark:text-[#28B5B7]',
+    iconBg: 'bg-[#E8F6F5] dark:bg-[#0F8B8D]/15 border-[#0F8B8D]/25',
+  },
+  {
+    title: 'Nursing',
+    desc: 'Ward bed roster, vital signs telemetry, and bedside care.',
+    icon: BedDouble,
+    iconColor: 'text-[#0F8B8D] dark:text-[#28B5B7]',
+    iconBg: 'bg-[#E8F6F5] dark:bg-[#0F8B8D]/15 border-[#0F8B8D]/25',
+  },
+  {
+    title: 'Billing',
+    desc: 'Consolidated invoices, cashier POS, and instant receipts.',
     icon: Receipt,
-    route: '/billing',
-    badge: 'Billing & POS',
-    color: {
-      bg: 'bg-teal-500/10',
-      darkBg: 'dark:bg-teal-500/20',
-      text: 'text-teal-700',
-      darkText: 'dark:text-teal-400',
-      border: 'border-teal-200',
-      darkBorder: 'dark:border-teal-800',
-      badgeBg: 'bg-teal-50 dark:bg-teal-950/60',
-      badgeText: 'text-teal-700 dark:text-teal-300',
-    },
-    whatItDoes: [
-      'All charges combined into 1 bill',
-      'Accepts cash, card, and UPI payments',
-      'Print clean itemized patient receipts',
-    ],
-    sampleAction: 'Collect payment & print bill',
-  },
-  {
-    id: 'admin',
-    title: 'Hospital Administration',
-    subtitle: 'Staff Roles, Pricing & Settings',
-    category: 'operations',
-    simpleDescription: 'Gives clinic directors and hospital managers complete control over staff logins, service price lists, and clinic settings.',
-    icon: Building2,
-    route: '/admin',
-    badge: 'Admin & Ops',
-    color: {
-      bg: 'bg-indigo-500/10',
-      darkBg: 'dark:bg-indigo-500/20',
-      text: 'text-indigo-700',
-      darkText: 'dark:text-indigo-400',
-      border: 'border-indigo-200',
-      darkBorder: 'dark:border-indigo-800',
-      badgeBg: 'bg-indigo-50 dark:bg-indigo-950/60',
-      badgeText: 'text-indigo-700 dark:text-indigo-300',
-    },
-    whatItDoes: [
-      'Manage doctors, nurses, and staff access',
-      'Set prices for consultations & tests',
-      'View hospital-wide audit logs',
-    ],
-    sampleAction: 'Manage clinic settings',
-  },
-  {
-    id: 'portal',
-    title: 'Patient Health Portal',
-    subtitle: 'Personal Records, Prescriptions & Reports',
-    category: 'clinical',
-    simpleDescription: 'A secure, friendly portal where patients can see past visit summaries, check doctor prescriptions, and download lab results.',
-    icon: HeartPulse,
-    route: '/portal',
-    badge: 'Patient Portal',
-    color: {
-      bg: 'bg-cyan-500/10',
-      darkBg: 'dark:bg-cyan-500/20',
-      text: 'text-cyan-700',
-      darkText: 'dark:text-cyan-400',
-      border: 'border-cyan-200',
-      darkBorder: 'dark:border-cyan-800',
-      badgeBg: 'bg-cyan-50 dark:bg-cyan-950/60',
-      badgeText: 'text-cyan-700 dark:text-cyan-300',
-    },
-    whatItDoes: [
-      'Access medical history from home',
-      'Read clear medication instructions',
-      'Download lab test results anytime',
-    ],
-    sampleAction: 'View patient records',
-  },
-  {
-    id: 'canteen',
-    title: 'Hospital Canteen & Meals',
-    subtitle: 'Staff & Patient Dietary Orders',
-    category: 'support',
-    simpleDescription: 'Manages cafeteria orders, meal plans for admitted patients, and quick dining checkout for hospital staff.',
-    icon: Coffee,
-    route: '/canteen',
-    badge: 'Canteen POS',
-    color: {
-      bg: 'bg-orange-500/10',
-      darkBg: 'dark:bg-orange-500/20',
-      text: 'text-orange-700',
-      darkText: 'dark:text-orange-400',
-      border: 'border-orange-200',
-      darkBorder: 'dark:border-orange-800',
-      badgeBg: 'bg-orange-50 dark:bg-orange-950/60',
-      badgeText: 'text-orange-700 dark:text-orange-300',
-    },
-    whatItDoes: [
-      'Order fresh patient meal trays',
-      'Staff cafeteria meal accounts',
-      'Dietary restriction tracking',
-    ],
-    sampleAction: 'Order meals & view menu',
+    iconColor: 'text-[#0F8B8D] dark:text-[#28B5B7]',
+    iconBg: 'bg-[#E8F6F5] dark:bg-[#0F8B8D]/15 border-[#0F8B8D]/25',
   },
 ]
 
-const FAQS = [
-  {
-    q: 'What is Cliniva OS?',
-    a: 'Cliniva OS is an all-in-one digital operating system for clinics and hospitals. It replaces paper records, physical tokens, and scattered software by connecting front desk reception, doctors, nurses, pharmacy, laboratory, and billing into one unified platform.',
-  },
-  {
-    q: 'Do staff members need special training to use it?',
-    a: 'No. Cliniva OS is designed to be as simple and intuitive as modern phone apps. Clean fonts, large buttons, and clear step-by-step forms mean doctors, nurses, and receptionists can start using it in less than 15 minutes.',
-  },
-  {
-    q: 'How does information flow between departments?',
-    a: 'Everything is synchronized in real time. When a doctor issues a prescription, it immediately shows up in the Pharmacy queue. When the lab finishes a blood test, the doctor and patient see the result instantly.',
-  },
-  {
-    q: 'Can patients check their own records?',
-    a: 'Yes! Patients have their own dedicated Patient Portal where they can view their visit dates, prescription dosages, download laboratory reports, and see past bills.',
-  },
-  {
-    q: 'Can I test each department right now?',
-    a: 'Yes, you can click on any department card on this page to immediately open that workspace and try its features.',
-  },
+const WORKFLOW_STEPS = [
+  'Registration',
+  'Consultation',
+  'Lab / Pharmacy',
+  'Billing',
+  'Patient Care',
 ]
 
-export default function SimpleLandingPage() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [activeCategory, setActiveCategory] = useState<'all' | 'clinical' | 'operations' | 'support'>('all')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [openFaq, setOpenFaq] = useState<number | null>(null)
+function WelcomeView() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const forceIntro = searchParams.get('intro') === 'true'
 
-  const filteredWorkspaces = useMemo(() => {
-    return WORKSPACES.filter((ws) => {
-      const matchesCategory = activeCategory === 'all' || ws.category === activeCategory
-      const matchesSearch =
-        ws.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        ws.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        ws.simpleDescription.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        ws.whatItDoes.some((f) => f.toLowerCase().includes(searchQuery.toLowerCase()))
-      return matchesCategory && matchesSearch
-    })
-  }, [activeCategory, searchQuery])
+  const [isReturningUser, setIsReturningUser] = useState(false)
+  const [showHowItWorksModal, setShowHowItWorksModal] = useState(false)
+
+  useEffect(() => {
+    // Check local storage for returning visitors
+    try {
+      if (typeof window !== 'undefined') {
+        const hasSeenIntro = localStorage.getItem(INTRO_FLAG_KEY) === 'true'
+        if (hasSeenIntro && !forceIntro) {
+          setIsReturningUser(true)
+          router.replace('/login')
+        }
+      }
+    } catch {
+      // LocalStorage access may fail in certain restricted contexts
+    }
+  }, [forceIntro, router])
+
+  const handleProceedToLogin = () => {
+    try {
+      localStorage.setItem(INTRO_FLAG_KEY, 'true')
+    } catch {
+      // LocalStorage access may fail in strict private modes
+    }
+    router.push('/login')
+  }
+
+  // Smooth redirect state for returning visitors
+  if (isReturningUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F9FA] dark:bg-[#0D1B26]">
+        <div className="flex items-center gap-2.5 text-xs text-[#60727F] dark:text-[#92A6B5] font-medium">
+          <Activity className="w-4 h-4 text-[#0F8B8D] animate-pulse" />
+          <span>Redirecting to login...</span>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen w-full max-w-full bg-surface dark:bg-surface text-on-surface flex flex-col selection:bg-primary/20 selection:text-primary overflow-x-hidden">
-      
-      {/* ─── Top Header ─── */}
-      <header className="sticky top-0 z-40 w-full max-w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
-        <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
-          
-          {/* Logo & Simple System Tagline */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-[#0c7a6e] to-[#149b8c] text-white flex items-center justify-center shadow-md shadow-[#0c7a6e]/20 group-hover:scale-105 transition-transform flex-shrink-0">
-              <Activity className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={2.2} />
+    <div className="min-h-screen flex flex-col justify-between bg-[#F7F9FA] dark:bg-[#0D1B26] text-[#172B3A] dark:text-[#E8F0F5] font-sans transition-colors antialiased">
+      {/* ─── Compact Top Bar ─── */}
+      <header className="w-full border-b border-[#E2E8EC] dark:border-white/[0.08] bg-white/95 dark:bg-[#122433]/95 backdrop-blur-md sticky top-0 z-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+          {/* Brand */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#0F8B8D] text-white flex items-center justify-center flex-shrink-0">
+              <Activity className="w-4 h-4" />
             </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="font-bold text-slate-900 dark:text-slate-100 text-base sm:text-lg tracking-tight font-heading">
-                  Cliniva OS
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-heading font-bold text-sm tracking-tight text-[#123047] dark:text-white">
+                  CLINIVA OS
                 </span>
-                <span className="hidden xs:inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-primary bg-primary/10 px-1.5 sm:px-2 py-0.5 rounded-full border border-primary/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  Live
+                <span className="hidden sm:inline-flex text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 text-[#0F8B8D] dark:text-[#28B5B7] border border-[#0F8B8D]/30">
+                  Hospital OS
                 </span>
               </div>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
-                Simple Hospital & Clinic OS
-              </span>
+              <p className="text-[10px] text-[#60727F] dark:text-[#92A6B5] font-medium leading-none hidden xs:block">
+                Integrated Hospital Management System
+              </p>
             </div>
-          </Link>
+          </div>
 
-          {/* Center Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
-            <a href="#about" className="hover:text-primary transition-colors">
-              What Is It?
-            </a>
-            <a href="#how-it-works" className="hover:text-primary transition-colors">
-              How It Works
-            </a>
-            <a href="#departments" className="hover:text-primary transition-colors">
-              Departments ({WORKSPACES.length})
-            </a>
-            <a href="#benefits" className="hover:text-primary transition-colors">
-              Benefits
-            </a>
-            <a href="#faq" className="hover:text-primary transition-colors">
-              FAQ
-            </a>
-          </nav>
-
-          {/* Right Action Controls */}
-          <div className="flex items-center gap-1.5 sm:gap-3">
-            <ThemeToggle />
-
-            <Link
-              href="/doctor"
-              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary-container text-white text-xs sm:text-sm font-semibold shadow-md shadow-primary/20 transition-all hover:scale-[1.02]"
-            >
-              <span>Doctor Portal</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-
-            {/* Mobile Menu Toggle */}
+          {/* Action Links */}
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              aria-label="Toggle menu"
+              onClick={() => setShowHowItWorksModal(true)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#60727F] dark:text-[#92A6B5] hover:text-[#123047] dark:hover:text-white hover:bg-[#F0F4F7] dark:hover:bg-white/5 transition-colors"
+              title="How CLINIVA Works"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              <Info className="w-3.5 h-3.5 text-[#0F8B8D] dark:text-[#28B5B7]" />
+              <span className="hidden sm:inline">How CLINIVA Works</span>
             </button>
+            <ThemeToggle />
           </div>
         </div>
-
-        {/* Mobile Dropdown Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-4 py-4 space-y-2 animate-in fade-in duration-200">
-            <div className="grid grid-cols-2 gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-              <a
-                href="#about"
-                onClick={() => setMobileMenuOpen(false)}
-                className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:text-primary"
-              >
-                What Is It?
-              </a>
-              <a
-                href="#how-it-works"
-                onClick={() => setMobileMenuOpen(false)}
-                className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:text-primary"
-              >
-                How It Works
-              </a>
-              <a
-                href="#departments"
-                onClick={() => setMobileMenuOpen(false)}
-                className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:text-primary"
-              >
-                Departments
-              </a>
-              <a
-                href="#faq"
-                onClick={() => setMobileMenuOpen(false)}
-                className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:text-primary"
-              >
-                FAQ
-              </a>
-            </div>
-
-            <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
-              <Link
-                href="/front-desk"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-2.5 rounded-lg bg-primary text-white font-semibold text-xs flex items-center justify-center gap-1.5"
-              >
-                <span>Open Front Desk</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-        )}
       </header>
 
-      {/* ─── Hero Section: Telling About The System Simply ─── */}
-      <section className="relative pt-6 sm:pt-20 pb-10 sm:pb-24 px-3 sm:px-6 lg:px-8 w-full max-w-5xl mx-auto text-center min-w-0 overflow-hidden">
-        
-        {/* Simple Friendly Badge */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] sm:text-sm font-semibold mb-3 sm:mb-6 shadow-sm max-w-full">
-          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
-          <span className="truncate">Simple, Paperless Hospital Software</span>
-        </div>
-
-        {/* Clear, Big, Plain-English Headline */}
-        <h1 className="text-2xl xs:text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight leading-tight sm:leading-[1.18] mb-3 sm:mb-6 font-heading break-words max-w-full">
-          Healthcare management,{' '}
-          <span className="bg-gradient-to-r from-[#0c7a6e] via-[#0e8c7f] to-[#126b60] dark:from-[#2ebdab] dark:via-[#42cdbd] dark:to-[#61dcce] bg-clip-text text-transparent">
-            made simple.
-          </span>
-        </h1>
-
-        {/* The Simple Explanation */}
-        <p className="text-xs xs:text-sm sm:text-lg lg:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed mb-5 sm:mb-8 px-1">
-          Cliniva OS connects consultations, patient queues, prescriptions, inpatient beds, lab tests, and billing into one clean, easy-to-use platform.
-        </p>
-
-        {/* Main CTA Buttons */}
-        <div className="flex flex-col xs:flex-row items-stretch xs:items-center justify-center gap-2 sm:gap-4 max-w-xs xs:max-w-md mx-auto mb-6 sm:mb-10 w-full">
-          <a
-            href="#departments"
-            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-6 sm:py-3.5 rounded-xl bg-primary hover:bg-primary-container text-white font-semibold text-xs sm:text-sm shadow-md shadow-primary/20 transition-all active:scale-[0.98]"
-          >
-            <Layers className="w-4 h-4" />
-            <span>Launch Live Demo</span>
-          </a>
-
-          <a
-            href="/login"
-            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-6 sm:py-3.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-xs sm:text-sm transition-colors active:scale-[0.98]"
-          >
-            <Shield className="w-4 h-4 text-slate-400" />
-            <span>Staff Login</span>
-          </a>
-        </div>
-
-        {/* Quick 1-Click Role Switcher Bar */}
-        <div className="p-3 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 shadow-md w-full max-w-4xl mx-auto min-w-0 overflow-hidden">
-          <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
-            <span className="text-[10px] sm:text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5 truncate">
-              <Zap className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
-              <span>Tap Any Role to Enter:</span>
-            </span>
-            <span className="text-[10px] sm:text-[11px] text-primary font-semibold whitespace-nowrap">
-              1-Click Access
-            </span>
-          </div>
-
-          {/* Horizontal scroll on mobile, grid on larger screens */}
-          <div className="w-full min-w-0 flex sm:grid sm:grid-cols-4 md:grid-cols-8 gap-2 overflow-x-auto pb-1 sm:pb-0 snap-x snap-mandatory scrollbar-hide">
-            {WORKSPACES.slice(0, 8).map((ws) => {
-              const Icon = ws.icon
-              return (
-                <Link
-                  key={ws.id}
-                  href={ws.route}
-                  className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-primary/10 border border-slate-200/80 dark:border-slate-700/80 hover:border-primary/40 text-slate-700 dark:text-slate-200 group transition-all snap-start flex-shrink-0 w-16 sm:w-auto"
-                  title={`Open ${ws.title}`}
-                >
-                  <Icon className="w-4 h-4 text-primary group-hover:scale-110 transition-transform mb-1" />
-                  <span className="text-[10px] sm:text-xs font-semibold tracking-tight text-center leading-tight">
-                    {ws.title.split(' ')[0]}
-                  </span>
-                </Link>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Key Simplicity Pillars */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 pt-5 sm:pt-10 w-full max-w-4xl mx-auto text-left min-w-0">
-          <div className="flex items-center gap-1.5 sm:gap-2.5 p-2 sm:p-3 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 min-w-0">
-            <CheckCircle2 className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-            <div className="min-w-0">
-              <span className="text-[10px] sm:text-xs font-bold text-slate-900 dark:text-slate-100 block truncate">No Installation</span>
-              <span className="text-[9px] sm:text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">Works in browser</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2.5 p-2 sm:p-3 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 min-w-0">
-            <Zap className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-amber-500 flex-shrink-0" />
-            <div className="min-w-0">
-              <span className="text-[10px] sm:text-xs font-bold text-slate-900 dark:text-slate-100 block truncate">Pre-loaded Data</span>
-              <span className="text-[9px] sm:text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">Ready to demo now</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2.5 p-2 sm:p-3 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 min-w-0">
-            <Smartphone className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-sky-600 dark:text-sky-400 flex-shrink-0" />
-            <div className="min-w-0">
-              <span className="text-[10px] sm:text-xs font-bold text-slate-900 dark:text-slate-100 block truncate">Mobile First</span>
-              <span className="text-[9px] sm:text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">Phones & tablets</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2.5 p-2 sm:p-3 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 min-w-0">
-            <Clock className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-violet-600 dark:text-violet-400 flex-shrink-0" />
-            <div className="min-w-0">
-              <span className="text-[10px] sm:text-xs font-bold text-slate-900 dark:text-slate-100 block truncate">Instant 1-Click</span>
-              <span className="text-[9px] sm:text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">Access any workspace</span>
-            </div>
-          </div>
-        </div>
-
-      </section>
-
-      {/* ─── Section: What is Cliniva OS? (Simple Comparison) ─── */}
-      <section id="about" className="py-10 sm:py-20 bg-white dark:bg-slate-900/60 border-y border-slate-200/80 dark:border-slate-800/80 transition-colors">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-bold text-primary uppercase tracking-wider mb-2 block">
-              Why Cliniva OS?
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight font-heading">
-              What Cliniva OS Does For Your Clinic
-            </h2>
-            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 mt-2">
-              Clinics often struggle with paper folders, hard-to-read doctor handwriting, lost lab slips, and billing delays. Here is how Cliniva OS fixes that simply.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            {/* The Old Way */}
-            <div className="p-6 rounded-2xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40">
-              <div className="flex items-center gap-2 mb-4 text-rose-700 dark:text-rose-400 font-bold text-sm">
-                <X className="w-5 h-5 p-0.5 rounded-full bg-rose-200 dark:bg-rose-900/60" />
-                <span>The Traditional Hospital Headache</span>
-              </div>
-              <ul className="space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold">•</span>
-                  <span>Physical paper folders that get lost, damaged, or misplaced.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold">•</span>
-                  <span>Handwritten doctor notes and prescriptions that are hard to read.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold">•</span>
-                  <span>Patients having to carry lab slips by hand from room to room.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold">•</span>
-                  <span>Billing mismatches where medications or procedures get forgotten.</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* The Cliniva OS Way */}
-            <div className="p-6 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40">
-              <div className="flex items-center gap-2 mb-4 text-emerald-700 dark:text-emerald-400 font-bold text-sm">
-                <Check className="w-5 h-5 p-0.5 rounded-full bg-emerald-200 dark:bg-emerald-900/60" />
-                <span>With Cliniva OS (Simple & Digital)</span>
-              </div>
-              <ul className="space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
-                  <span>One permanent digital ID (UHID) stores all visit records safely in the cloud.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
-                  <span>Clean digital prescriptions sent instantly to the pharmacy screen.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
-                  <span>Lab results uploaded immediately so doctors can see them without walking anywhere.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
-                  <span>Single itemized invoice with zero revenue leakage and clear receipts.</span>
-                </li>
-              </ul>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* ─── Section: How It Works in 4 Simple Steps ─── */}
-      <section id="how-it-works" className="py-10 sm:py-20 px-3 sm:px-6 lg:px-8 w-full max-w-5xl mx-auto min-w-0 overflow-hidden">
-        
-        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <span className="text-xs font-bold text-primary uppercase tracking-wider mb-2 block">
-            The Patient Journey
-          </span>
-          <h2 className="text-xl sm:text-4xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight font-heading">
-            How The System Works In 4 Easy Steps
-          </h2>
-          <p className="text-xs sm:text-base text-slate-600 dark:text-slate-300 mt-2">
-            Every step connects smoothly so the patient has zero delays.
+      {/* ─── Main Content: Centered, Focused Welcome ─── */}
+      <main className="flex-1 flex flex-col justify-center items-center px-4 sm:px-6 py-6 sm:py-10 max-w-4xl mx-auto w-full text-center">
+        {/* Main Heading & Short Tagline */}
+        <div className="space-y-2 max-w-2xl mx-auto">
+          <h1 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#123047] dark:text-white leading-tight">
+            Connected Care. Simplified Operations.
+          </h1>
+          <p className="text-xs sm:text-sm text-[#60727F] dark:text-[#92A6B5] leading-relaxed max-w-lg mx-auto">
+            One secure platform connecting patients, healthcare teams, and hospital operations.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 relative w-full min-w-0">
-          
-          {/* Step 1 */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-primary transition-all flex flex-col justify-between">
-            <div>
-              <div className="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 font-bold text-base flex items-center justify-center mb-3">
-                1
-              </div>
-              <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base mb-1">
-                Patient Check-In
-              </h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
-                Front desk registers the patient in under a minute, generates their unique UHID, and assigns an OPD queue token.
-              </p>
-            </div>
-            <Link
-              href="/front-desk"
-              className="text-xs font-semibold text-sky-700 dark:text-sky-400 hover:underline inline-flex items-center gap-1"
-            >
-              <span>Front Desk Workspace</span>
-              <ArrowRight className="w-3 h-3" />
-            </Link>
+        {/* ─── Subtle Connected Workflow Visual ─── */}
+        <div className="w-full max-w-2xl my-6">
+          <div className="px-3 sm:px-4 py-2 rounded-xl bg-white dark:bg-[#122433] border border-[#E2E8EC] dark:border-white/[0.08] flex items-center justify-center flex-wrap gap-1 sm:gap-2 text-[11px] sm:text-xs font-medium text-[#172B3A] dark:text-[#E8F0F5]">
+            {WORKFLOW_STEPS.map((step, index) => (
+              <React.Fragment key={step}>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#F7F9FA] dark:bg-white/[0.04] border border-[#E2E8EC] dark:border-white/[0.08]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#0F8B8D]" />
+                  <span>{step}</span>
+                </span>
+                {index < WORKFLOW_STEPS.length - 1 && (
+                  <ChevronRight className="w-3.5 h-3.5 text-[#A0B0BC] flex-shrink-0" />
+                )}
+              </React.Fragment>
+            ))}
           </div>
-
-          {/* Step 2 */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-primary transition-all flex flex-col justify-between">
-            <div>
-              <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-bold text-base flex items-center justify-center mb-3">
-                2
-              </div>
-              <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base mb-1">
-                Vitals & Triage
-              </h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
-                Nurses record blood pressure, pulse, oxygen, and temperature. For admitted patients, ward beds are assigned instantly.
-              </p>
-            </div>
-            <Link
-              href="/nursing"
-              className="text-xs font-semibold text-rose-700 dark:text-rose-400 hover:underline inline-flex items-center gap-1"
-            >
-              <span>Nursing Workspace</span>
-              <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-
-          {/* Step 3 */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-primary transition-all flex flex-col justify-between">
-            <div>
-              <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-base flex items-center justify-center mb-3">
-                3
-              </div>
-              <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base mb-1">
-                Doctor Consultation
-              </h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
-                The doctor reviews the patient, enters diagnosis notes, and creates digital prescriptions sent straight to pharmacy.
-              </p>
-            </div>
-            <Link
-              href="/doctor"
-              className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline inline-flex items-center gap-1"
-            >
-              <span>Doctor Portal</span>
-              <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-
-          {/* Step 4 */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-primary transition-all flex flex-col justify-between">
-            <div>
-              <div className="w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-950 text-violet-700 dark:text-violet-300 font-bold text-base flex items-center justify-center mb-3">
-                4
-              </div>
-              <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base mb-1">
-                Dispense & Single Bill
-              </h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
-                Pharmacy hands over the medicines, lab releases reports, and the cashier provides one itemized bill with no confusion.
-              </p>
-            </div>
-            <Link
-              href="/billing"
-              className="text-xs font-semibold text-violet-700 dark:text-violet-400 hover:underline inline-flex items-center gap-1"
-            >
-              <span>Billing & Pharmacy</span>
-              <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-
         </div>
 
-      </section>
-
-      {/* ─── Section: Departments / Workspaces Directory ─── */}
-      <section id="departments" className="py-10 sm:py-20 bg-white/70 dark:bg-slate-900/40 border-y border-slate-200/80 dark:border-slate-800/80 transition-colors w-full overflow-hidden">
-        <div className="w-full max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 min-w-0">
-          
-          <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8">
-            <span className="text-xs font-bold text-primary uppercase tracking-wider mb-2 block">
-              Modular Departments
-            </span>
-            <h2 className="text-xl sm:text-4xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight font-heading">
-              Explore All Hospital Workspaces
-            </h2>
-            <p className="text-xs sm:text-base text-slate-600 dark:text-slate-300 mt-2">
-              Each hospital role has a dedicated screen designed specifically for their job. Click any workspace to try it.
-            </p>
-          </div>
-
-          {/* Filter Bar & Search */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 mb-6 sm:mb-8 w-full min-w-0">
-            
-            {/* Category Tabs — horizontal scroll on mobile */}
-            <div className="flex items-center gap-1 overflow-x-auto w-full sm:w-auto p-1 rounded-xl bg-slate-100 dark:bg-slate-800 scrollbar-hide snap-x min-w-0 max-w-full">
-              <button
-                onClick={() => setActiveCategory('all')}
-                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap snap-start ${
-                  activeCategory === 'all'
-                    ? 'bg-white dark:bg-slate-900 text-primary shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                }`}
+        {/* ─── 6 Small Feature Cards ─── */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 w-full max-w-2xl text-left my-2">
+          {FEATURES.map((item) => {
+            const Icon = item.icon
+            return (
+              <div
+                key={item.title}
+                className="p-3 sm:p-3.5 rounded-xl bg-white dark:bg-[#122433] border border-[#E2E8EC] dark:border-white/[0.08] hover:border-[#D5DFE6] dark:hover:border-white/[0.12] transition-all group"
               >
-                All ({WORKSPACES.length})
-              </button>
-              <button
-                onClick={() => setActiveCategory('clinical')}
-                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap snap-start ${
-                  activeCategory === 'clinical'
-                    ? 'bg-white dark:bg-slate-900 text-primary shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                }`}
-              >
-                Clinical
-              </button>
-              <button
-                onClick={() => setActiveCategory('operations')}
-                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap snap-start ${
-                  activeCategory === 'operations'
-                    ? 'bg-white dark:bg-slate-900 text-primary shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                }`}
-              >
-                Operations
-              </button>
-              <button
-                onClick={() => setActiveCategory('support')}
-                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap snap-start ${
-                  activeCategory === 'support'
-                    ? 'bg-white dark:bg-slate-900 text-primary shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                }`}
-              >
-                Lab & Canteen
-              </button>
-            </div>
-
-            {/* Search Box */}
-            <div className="relative w-full sm:w-60">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search department..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-primary"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-
-          </div>
-
-          {/* Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-            {filteredWorkspaces.map((card) => {
-              const Icon = card.icon
-              return (
-                <div
-                  key={card.id}
-                  className="p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900 hover:border-primary hover:shadow-md transition-all flex flex-col justify-between group"
-                >
-                  <div>
-                    {/* Header */}
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${card.color.bg} ${card.color.darkBg} ${card.color.border} ${card.color.darkBorder} ${card.color.text} ${card.color.darkText}`}>
-                        <Icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                      </div>
-                      <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${card.color.badgeBg} ${card.color.badgeText} ${card.color.border} ${card.color.darkBorder}`}>
-                        {card.badge}
-                      </span>
-                    </div>
-
-                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-1 font-heading group-hover:text-primary transition-colors">
-                      {card.title}
-                    </h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-3">
-                      {card.simpleDescription}
-                    </p>
-
-                    {/* What It Does Checkpoints */}
-                    <div className="space-y-1.5 mb-4">
-                      {card.whatItDoes.map((item, idx) => (
-                        <div key={idx} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                          <span>{item}</span>
-                        </div>
-                      ))}
-                    </div>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div
+                    className={`w-6 h-6 rounded-md flex items-center justify-center border flex-shrink-0 ${item.iconBg} ${item.iconColor}`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
                   </div>
-
-                  {/* Open Link */}
-                  <Link
-                    href={card.route}
-                    className="w-full py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-primary hover:text-white text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-between transition-colors"
-                  >
-                    <span>Open {card.title.split(' ')[0]} Workspace</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                  </Link>
+                  <h3 className="font-heading font-semibold text-xs sm:text-[13px] text-[#123047] dark:text-white tracking-tight leading-tight">
+                    {item.title}
+                  </h3>
                 </div>
-              )
-            })}
-          </div>
-
-          {filteredWorkspaces.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-sm text-slate-500">No departments match &ldquo;{searchQuery}&rdquo;.</p>
-              <button
-                onClick={() => {
-                  setSearchQuery('')
-                  setActiveCategory('all')
-                }}
-                className="mt-2 text-xs font-semibold text-primary underline"
-              >
-                Clear Filters
-              </button>
-            </div>
-          )}
-
+                <p className="text-[11px] text-[#7A8B99] dark:text-[#8297A6] font-normal leading-relaxed line-clamp-2">
+                  {item.desc}
+                </p>
+              </div>
+            )
+          })}
         </div>
-      </section>
 
-      {/* ─── Section: Key Benefits ─── */}
-      <section id="benefits" className="py-10 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="text-xs font-bold text-primary uppercase tracking-wider mb-2 block">
-            Simplicity & Speed
+        {/* ─── CTA Controls ─── */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-4 mt-6 sm:mt-8 w-full">
+          <button
+            onClick={handleProceedToLogin}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-[#0F8B8D] hover:bg-[#0D7A7C] active:scale-[0.98] text-white font-medium text-xs sm:text-sm transition-all"
+          >
+            <span>Get Started</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={handleProceedToLogin}
+            className="text-xs text-[#60727F] dark:text-[#92A6B5] hover:text-[#123047] dark:hover:text-white font-medium py-1.5 px-3 transition-colors inline-flex items-center gap-1"
+          >
+            <span>Skip Introduction → Login</span>
+          </button>
+        </div>
+      </main>
+
+      {/* ─── Very Small Footer ─── */}
+      <footer className="border-t border-[#E2E8EC] dark:border-white/[0.08] py-4 text-center">
+        <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2 text-[11px] text-[#60727F] dark:text-[#92A6B5]">
+          <span className="flex items-center gap-1.5 justify-center">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#0F8B8D]" />
+            <span>Secure • Role-Based • Connected Healthcare</span>
           </span>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight font-heading">
-            Built To Save Time, Not Waste It
-          </h2>
-          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 mt-2">
-            Every screen in Cliniva OS is designed to reduce clicks, prevent errors, and let clinical staff focus on patients.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5">
-          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
-              <Zap className="w-5 h-5" />
-            </div>
-            <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base mb-1 font-heading">
-              Lightning Fast
-            </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              No slow loading spinners or heavy software to install. Works instantly in any browser on clinic computers, tablets, or phones.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center mb-3">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base mb-1 font-heading">
-              Role-Based Privacy
-            </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Doctors see clinical charts, pharmacists see medicine queues, and cashiers handle payments. Medical records stay secure and confidential.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-            <div className="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 flex items-center justify-center mb-3">
-              <Smartphone className="w-5 h-5" />
-            </div>
-            <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base mb-1 font-heading">
-              Bedside Touch Friendly
-            </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Large touch targets and clear cards allow nurses and doctors to log vitals and update records comfortably on ward tablets.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Section: Simple FAQ ─── */}
-      <section id="faq" className="py-10 sm:py-20 bg-white dark:bg-slate-900/60 border-y border-slate-200/80 dark:border-slate-800/80 transition-colors">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center mb-10">
-            <span className="text-xs font-bold text-primary uppercase tracking-wider mb-2 block">
-              Quick Answers
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight font-heading">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-              Everything you need to know about the system in simple terms.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            {FAQS.map((faq, index) => {
-              const isOpen = openFaq === index
-              return (
-                <div
-                  key={index}
-                  className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/80 overflow-hidden"
-                >
-                  <button
-                    onClick={() => setOpenFaq(isOpen ? null : index)}
-                    className="w-full px-4 py-3.5 text-left flex items-center justify-between gap-3 text-sm font-bold text-slate-900 dark:text-slate-100 hover:text-primary transition-colors"
-                  >
-                    <span>{faq.q}</span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-slate-400 transition-transform duration-200 flex-shrink-0 ${
-                        isOpen ? 'rotate-180 text-primary' : ''
-                      }`}
-                    />
-                  </button>
-                  {isOpen && (
-                    <div className="px-4 pb-4 pt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-200/60 dark:border-slate-800/60">
-                      {faq.a}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-
-        </div>
-      </section>
-
-      {/* ─── Ready to Start CTA Banner ─── */}
-      <section className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center">
-        <div className="p-6 sm:p-12 rounded-2xl sm:rounded-3xl bg-gradient-to-tr from-[#084c44] via-[#0c7a6e] to-[#0a6860] text-white shadow-xl relative overflow-hidden">
-          <div className="relative z-10">
-            <h2 className="text-xl sm:text-4xl font-extrabold tracking-tight mb-2 sm:mb-3 font-heading">
-              Ready to experience Cliniva OS?
-            </h2>
-            <p className="text-teal-100/90 text-xs sm:text-base max-w-xl mx-auto mb-5 sm:mb-8 leading-relaxed">
-              Open any workspace instantly — no sign-up required.
-            </p>
-            <div className="flex flex-col xs:flex-row items-center justify-center gap-2.5 sm:gap-3">
-              <Link
-                href="/front-desk"
-                className="w-full xs:w-auto px-5 sm:px-6 py-3 rounded-xl bg-white text-primary hover:bg-slate-50 font-bold text-sm shadow-md transition-all active:scale-[0.98]"
-              >
-                Start at Front Desk
-              </Link>
-              <Link
-                href="/doctor"
-                className="w-full xs:w-auto px-5 sm:px-6 py-3 rounded-xl bg-[#06332e]/70 hover:bg-[#06332e]/90 text-white font-semibold text-sm border border-white/20 transition-all active:scale-[0.98]"
-              >
-                Open Doctor Portal
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Clean Modern Footer ─── */}
-      <footer className="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-6 sm:py-8 transition-colors">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center sm:flex-row sm:justify-between gap-2 sm:gap-4 text-xs text-slate-500 dark:text-slate-400 text-center sm:text-left">
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded-md bg-primary text-white flex items-center justify-center flex-shrink-0">
-              <Activity className="w-3 h-3" />
-            </div>
-            <span className="font-bold text-slate-800 dark:text-slate-200 font-heading">Cliniva OS</span>
-            <span className="hidden sm:inline">•</span>
-            <span className="hidden sm:inline">Hospital & Clinic Management System</span>
-          </div>
-          <div>
-            © {new Date().getFullYear()} Cliniva OS. Built for simplicity & speed.
-          </div>
+          <span className="text-[10px] text-[#A0B0BC]">
+            CLINIVA OS v2.4
+          </span>
         </div>
       </footer>
 
+      {/* ─── Compact "How CLINIVA Works" Modal ─── */}
+      {showHowItWorksModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-xs animate-in fade-in duration-150">
+          <div
+            className="bg-white dark:bg-[#122433] border border-[#E2E8EC] dark:border-white/[0.08] rounded-2xl max-w-sm w-full p-5 shadow-xl relative text-left"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-[#E2E8EC] dark:border-white/[0.06] mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-md bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 text-[#0F8B8D] dark:text-[#28B5B7] flex items-center justify-center">
+                  <Info className="w-3.5 h-3.5" />
+                </div>
+                <h4 className="font-heading font-bold text-sm text-[#123047] dark:text-white">
+                  How CLINIVA Works
+                </h4>
+              </div>
+              <button
+                onClick={() => setShowHowItWorksModal(false)}
+                className="p-1 rounded-md text-[#60727F] hover:text-[#172B3A] dark:hover:text-white transition-colors"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs text-[#60727F] dark:text-[#92A6B5]">
+              <div className="flex items-start gap-2.5">
+                <div className="w-5 h-5 rounded-full bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 text-[#0F8B8D] dark:text-[#28B5B7] flex items-center justify-center font-bold text-[11px] flex-shrink-0 mt-0.5">
+                  1
+                </div>
+                <div>
+                  <p className="font-semibold text-[#172B3A] dark:text-white">
+                    Login with your authorized account
+                  </p>
+                  <p className="text-[11px] text-[#60727F] dark:text-[#92A6B5] mt-0.5">
+                    Select your hospital role or sign in with your clinic credentials.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <div className="w-5 h-5 rounded-full bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 text-[#0F8B8D] dark:text-[#28B5B7] flex items-center justify-center font-bold text-[11px] flex-shrink-0 mt-0.5">
+                  2
+                </div>
+                <div>
+                  <p className="font-semibold text-[#172B3A] dark:text-white">
+                    Automatic workspace launch
+                  </p>
+                  <p className="text-[11px] text-[#60727F] dark:text-[#92A6B5] mt-0.5">
+                    CLINIVA automatically opens your role-based workspace.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <div className="w-5 h-5 rounded-full bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 text-[#0F8B8D] dark:text-[#28B5B7] flex items-center justify-center font-bold text-[11px] flex-shrink-0 mt-0.5">
+                  3
+                </div>
+                <div>
+                  <p className="font-semibold text-[#172B3A] dark:text-white">
+                    Role-assigned modules
+                  </p>
+                  <p className="text-[11px] text-[#60727F] dark:text-[#92A6B5] mt-0.5">
+                    Use only the clinical and operational modules assigned to your role.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-[#E2E8EC] dark:border-white/[0.06] flex justify-end">
+              <button
+                onClick={() => setShowHowItWorksModal(false)}
+                className="px-4 py-1.5 rounded-lg bg-[#0F8B8D] text-white text-xs font-semibold hover:bg-[#0D7A7C] transition-colors"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+  )
+}
+
+export default function WelcomePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#F7F9FA] dark:bg-[#0D1B26]">
+          <div className="flex items-center gap-2.5 text-xs text-[#60727F] dark:text-[#92A6B5] font-medium">
+            <Activity className="w-4 h-4 text-[#0F8B8D] animate-pulse" />
+            <span>Loading Cliniva OS...</span>
+          </div>
+        </div>
+      }
+    >
+      <WelcomeView />
+    </Suspense>
   )
 }

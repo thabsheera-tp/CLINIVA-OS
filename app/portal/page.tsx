@@ -1,16 +1,10 @@
-import { redirect } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
-import PortalDashboardView from '@/components/dashboard/PortalDashboardView'
+import PatientPortalApp from '@/components/portal/PatientPortalApp'
 
-export const metadata = { title: 'Patient Portal — My Health' }
+export const metadata = {
+  title: 'Patient Portal — Cliniva OS',
+  description: 'Digital patient health records, appointments, prescriptions & lab reports',
+}
 
-export default async function PatientPortal() {
-  const supabase = createServerClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session && process.env.NEXT_PUBLIC_DEMO_MODE === 'false') redirect('/login')
-
-  const patientName = session?.user?.user_metadata?.display_name ?? 'Marcus Delacroix'
-  const firstName = patientName.split(' ')[0]
-
-  return <PortalDashboardView firstName={firstName} />
+export default function PatientPortal() {
+  return <PatientPortalApp initialTab="dashboard" />
 }

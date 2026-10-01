@@ -13,6 +13,7 @@ const NAV_SECTIONS = [
       { label: 'Token Issuance',   href: '/front-desk/tokens',             icon: 'confirmation_number', badge: 5, badgeVariant: 'live' as const },
       { label: 'Appointments',     href: '/front-desk/appointments',       icon: 'calendar_today',      badge: '32 Today' },
       { label: 'Doctor Availability', href: '/front-desk/availability',   icon: 'medical_information' },
+      { label: 'Patient Portal QR',   href: '/portal/qr',                 icon: 'qr_code_2' },
     ],
   },
   { label: 'System', items: [{ label: 'Settings', href: '/front-desk/settings', icon: 'settings' }] },
@@ -25,12 +26,17 @@ export default async function FrontDeskDashboard() {
   const { data: { session } } = await supabase.auth.getSession()
   if (!session && process.env.NEXT_PUBLIC_DEMO_MODE === 'false') redirect('/login')
   const userName = session?.user?.user_metadata?.display_name ?? 'Elena Rostova'
+  const userMeta = session?.user?.user_metadata || {}
+  const assignedRoles = (Array.isArray(userMeta.roles) && userMeta.roles.length > 0)
+    ? userMeta.roles
+    : (userMeta.role ? [userMeta.role] : ['front_desk'])
 
   return (
     <DashboardShell
       role="front_desk"
-      roleLabel="Front Desk & Registration"
+      roleLabel="Front Desk"
       userName={userName}
+      assignedRoles={assignedRoles}
       clinicName="St. Jude Medical Center — OPD"
       clinicIcon="business"
       searchPlaceholder="Search patients by name, MRN, phone..."

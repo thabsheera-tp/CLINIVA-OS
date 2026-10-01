@@ -53,12 +53,12 @@ export default function AdminSubScreens({ slug, userName }: Props) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {modules.map((m) => (
-              <div key={m.key} className="p-5 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm flex items-start justify-between gap-4">
+              <div key={m.key} className="p-5 bg-white rounded-xl border border-border-subtle shadow-sm flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="font-semibold text-on-surface text-body-md">{m.name}</h3>
-                  <p className="text-body-sm text-on-surface-variant mt-1">{m.desc}</p>
-                  <span className={`inline-block mt-3 px-2.5 py-0.5 rounded-full text-label-sm font-semibold ${
-                    m.enabled ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-800'
+                  <h3 className="font-semibold text-primary-navy text-body-md">{m.name}</h3>
+                  <p className="text-body-sm text-secondary-text mt-1">{m.desc}</p>
+                  <span className={`inline-block mt-3 px-2.5 py-0.5 rounded-full text-label-sm font-semibold border ${
+                    m.enabled ? 'bg-[#EBF7F2] text-[#2E7D5B] border-[#C3ECD8]' : 'bg-slate-100 text-secondary-text border-border-subtle'
                   }`}>
                     {m.enabled ? 'Module Enabled' : 'Disabled'}
                   </span>
@@ -66,7 +66,7 @@ export default function AdminSubScreens({ slug, userName }: Props) {
                 <button
                   onClick={() => toggleModule(m.key)}
                   className={`w-12 h-6 rounded-full transition-colors relative flex items-center p-0.5 ${
-                    m.enabled ? 'bg-primary' : 'bg-outline-variant'
+                    m.enabled ? 'bg-medical-teal' : 'bg-slate-300'
                   }`}
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform ${
@@ -90,10 +90,10 @@ export default function AdminSubScreens({ slug, userName }: Props) {
             description="Manage clinical staff, role-based access control (RBAC), department transfers, and active account status."
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 overflow-hidden shadow-sm">
+          <div className="bg-white rounded-xl border border-border-subtle overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-body-sm">
-                <thead className="bg-surface-container-low/50 text-label-sm text-on-surface-variant uppercase border-b border-outline-variant/20">
+              <table className="w-full text-left text-[13px]">
+                <thead className="bg-slate-50/80 text-[11px] font-bold text-[#4A5D6B] dark:text-[#9FB1C0] uppercase tracking-wider border-b border-border-subtle">
                   <tr>
                     <th className="px-5 py-3">Employee ID</th>
                     <th className="px-5 py-3">Name</th>
@@ -103,16 +103,16 @@ export default function AdminSubScreens({ slug, userName }: Props) {
                     <th className="px-5 py-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-outline-variant/20">
+                <tbody className="divide-y divide-border-subtle">
                   {SAMPLE_STAFF.map((s) => (
-                    <tr key={s.id} className="hover:bg-surface-container-low/30">
-                      <td className="px-5 py-3.5 font-mono text-outline font-medium">{s.id}</td>
-                      <td className="px-5 py-3.5 font-semibold text-on-surface">{s.name}</td>
-                      <td className="px-5 py-3.5 text-primary font-medium">{s.role}</td>
-                      <td className="px-5 py-3.5 text-on-surface-variant">{s.dept}</td>
-                      <td className="px-5 py-3.5 text-outline text-label-sm">{s.email}</td>
+                    <tr key={s.id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-5 py-3.5 font-mono font-bold text-xs text-[#123047] dark:text-white">{s.id}</td>
+                      <td className="px-5 py-3.5 font-semibold text-sm text-[#123047] dark:text-white">{s.name}</td>
+                      <td className="px-5 py-3.5 text-xs text-[#0F8B8D] dark:text-[#28B5B7] font-semibold">{s.role}</td>
+                      <td className="px-5 py-3.5 text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">{s.dept}</td>
+                      <td className="px-5 py-3.5 text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">{s.email}</td>
                       <td className="px-5 py-3.5">
-                        <span className="px-2.5 py-1 rounded-full text-label-sm font-semibold bg-emerald-100 text-emerald-800">
+                        <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#EBF7F2] text-[#2E7D5B] border border-[#C3ECD8]">
                           {s.status}
                         </span>
                       </td>
@@ -145,12 +145,12 @@ export default function AdminSubScreens({ slug, userName }: Props) {
               { name: 'Diagnostic Pathology & Lab', head: 'Dr. Helen Frost, MD', loc: 'Sub-Level 1 • Core Lab', staff: 9 },
               { name: 'Inpatient Nursing Service', head: 'Nurse Priya Sharma, RN', loc: 'Main Tower • Wards A & B', staff: 35 },
             ].map((d) => (
-              <div key={d.name} className="p-5 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm space-y-2">
-                <h3 className="font-semibold text-on-surface text-body-md">{d.name}</h3>
-                <div className="text-body-sm text-on-surface-variant space-y-0.5">
-                  <div>HOD: <strong className="text-primary">{d.head}</strong></div>
+              <div key={d.name} className="p-5 bg-white rounded-xl border border-border-subtle shadow-sm space-y-2">
+                <h3 className="font-bold text-sm text-[#123047] dark:text-white">{d.name}</h3>
+                <div className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] space-y-0.5">
+                  <div>HOD: <strong className="text-[#0F8B8D] dark:text-[#28B5B7] font-semibold">{d.head}</strong></div>
                   <div>Location: {d.loc}</div>
-                  <div className="text-outline mt-1 font-medium">{d.staff} Assigned Personnel</div>
+                  <div className="text-[#123047] dark:text-white mt-1 font-semibold">{d.staff} Assigned Personnel</div>
                 </div>
               </div>
             ))}
@@ -170,25 +170,25 @@ export default function AdminSubScreens({ slug, userName }: Props) {
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div className="p-5 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm">
-              <span className="text-label-sm text-on-surface-variant">Bed Occupancy Rate</span>
-              <div className="text-headline-lg font-bold text-on-surface font-mono mt-1">75.0%</div>
-              <span className="text-label-sm text-emerald-700 font-semibold">6 of 8 Active Beds</span>
+            <div className="p-5 bg-white rounded-xl border border-border-subtle shadow-sm">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#4A5D6B] dark:text-[#9FB1C0]">Bed Occupancy Rate</span>
+              <div className="text-2xl font-bold text-[#123047] dark:text-white font-mono mt-1">75.0%</div>
+              <span className="text-xs text-[#2E7D5B] font-semibold">6 of 8 Active Beds</span>
             </div>
-            <div className="p-5 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm">
-              <span className="text-label-sm text-on-surface-variant">Daily OPD Footfall</span>
-              <div className="text-headline-lg font-bold text-primary font-mono mt-1">47</div>
-              <span className="text-label-sm text-emerald-700 font-semibold">+12% vs last week</span>
+            <div className="p-5 bg-white rounded-xl border border-border-subtle shadow-sm">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#4A5D6B] dark:text-[#9FB1C0]">Daily OPD Footfall</span>
+              <div className="text-2xl font-bold text-[#0F8B8D] dark:text-[#28B5B7] font-mono mt-1">47</div>
+              <span className="text-xs text-[#2E7D5B] font-semibold">+12% vs last week</span>
             </div>
-            <div className="p-5 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm">
-              <span className="text-label-sm text-on-surface-variant">Avg Wait to Consult</span>
-              <div className="text-headline-lg font-bold text-on-surface font-mono mt-1">18m</div>
-              <span className="text-label-sm text-emerald-700 font-semibold">Within target (&lt;20m)</span>
+            <div className="p-5 bg-white rounded-xl border border-border-subtle shadow-sm">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#4A5D6B] dark:text-[#9FB1C0]">Avg Wait to Consult</span>
+              <div className="text-2xl font-bold text-[#123047] dark:text-white font-mono mt-1">18m</div>
+              <span className="text-xs text-[#2E7D5B] font-semibold">Within target (&lt;20m)</span>
             </div>
-            <div className="p-5 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm">
-              <span className="text-label-sm text-on-surface-variant">Daily Cash Collection</span>
-              <div className="text-headline-lg font-bold text-emerald-700 font-mono mt-1">$6,840</div>
-              <span className="text-label-sm text-on-surface-variant font-semibold">98.5% reconciliation</span>
+            <div className="p-5 bg-white rounded-xl border border-border-subtle shadow-sm">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#4A5D6B] dark:text-[#9FB1C0]">Daily Cash Collection</span>
+              <div className="text-2xl font-bold text-[#2E7D5B] font-mono mt-1">$6,840</div>
+              <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">98.5% reconciliation</span>
             </div>
           </div>
         </>
@@ -205,10 +205,10 @@ export default function AdminSubScreens({ slug, userName }: Props) {
             description="Immutable log of all user authentication events, patient health record views, and prescription changes."
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 overflow-hidden shadow-sm">
+          <div className="bg-white rounded-xl border border-border-subtle overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-body-sm">
-                <thead className="bg-surface-container-low/50 text-label-sm text-on-surface-variant uppercase border-b border-outline-variant/20">
+              <table className="w-full text-left text-[13px]">
+                <thead className="bg-slate-50/80 text-[11px] font-bold text-[#4A5D6B] dark:text-[#9FB1C0] uppercase tracking-wider border-b border-border-subtle">
                   <tr>
                     <th className="px-5 py-3">Timestamp</th>
                     <th className="px-5 py-3">User</th>
@@ -217,7 +217,7 @@ export default function AdminSubScreens({ slug, userName }: Props) {
                     <th className="px-5 py-3">IP Address</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-outline-variant/20 font-mono text-label-sm">
+                <tbody className="divide-y divide-border-subtle">
                   {[
                     { time: '10:42:15 AM', user: 'Dr. Sarah Jenkins', action: 'VIEW_RECORD', res: 'Patient #00482910 (Delacroix)', ip: '192.168.1.45' },
                     { time: '10:38:02 AM', user: 'Nurse Priya Sharma', action: 'RECORD_VITALS', res: 'Patient #00482910 (Delacroix)', ip: '192.168.1.88' },
@@ -225,12 +225,12 @@ export default function AdminSubScreens({ slug, userName }: Props) {
                     { time: '09:55:12 AM', user: 'Elena Rostova', action: 'GENERATE_TOKEN', res: 'OPD Queue Token #12', ip: '192.168.1.20' },
                     { time: '08:00:00 AM', user: 'Alexander Sterling', action: 'USER_LOGIN', res: 'Session Initiated', ip: '192.168.1.10' },
                   ].map((a, i) => (
-                    <tr key={i} className="hover:bg-surface-container-low/30">
-                      <td className="px-5 py-3 text-outline">{a.time}</td>
-                      <td className="px-5 py-3 font-semibold text-on-surface font-sans">{a.user}</td>
-                      <td className="px-5 py-3 font-bold text-primary">{a.action}</td>
-                      <td className="px-5 py-3 font-sans text-on-surface-variant">{a.res}</td>
-                      <td className="px-5 py-3 text-outline">{a.ip}</td>
+                    <tr key={i} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-5 py-3 font-mono text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">{a.time}</td>
+                      <td className="px-5 py-3 font-semibold text-sm text-[#123047] dark:text-white font-sans">{a.user}</td>
+                      <td className="px-5 py-3 font-bold text-xs text-[#0F8B8D] dark:text-[#28B5B7]">{a.action}</td>
+                      <td className="px-5 py-3 font-medium text-[13px] text-[#253848] dark:text-[#D9E5F0]">{a.res}</td>
+                      <td className="px-5 py-3 font-mono text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">{a.ip}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -252,29 +252,29 @@ export default function AdminSubScreens({ slug, userName }: Props) {
             description="Multi-tenant cloud infrastructure license, active clinic nodes, and automated encrypted backup."
           />
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 shadow-sm space-y-4 max-w-3xl">
+          <div className="bg-white rounded-xl border border-border-subtle p-6 shadow-sm space-y-4 max-w-3xl">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-heading font-semibold text-headline-sm text-on-surface">St. Jude Medical Center</h3>
-                <p className="text-body-sm text-on-surface-variant">Tenant ID: c0000000-0000-0000-0000-000000000001</p>
+                <h3 className="font-heading font-semibold text-headline-sm text-primary-navy">St. Jude Medical Center</h3>
+                <p className="text-body-sm text-secondary-text">Tenant ID: c0000000-0000-0000-0000-000000000001</p>
               </div>
-              <span className="px-3 py-1 rounded-full text-label-sm font-bold bg-emerald-100 text-emerald-800">
+              <span className="px-3 py-1 rounded-full text-label-sm font-semibold bg-[#EBF7F2] text-[#2E7D5B] border border-[#C3ECD8]">
                 Active & Healthy
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-outline-variant/20">
-              <div className="p-3 bg-surface-container-low rounded-xl">
-                <span className="text-label-sm text-outline">User Seats</span>
-                <div className="font-bold text-on-surface font-mono">48 / Unlimited</div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-border-subtle">
+              <div className="p-3 bg-slate-50 rounded-xl border border-border-subtle">
+                <span className="text-label-sm text-secondary-text">User Seats</span>
+                <div className="font-bold text-primary-navy font-mono">48 / Unlimited</div>
               </div>
-              <div className="p-3 bg-surface-container-low rounded-xl">
-                <span className="text-label-sm text-outline">Cloud Storage</span>
-                <div className="font-bold text-on-surface font-mono">14.2 GB / 500 GB</div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-border-subtle">
+                <span className="text-label-sm text-secondary-text">Cloud Storage</span>
+                <div className="font-bold text-primary-navy font-mono">14.2 GB / 500 GB</div>
               </div>
-              <div className="p-3 bg-surface-container-low rounded-xl">
-                <span className="text-label-sm text-outline">Latest Backup</span>
-                <div className="font-bold text-primary font-mono">Today 04:00 AM</div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-border-subtle">
+                <span className="text-label-sm text-secondary-text">Latest Backup</span>
+                <div className="font-bold text-medical-teal font-mono">Today 04:00 AM</div>
               </div>
             </div>
           </div>
