@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClientSideClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import ThemeToggle from '@/components/ui/ThemeToggle'
@@ -44,7 +44,35 @@ export default function TopBar({
   const [clinicMenuOpen, setClinicMenuOpen] = useState(false)
   const [selectedClinic, setSelectedClinic] = useState(clinicName)
   const [userAssignedRoles, setUserAssignedRoles] = useState<string[]>(assignedRoles || [])
+  const notificationRef = useRef<HTMLDivElement>(null)
   const supabase = createClientSideClient()
+
+  // Close notifications dropdown on click outside or Escape key
+  useEffect(() => {
+    if (!notificationsOpen) return
+
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setNotificationsOpen(false)
+      }
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setNotificationsOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [notificationsOpen])
   const {
     setRegisterOpen,
     setVitalsOpen,
@@ -243,7 +271,7 @@ export default function TopBar({
           <ThemeToggle />
 
           {/* Notifications with interactive popover */}
-          <div className="relative">
+          <div className="relative" ref={notificationRef}>
             <button
               onClick={() => setNotificationsOpen(!notificationsOpen)}
               className="relative p-2 text-[#60727F] hover:text-[#172B3A] dark:text-[#92A6B5] dark:hover:text-white hover:bg-[#F0F4F7] dark:hover:bg-white/5 rounded-full transition-colors touch-tap"
@@ -256,34 +284,34 @@ export default function TopBar({
             </button>
 
             {notificationsOpen && (
-              <div className="absolute right-0 top-12 w-[calc(100vw-1.5rem)] max-w-[20rem] bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] shadow-lg p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="flex items-center justify-between pb-2 border-b border-[#E2E8EC] dark:border-white/[0.06] mb-2">
-                  <span className="text-label-md font-bold text-[#123047] dark:text-white">Clinical Alerts</span>
-                  <span className="text-[11px] bg-[#C94A4A]/10 text-[#C94A4A] border border-[#C94A4A]/20 px-2 py-0.5 rounded-full font-semibold">3 Unread</span>
+              <div className="absolute right-0 top-12 w-[340px] max-w-[calc(100vw-1.5rem)] bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800 mb-2">
+                  <span className="text-label-md font-bold text-slate-900 dark:text-white">Clinical Alerts</span>
+                  <span className="text-[11px] bg-[#C94A4A]/10 text-[#C94A4A] border border-[#C94A4A]/20 px-2 py-0.5 rounded-full font-semibold tabular-nums">3 Unread</span>
                 </div>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  <div className="p-2.5 rounded-lg bg-[#C94A4A]/5 border border-[#C94A4A]/15 flex gap-2.5 items-start">
+                <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1">
+                  <div className="p-2.5 rounded-lg bg-[#C94A4A]/5 dark:bg-red-950/30 border border-[#C94A4A]/15 dark:border-red-900/50 flex gap-2.5 items-start">
                     <ClinivaIcon name="priority_high" size={16} strokeWidth={1.5} className="text-[#C94A4A] flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-label-sm font-semibold text-[#172B3A] dark:text-white">Critical Troponin Result</p>
-                      <p className="text-[12px] text-[#60727F] dark:text-[#92A6B5]">Patient Marcus Delacroix: 0.08 ng/mL (STAT alert)</p>
-                      <span className="text-[10px] text-[#A0B0BC]">5 mins ago</span>
+                      <p className="text-label-sm font-semibold text-slate-900 dark:text-white">Critical Troponin Result</p>
+                      <p className="text-[12px] text-slate-600 dark:text-slate-300">Patient Marcus Delacroix: 0.08 ng/mL (STAT alert)</p>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">5 mins ago</span>
                     </div>
                   </div>
-                  <div className="p-2.5 rounded-lg bg-[#F7F9FA] dark:bg-white/[0.03] border border-[#E2E8EC] dark:border-white/[0.06] flex gap-2.5 items-start">
+                  <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex gap-2.5 items-start">
                     <ClinivaIcon name="prescriptions" size={16} strokeWidth={1.5} className="text-[#0F8B8D] flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-label-sm font-semibold text-[#172B3A] dark:text-white">Rx Verification Needed</p>
-                      <p className="text-[12px] text-[#60727F] dark:text-[#92A6B5]">Central Pharmacy flagged Lisinopril interaction</p>
-                      <span className="text-[10px] text-[#A0B0BC]">18 mins ago</span>
+                      <p className="text-label-sm font-semibold text-slate-900 dark:text-white">Rx Verification Needed</p>
+                      <p className="text-[12px] text-slate-600 dark:text-slate-300">Central Pharmacy flagged Lisinopril interaction</p>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">18 mins ago</span>
                     </div>
                   </div>
-                  <div className="p-2.5 rounded-lg bg-[#F7F9FA] dark:bg-white/[0.03] border border-[#E2E8EC] dark:border-white/[0.06] flex gap-2.5 items-start">
+                  <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex gap-2.5 items-start">
                     <ClinivaIcon name="how_to_reg" size={16} strokeWidth={1.5} className="text-[#0F8B8D] flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-label-sm font-semibold text-[#172B3A] dark:text-white">New Inpatient Admission</p>
-                      <p className="text-[12px] text-[#60727F] dark:text-[#92A6B5]">Bed A-02 occupied by Priya Mehta</p>
-                      <span className="text-[10px] text-[#A0B0BC]">35 mins ago</span>
+                      <p className="text-label-sm font-semibold text-slate-900 dark:text-white">New Inpatient Admission</p>
+                      <p className="text-[12px] text-slate-600 dark:text-slate-300">Bed A-02 occupied by Priya Mehta</p>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">35 mins ago</span>
                     </div>
                   </div>
                 </div>

@@ -84,20 +84,20 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
             }
           />
 
-          <div className="bg-white rounded-xl border border-border-subtle overflow-hidden shadow-sm">
-            <div className="p-4 border-b border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-border-subtle dark:border-slate-800 overflow-hidden shadow-sm">
+            <div className="p-4 border-b border-border-subtle dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="relative w-full sm:w-80">
-                <ClinivaIcon name="search" size={16} strokeWidth={1.5} className="absolute left-3 top-2.5 text-secondary-text" />
+                <ClinivaIcon name="search" size={16} strokeWidth={1.5} className="absolute left-3 top-2.5 text-secondary-text dark:text-slate-400" />
                 <input
                   type="text"
                   placeholder="Filter by name, MRN..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-50/70 rounded-xl text-body-sm text-primary-text focus:outline-none focus:ring-2 focus:ring-medical-teal/20 border border-border-subtle focus:border-medical-teal"
+                  className="w-full pl-10 pr-4 py-2 bg-slate-50/70 dark:bg-slate-800 rounded-xl text-body-sm text-primary-text dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-medical-teal/20 border border-border-subtle dark:border-slate-700 focus:border-medical-teal"
                 />
               </div>
               <div className="flex items-center gap-2 text-label-sm text-secondary-text">
-                <span className="px-3 py-1 rounded-lg bg-slate-100 font-medium text-primary-navy">All Patients</span>
+                <span className="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-medium text-primary-navy dark:text-slate-100 border border-transparent dark:border-slate-700">All Patients</span>
               </div>
             </div>
 
@@ -107,7 +107,7 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-body-sm">
-                <thead className="bg-slate-50/80 text-label-sm text-secondary-text uppercase tracking-wider border-b border-border-subtle">
+                <thead className="bg-slate-50/80 dark:bg-slate-800/80 text-label-sm text-secondary-text dark:text-slate-400 uppercase tracking-wider border-b border-border-subtle dark:border-slate-800">
                   <tr>
                     <th className="px-5 py-3">Patient / MRN</th>
                     <th className="px-5 py-3">Gender</th>
@@ -119,28 +119,28 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
                 {patients.loading ? (
                   <TableSkeleton rows={6} cols={5} />
                 ) : (
-                  <tbody className="divide-y divide-border-subtle">
+                  <tbody className="divide-y divide-border-subtle dark:divide-slate-800">
                     {patients.data.length === 0 && !patients.error && (
                       <tr>
-                        <td colSpan={5} className="px-5 py-10 text-center text-secondary-text text-body-sm">
+                        <td colSpan={5} className="px-5 py-10 text-center text-secondary-text dark:text-slate-400 text-body-sm">
                           No patients found{searchTerm ? ` matching "${searchTerm}"` : ''}. {' '}
                           <button onClick={patients.refetch} className="text-medical-teal hover:underline font-medium">Refresh</button>
                         </td>
                       </tr>
                     )}
                     {patients.data.map((p) => (
-                      <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
+                      <tr key={p.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
                         <td className="px-5 py-3.5">
-                          <div className="font-semibold text-primary-navy">{p.first_name} {p.last_name}</div>
-                          <div className="text-label-sm text-secondary-text font-mono">MRN #{p.mrn}</div>
+                          <div className="font-semibold text-primary-navy dark:text-slate-100">{p.first_name} {p.last_name}</div>
+                          <div className="text-label-sm text-secondary-text dark:text-slate-400 font-mono">MRN #{p.mrn}</div>
                         </td>
-                        <td className="px-5 py-3.5 text-secondary-text font-medium capitalize">{p.gender}</td>
-                        <td className="px-5 py-3.5 text-secondary-text">{p.dob}</td>
-                        <td className="px-5 py-3.5 text-secondary-text">{p.phone}</td>
+                        <td className="px-5 py-3.5 text-secondary-text dark:text-slate-300 font-medium capitalize">{p.gender}</td>
+                        <td className="px-5 py-3.5 text-secondary-text dark:text-slate-300">{p.dob}</td>
+                        <td className="px-5 py-3.5 text-secondary-text dark:text-slate-300">{p.phone}</td>
                         <td className="px-5 py-3.5 text-right">
                           <Link
                             href={`/doctor/patients/${p.mrn}`}
-                            className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-medical-teal hover:text-white text-label-sm font-semibold transition-colors inline-block"
+                            className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-medical-teal hover:text-white dark:hover:bg-teal-600 text-label-sm font-semibold text-primary-navy dark:text-slate-100 transition-colors inline-block border border-transparent dark:border-slate-700"
                           >
                             View Chart
                           </Link>
@@ -193,14 +193,14 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
               {appointments.data.map((apt) => {
                 const time = new Date(apt.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 return (
-                  <div key={apt.id} className="p-4 bg-white rounded-xl border border-border-subtle flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm hover:border-slate-300 transition-colors">
+                  <div key={apt.id} className="p-4 bg-white dark:bg-slate-800/90 rounded-xl border border-border-subtle dark:border-slate-700/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
                     <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-xl bg-slate-50 border border-border-subtle flex flex-col items-center justify-center text-primary-navy flex-shrink-0">
+                      <div className="w-14 h-14 rounded-xl bg-slate-50 dark:bg-slate-900 border border-border-subtle dark:border-slate-700 flex flex-col items-center justify-center text-primary-navy dark:text-slate-100 flex-shrink-0 tabular-nums">
                         <span className="text-label-sm font-bold">{time}</span>
                       </div>
                       <div>
-                        <div className="font-semibold text-primary-navy text-body-md">Token #{apt.queue_token}</div>
-                        <div className="text-body-sm text-secondary-text mt-0.5">{apt.chief_complaint ?? 'General consultation'}</div>
+                        <div className="font-semibold text-primary-navy dark:text-slate-100 text-body-md">Token #{apt.queue_token}</div>
+                        <div className="text-body-sm text-secondary-text dark:text-slate-400 mt-0.5">{apt.chief_complaint ?? 'General consultation'}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
@@ -238,34 +238,44 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
             }
           />
 
-          <div className="bg-white rounded-xl border border-border-subtle p-5 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-label-lg font-semibold text-primary-navy">Queue Sequence</span>
-              <span className="text-body-sm text-secondary-text">Live telemetry active</span>
+              <span className="text-label-lg font-semibold text-slate-900 dark:text-slate-100">Queue Sequence</span>
+              <span className="text-body-sm text-slate-500 dark:text-slate-400">Live telemetry active</span>
             </div>
             <div className="space-y-3">
               {queue.map((p) => (
-                <div key={p.id} className="p-4 rounded-xl border border-border-subtle bg-slate-50/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div
+                  key={p.id}
+                  className="p-4 rounded-xl border border-slate-200 dark:border-slate-700/70 bg-slate-50/80 dark:bg-slate-800/90 text-slate-900 dark:text-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs hover:border-teal-500/50 dark:hover:border-teal-500/50 transition-colors"
+                >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary-navy text-white flex items-center justify-center font-heading font-bold text-headline-sm">
+                    <div className="w-12 h-12 rounded-xl bg-primary-navy dark:bg-slate-900 text-white dark:text-teal-300 border border-transparent dark:border-slate-700/80 flex items-center justify-center font-heading font-bold text-headline-sm tabular-nums flex-shrink-0">
                       #{p.token}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-primary-navy">{p.name}</span>
-                        <span className="text-label-sm text-secondary-text">({p.age})</span>
+                        <span className="font-semibold text-slate-900 dark:text-slate-100">{p.name}</span>
+                        <span className="text-label-sm text-slate-500 dark:text-slate-400 tabular-nums">({p.age})</span>
                       </div>
-                      <p className="text-body-sm text-secondary-text mt-0.5">{p.complaint}</p>
+                      <p className="text-body-sm text-slate-600 dark:text-slate-300 mt-0.5 font-medium">{p.complaint}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-label-sm font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-secondary-text border border-border-subtle">{p.wait}</span>
-                    <button onClick={() => setConsultOpen(true)} className="btn-secondary text-label-sm py-1.5 px-3">Start Exam</button>
+                    <span className="text-label-sm font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 tabular-nums">
+                      {p.wait}
+                    </span>
+                    <button
+                      onClick={() => setConsultOpen(true)}
+                      className="btn-secondary text-label-sm py-1.5 px-3 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-100 dark:border-slate-600"
+                    >
+                      Start Exam
+                    </button>
                   </div>
                 </div>
               ))}
               {queue.length === 0 && (
-                <p className="text-body-sm text-secondary-text text-center py-8">Queue is empty. All patients have been seen.</p>
+                <p className="text-body-sm text-slate-500 dark:text-slate-400 text-center py-8">Queue is empty. All patients have been seen.</p>
               )}
             </div>
           </div>
@@ -297,23 +307,23 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
                 </div>
               )}
               {labOrders.data.map((lab) => (
-                <div key={lab.id} className={`p-4 rounded-xl border shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${lab.is_critical ? 'bg-[#FDF2F2] border-[#F8D7D7]' : 'bg-white border-border-subtle'}`}>
+                <div key={lab.id} className={`p-4 rounded-xl border shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${lab.is_critical ? 'bg-[#FDF2F2] dark:bg-red-950/30 border-[#F8D7D7] dark:border-red-900/50' : 'bg-white dark:bg-slate-800/90 border-border-subtle dark:border-slate-700/70'}`}>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-label-sm font-mono text-secondary-text">{lab.id.slice(0, 12)}</span>
-                      {lab.is_critical && <span className="text-label-sm font-bold text-[#C94A4A] bg-[#FCE8E8] border border-[#F8D7D7] px-2 py-0.5 rounded-full">CRITICAL</span>}
+                      <span className="text-label-sm font-mono text-secondary-text dark:text-slate-400">{lab.id.slice(0, 12)}</span>
+                      {lab.is_critical && <span className="text-label-sm font-bold text-[#C94A4A] bg-[#FCE8E8] dark:bg-red-950/60 border border-[#F8D7D7] dark:border-red-900 px-2 py-0.5 rounded-full">CRITICAL</span>}
                     </div>
-                    <div className="text-body-md font-semibold text-primary-navy mt-1">{lab.test_name}</div>
+                    <div className="text-body-md font-semibold text-primary-navy dark:text-slate-100 mt-1">{lab.test_name}</div>
                     <div className="flex items-center gap-3 text-body-sm mt-1">
-                      {lab.result_value && <span>Result: <strong className={lab.is_critical ? 'text-[#C94A4A]' : 'text-primary-text'}>{lab.result_value} {lab.result_unit}</strong></span>}
-                      {lab.reference_range && <span className="text-secondary-text">Ref: {lab.reference_range}</span>}
+                      {lab.result_value && <span>Result: <strong className={lab.is_critical ? 'text-[#C94A4A]' : 'text-primary-text dark:text-slate-100'}>{lab.result_value} {lab.result_unit}</strong></span>}
+                      {lab.reference_range && <span className="text-secondary-text dark:text-slate-400">Ref: {lab.reference_range}</span>}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={`px-3 py-1 rounded-full text-label-sm font-semibold border ${lab.is_critical ? 'bg-[#FDF2F2] text-[#C94A4A] border-[#F8D7D7]' : 'bg-[#EBF7F2] text-[#2E7D5B] border-[#C3ECD8]'}`}>
+                    <span className={`px-3 py-1 rounded-full text-label-sm font-semibold border ${lab.is_critical ? 'bg-[#FDF2F2] dark:bg-red-950/50 text-[#C94A4A] border-[#F8D7D7] dark:border-red-900/50' : 'bg-[#EBF7F2] dark:bg-emerald-950/40 text-[#2E7D5B] dark:text-emerald-300 border-[#C3ECD8] dark:border-emerald-800/50'}`}>
                       {lab.status}
                     </span>
-                    <button className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-label-sm font-semibold text-primary-navy">
+                    <button className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-label-sm font-semibold text-primary-navy dark:text-slate-100 transition-colors">
                       Sign & Acknowledge
                     </button>
                   </div>
@@ -343,10 +353,10 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
 
           {prescriptions.error && <DataError message="Could not load prescriptions." retry={prescriptions.refetch} />}
 
-          <div className="bg-white rounded-xl border border-border-subtle overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-border-subtle dark:border-slate-800 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-body-sm">
-                <thead className="bg-slate-50/80 text-label-sm text-secondary-text uppercase tracking-wider border-b border-border-subtle">
+                <thead className="bg-slate-50/80 dark:bg-slate-800/80 text-label-sm text-secondary-text dark:text-slate-400 uppercase tracking-wider border-b border-border-subtle dark:border-slate-800">
                   <tr>
                     <th className="px-5 py-3">Prescription ID</th>
                     <th className="px-5 py-3">Medication & Dosage</th>
@@ -359,28 +369,28 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
                 {prescriptions.loading ? (
                   <TableSkeleton rows={5} cols={6} />
                 ) : (
-                  <tbody className="divide-y divide-border-subtle">
+                  <tbody className="divide-y divide-border-subtle dark:divide-slate-800">
                     {prescriptions.data.length === 0 && (
                       <tr>
-                        <td colSpan={6} className="px-5 py-10 text-center text-secondary-text text-body-sm">No active prescriptions found.</td>
+                        <td colSpan={6} className="px-5 py-10 text-center text-secondary-text dark:text-slate-400 text-body-sm">No active prescriptions found.</td>
                       </tr>
                     )}
                     {prescriptions.data.map((rx) => (
-                      <tr key={rx.id} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="px-5 py-3.5 font-mono text-secondary-text font-medium">{rx.id.slice(0, 12)}</td>
+                      <tr key={rx.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
+                        <td className="px-5 py-3.5 font-mono text-secondary-text dark:text-slate-400 font-medium">{rx.id.slice(0, 12)}</td>
                         <td className="px-5 py-3.5">
-                          <div className="font-semibold text-primary-navy">{rx.drug_name}</div>
-                          <div className="text-label-sm text-secondary-text">{rx.dose}</div>
+                          <div className="font-semibold text-primary-navy dark:text-slate-100">{rx.drug_name}</div>
+                          <div className="text-label-sm text-secondary-text dark:text-slate-400">{rx.dose}</div>
                         </td>
-                        <td className="px-5 py-3.5 text-secondary-text">{rx.frequency}</td>
-                        <td className="px-5 py-3.5 text-primary-text">{rx.quantity} (Refills: {rx.refills})</td>
+                        <td className="px-5 py-3.5 text-secondary-text dark:text-slate-400">{rx.frequency}</td>
+                        <td className="px-5 py-3.5 text-primary-text dark:text-slate-200">{rx.quantity} (Refills: {rx.refills})</td>
                         <td className="px-5 py-3.5">
-                          <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold border ${rx.status === 'active' ? 'bg-[#EBF7F2] text-[#2E7D5B] border-[#C3ECD8]' : 'bg-slate-100 text-secondary-text border-border-subtle'}`}>
+                          <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold border ${rx.status === 'active' ? 'bg-[#EBF7F2] dark:bg-emerald-950/40 text-[#2E7D5B] dark:text-emerald-300 border-[#C3ECD8] dark:border-emerald-800/50' : 'bg-slate-100 dark:bg-slate-800 text-secondary-text dark:text-slate-400 border-border-subtle dark:border-slate-700'}`}>
                             {rx.status}
                           </span>
                         </td>
                         <td className="px-5 py-3.5 text-right">
-                          <button className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-label-sm font-semibold text-primary-navy transition-colors">
+                          <button className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-label-sm font-semibold text-primary-navy dark:text-slate-100 transition-colors">
                             Print Rx
                           </button>
                         </td>
@@ -405,19 +415,19 @@ export default function DoctorSubScreens({ slug, userName }: Props) {
             description="Secure communication channels between physicians, ward nurses, lab techs, and pharmacy."
           />
 
-          <div className="bg-white rounded-xl border border-border-subtle p-5 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-border-subtle dark:border-slate-800 p-5 shadow-sm space-y-4">
             {[
               { sender: 'Nurse Priya Sharma (Ward A)', time: '12m ago', text: 'Bed A-01 patient reported mild dizziness after morning medication. Vitals logged.', unread: true },
               { sender: 'David Kalu (Central Lab)', time: '40m ago', text: 'Critical lab alert: Troponin sample verified at 0.04 ng/mL — requires physician acknowledgement.', unread: true },
               { sender: 'Marcus Vance (Pharmacy)', time: '2h ago', text: 'Alternative brand dispensed for Atorvastatin 40mg due to primary stock lot rotation.', unread: false },
               { sender: 'OPD Reception', time: '3h ago', text: 'Patient checked in for routine diabetes review. Token issued.', unread: false },
             ].map((msg, i) => (
-              <div key={i} className={`p-4 rounded-xl border ${msg.unread ? 'bg-[#F2F9F9] border-[#D1ECEB]' : 'bg-slate-50/60 border-border-subtle'}`}>
+              <div key={i} className={`p-4 rounded-xl border ${msg.unread ? 'bg-[#F2F9F9] dark:bg-teal-950/30 border-[#D1ECEB] dark:border-teal-900/50' : 'bg-slate-50/60 dark:bg-slate-800/80 border-border-subtle dark:border-slate-700'}`}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-semibold text-primary-navy text-body-md">{msg.sender}</span>
-                  <span className="text-label-sm text-secondary-text">{msg.time}</span>
+                  <span className="font-semibold text-primary-navy dark:text-slate-100 text-body-md">{msg.sender}</span>
+                  <span className="text-label-sm text-secondary-text dark:text-slate-400">{msg.time}</span>
                 </div>
-                <p className="text-body-sm text-secondary-text">{msg.text}</p>
+                <p className="text-body-sm text-secondary-text dark:text-slate-300">{msg.text}</p>
               </div>
             ))}
           </div>
