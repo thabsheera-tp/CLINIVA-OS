@@ -13,7 +13,7 @@ const NAV_SECTIONS = [
       { label: 'Token Issuance',      href: '/front-desk/tokens',           icon: 'confirmation_number', badge: 5, badgeVariant: 'live' as const },
       { label: 'Appointments',        href: '/front-desk/appointments',     icon: 'calendar_today',      badge: '32 Today' },
       { label: 'Doctor Availability', href: '/front-desk/availability',     icon: 'medical_information' },
-      { label: 'Patient Portal QR',   href: '/portal/qr',                   icon: 'qr_code_2' },
+      { label: 'Patient Portal QR',   href: '/front-desk/qr',               icon: 'qr_code_2' },
     ],
   },
   { label: 'System', items: [{ label: 'Settings', href: '/front-desk/settings', icon: 'settings' }] },

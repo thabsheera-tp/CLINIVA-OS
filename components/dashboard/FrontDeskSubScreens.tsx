@@ -7,6 +7,7 @@ import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import RegisterPatientModal from '@/components/modals/RegisterPatientModal'
 import { registerPatient, fetchDoctors, type DoctorProfile } from '@/lib/data'
+import PatientPortalQrCard from './PatientPortalQrCard'
 
 type Props = {
   slug: string
@@ -428,6 +429,21 @@ export default function FrontDeskSubScreens({ slug, userName }: Props) {
             </div>
             <button className="btn-primary">Save Settings</button>
           </div>
+        </>
+      )}
+
+      {/* ── 7. PATIENT PORTAL QR MANAGEMENT ── */}
+      {slug === 'qr' && (
+        <>
+          <SubScreenHeader
+            parentLabel="Front Desk"
+            parentHref="/front-desk"
+            title="Patient Portal Access & QR Poster Management"
+            badge="Hospital Wide"
+            description="Manage and distribute the official hospital Patient Portal QR code. Front Desk staff can view the official poster, print physical signage, download barcodes, or copy the direct portal URL."
+          />
+
+          <PatientPortalQrCard variant="full" />
         </>
       )}
     </div>

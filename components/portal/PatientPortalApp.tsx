@@ -336,17 +336,6 @@ export default function PatientPortalApp({ initialTab = 'dashboard' }: { initial
             </p>
           </div>
 
-          {/* QR Origin Badge */}
-          <div className="mb-4 flex items-center justify-center gap-2">
-            <Link
-              href="/portal/qr"
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-white dark:bg-[#122433] border border-[#CBD5E1] dark:border-white/10 text-[#0F8B8D] dark:text-[#28B5B7] shadow-xs hover:border-[#0F8B8D] transition-colors"
-            >
-              <ClinivaIcon name="qr_code_2" size={14} />
-              View Hospital QR Poster
-            </Link>
-          </div>
-
           {/* Auth Card */}
           <div className="bg-white dark:bg-[#122433] rounded-3xl border border-[#E2E8EC] dark:border-white/10 shadow-xl p-6 sm:p-8 transition-all">
             {!otpSent ? (
@@ -598,15 +587,6 @@ export default function PatientPortalApp({ initialTab = 'dashboard' }: { initial
               ML
             </button>
           </div>
-
-          {/* Hospital QR Page Link */}
-          <Link
-            href="/portal/qr"
-            className="p-1.5 rounded-xl text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F8B8D] hover:bg-[#F1F5F9] dark:hover:bg-white/5 transition-colors"
-            title="Hospital QR Poster"
-          >
-            <ClinivaIcon name="qr_code_2" size={20} />
-          </Link>
 
           {/* Patient MRN Chip & Sign Out */}
           <div className="flex items-center gap-2 border-l border-[#E2E8EC] dark:border-white/10 pl-2 sm:pl-3">

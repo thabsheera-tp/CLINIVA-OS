@@ -7,6 +7,7 @@ import LiveIndicator from '@/components/ui/LiveIndicator'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import RegisterPatientModal from '@/components/modals/RegisterPatientModal'
+import PatientPortalQrCard from '@/components/dashboard/PatientPortalQrCard'
 
 type Props = {
   userName: string
@@ -170,37 +171,43 @@ export default function FrontDeskDashboardView({ userName }: Props) {
           </div>
         </div>
 
-        {/* Doctor OPD Availability */}
-        <div className="bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] p-4 shadow-card flex flex-col">
-          <div className="flex items-center justify-between pb-3 border-b border-[#E2E8EC] dark:border-white/[0.08] mb-3">
-            <h3 className="text-xs font-bold text-[#123047] dark:text-white uppercase tracking-wider">
-              Doctor OPD Status
-            </h3>
-            <span className="text-xs font-semibold text-[#0F8B8D] dark:text-[#28B5B7]">Live</span>
+        {/* Right Column: Doctor OPD Availability + Patient Portal QR */}
+        <div className="space-y-4 flex flex-col">
+          {/* Doctor OPD Availability */}
+          <div className="bg-white dark:bg-[#122433] rounded-xl border border-[#E2E8EC] dark:border-white/[0.08] p-4 shadow-card flex flex-col">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E2E8EC] dark:border-white/[0.08] mb-3">
+              <h3 className="text-xs font-bold text-[#123047] dark:text-white uppercase tracking-wider">
+                Doctor OPD Status
+              </h3>
+              <span className="text-xs font-semibold text-[#0F8B8D] dark:text-[#28B5B7]">Live</span>
+            </div>
+
+            <div className="divide-y divide-[#E2E8EC]/80 dark:divide-white/[0.05]">
+              {[
+                { name: 'Dr. Sarah Jenkins', dept: 'Cardiology (Suite 304)', queue: waitingCount, status: 'available' },
+                { name: 'Dr. Raj Patel', dept: 'Neurology (Suite 201)', queue: 3, status: 'busy' },
+                { name: 'Dr. Lisa Wong', dept: 'Orthopedics (Suite 108)', queue: 0, status: 'away' },
+                { name: 'Dr. Omar Hassan', dept: 'Pediatrics (Suite 112)', queue: 4, status: 'available' },
+              ].map((doc) => (
+                <div key={doc.name} className="py-2.5 flex items-center justify-between text-xs">
+                  <div>
+                    <p className="font-semibold text-sm text-[#123047] dark:text-white">{doc.name}</p>
+                    <p className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">{doc.dept}</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-0.5">
+                    <StatusBadge
+                      variant={doc.status === 'available' ? 'routine' : doc.status === 'busy' ? 'warning' : 'neutral'}
+                      label={doc.status}
+                    />
+                    <span className="text-xs font-medium text-[#4A5D6B] dark:text-[#9FB1C0]">{doc.queue} waiting</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="divide-y divide-[#E2E8EC]/80 dark:divide-white/[0.05]">
-            {[
-              { name: 'Dr. Sarah Jenkins', dept: 'Cardiology (Suite 304)', queue: waitingCount, status: 'available' },
-              { name: 'Dr. Raj Patel', dept: 'Neurology (Suite 201)', queue: 3, status: 'busy' },
-              { name: 'Dr. Lisa Wong', dept: 'Orthopedics (Suite 108)', queue: 0, status: 'away' },
-              { name: 'Dr. Omar Hassan', dept: 'Pediatrics (Suite 112)', queue: 4, status: 'available' },
-            ].map((doc) => (
-              <div key={doc.name} className="py-2.5 flex items-center justify-between text-xs">
-                <div>
-                  <p className="font-semibold text-sm text-[#123047] dark:text-white">{doc.name}</p>
-                  <p className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">{doc.dept}</p>
-                </div>
-                <div className="flex flex-col items-end gap-0.5">
-                  <StatusBadge
-                    variant={doc.status === 'available' ? 'routine' : doc.status === 'busy' ? 'warning' : 'neutral'}
-                    label={doc.status}
-                  />
-                  <span className="text-xs font-medium text-[#4A5D6B] dark:text-[#9FB1C0]">{doc.queue} waiting</span>
-                </div>
-              </div>
-            ))}
-          </div>
+          {/* ── Patient Portal QR Management ── */}
+          <PatientPortalQrCard variant="compact" />
         </div>
       </div>
     </div>

@@ -27,7 +27,12 @@ export default function HospitalQrPortalPage() {
       },
       errorCorrectionLevel: 'H',
     })
-      .then((url) => setQrDataUrl(url))
+      .then((url) => {
+        setQrDataUrl(url)
+        if (typeof window !== 'undefined' && window.location.search.includes('print=1')) {
+          setTimeout(() => window.print(), 350)
+        }
+      })
       .catch((err) => console.error('Failed to generate QR code', err))
   }, [])
 
