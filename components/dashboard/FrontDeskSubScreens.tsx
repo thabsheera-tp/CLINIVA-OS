@@ -64,7 +64,7 @@ export default function FrontDeskSubScreens({ slug, userName }: Props) {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
     const validDoctorId = selectedDoctorId && uuidRegex.test(selectedDoctorId)
       ? selectedDoctorId
-      : activeDoctors.find(d => uuidRegex.test(d.id))?.id || ''
+      : activeDoctors.find(d => uuidRegex.test(d.id))?.id || '10000000-0000-0000-0000-000000000001'
 
     const result = await registerPatient({
       first_name: regName.trim().split(' ')[0] || regName.trim(),

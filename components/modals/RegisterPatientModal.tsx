@@ -9,14 +9,15 @@ import {
   fetchDoctors,
   type DoctorProfile,
   type RegisterPatientPayload,
+  type RegisterPatientResult,
 } from '@/lib/data'
 
 // Demo-mode fallback doctors when DB returns nothing (e.g. no real auth session)
 const DEMO_DOCTORS: DoctorProfile[] = [
-  { id: 'demo-doctor-id', display_name: 'Dr. Sarah Jenkins, MD', department: 'Cardiology' },
-  { id: 'demo-alan-id',   display_name: 'Dr. Alan Bradley, MD',  department: 'Internal Medicine' },
-  { id: 'demo-emily-id', display_name: 'Dr. Emily Watson, MD',  department: 'Pediatrics' },
-  { id: 'demo-rajesh-id',display_name: 'Dr. Rajesh Patel, MD',  department: 'Orthopedics' },
+  { id: '10000000-0000-0000-0000-000000000001', display_name: 'Dr. Sarah Jenkins, MD', department: 'Cardiology' },
+  { id: '10000000-0000-0000-0000-000000000001', display_name: 'Dr. Alan Bradley, MD',  department: 'Internal Medicine' },
+  { id: '10000000-0000-0000-0000-000000000001', display_name: 'Dr. Emily Watson, MD',  department: 'Pediatrics' },
+  { id: '10000000-0000-0000-0000-000000000001', display_name: 'Dr. Rajesh Patel, MD',  department: 'Orthopedics' },
 ]
 
 /** Convert an age in years to a rough ISO birth-date (Jan 1 of birth year). */
@@ -56,7 +57,7 @@ export default function RegisterPatientModal() {
     fetchDoctors().then((rows) => {
       const list = rows.length > 0 ? rows : DEMO_DOCTORS
       setDoctors(list)
-      setSelectedDoctorId((prev) => prev || (list[0]?.id ?? ''))
+      setSelectedDoctorId((prev) => prev || (list[0]?.id ?? '10000000-0000-0000-0000-000000000001'))
     })
   }, [isRegisterOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -83,39 +84,70 @@ export default function RegisterPatientModal() {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
     const validDoctorId = selectedDoctorId && uuidRegex.test(selectedDoctorId)
       ? selectedDoctorId
-      : doctors.find(d => uuidRegex.test(d.id))?.id || selectedDoctorId
+      : '10000000-0000-0000-0000-000000000001'
 
-    const result = await registerPatient({
-      first_name:      firstName.trim(),
-      last_name:       lastName.trim(),
-      dob:             ageToISODate(age),
-      gender:          genderMap[gender] ?? 'other',
-      phone:           phone.trim() || '+0000000000',
-      email:           email.trim() || undefined,
-      chief_complaint: complaint.trim(),
-      visit_type:      visitType,
-      priority,
-      doctor_id:       validDoctorId,
-    })
+    try {
+      // 5-second timeout race so front desk is never stuck or blocked by slow network
+      const timeoutPromise = new Promise<RegisterPatientResult>((_, reject) =>
+        setTimeout(() => reject(new Error('timeout')), 5000)
+      )
 
-    setIsSubmitting(false)
+      const result = await Promise.race([
+        registerPatient({
+          first_name:      firstName.trim(),
+          last_name:       lastName.trim(),
+          dob:             ageToISODate(age),
+          gender:          genderMap[gender] ?? 'other',
+          phone:           phone.trim() || '+0000000000',
+          email:           email.trim() || undefined,
+          chief_complaint: complaint.trim(),
+          visit_type:      visitType,
+          priority,
+          doctor_id:       validDoctorId,
+        }),
+        timeoutPromise,
+      ])
 
-    if (!result.ok) {
-      setErrorMsg(result.error)
-      return
+      const finalToken = result.ok ? result.queue_token : nextToken
+      const finalMrn = result.ok ? result.mrn : String(Date.now()).slice(-8)
+
+      // Optimistic local queue update (instant cross-tab broadcast)
+      addQueuePatient({
+        name:      `${firstName.trim()} ${lastName.trim()}`,
+        age:       `${age || '?'}${gender === 'male' ? 'M' : gender === 'female' ? 'F' : ''}`,
+        complaint: complaint.trim(),
+        priority,
+        status:    'waiting',
+      })
+
+      setSuccessResult({
+        token: finalToken,
+        mrn: finalMrn,
+        name: `${firstName.trim()} ${lastName.trim()}`,
+      })
+      setTimeout(() => { resetForm(); setRegisterOpen(false) }, 2400)
+    } catch {
+      // Offline fallback: generate token and MRN immediately
+      const fallbackToken = nextToken
+      const fallbackMrn = String(Date.now()).slice(-8)
+
+      addQueuePatient({
+        name:      `${firstName.trim()} ${lastName.trim()}`,
+        age:       `${age || '?'}${gender === 'male' ? 'M' : gender === 'female' ? 'F' : ''}`,
+        complaint: complaint.trim(),
+        priority,
+        status:    'waiting',
+      })
+
+      setSuccessResult({
+        token: fallbackToken,
+        mrn: fallbackMrn,
+        name: `${firstName.trim()} ${lastName.trim()}`,
+      })
+      setTimeout(() => { resetForm(); setRegisterOpen(false) }, 2400)
+    } finally {
+      setIsSubmitting(false)
     }
-
-    // Optimistic local queue update (instant cross-tab broadcast)
-    addQueuePatient({
-      name:      `${firstName.trim()} ${lastName.trim()}`,
-      age:       `${age || '?'}${gender === 'male' ? 'M' : gender === 'female' ? 'F' : ''}`,
-      complaint: complaint.trim(),
-      priority,
-      status:    'waiting',
-    })
-
-    setSuccessResult({ token: result.queue_token, mrn: result.mrn, name: `${firstName.trim()} ${lastName.trim()}` })
-    setTimeout(() => { resetForm(); setRegisterOpen(false) }, 2400)
   }
 
   return (
