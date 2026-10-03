@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
-import { getAdminClient } from '@/lib/portal/adminSupabase'
+import { getAdminClient, isAdminConfigured } from '@/lib/portal/adminSupabase'
 import { normalizePhone } from '@/lib/portal/session'
 import { setOtp } from '@/lib/portal/otpStore'
+import { findDemoPatient } from '@/lib/portal/demoPatients'
 
 export async function POST(request: Request) {
   try {
@@ -23,28 +24,46 @@ export async function POST(request: Request) {
       )
     }
 
-    const admin = getAdminClient()
-    const { data: patients, error: dbError } = await admin
-      .from('patients')
-      .select('id, mrn, first_name, last_name, phone')
+    let matchedPatient: { id: string; mrn: string; first_name: string; last_name: string; phone: string } | null = null
 
-    if (dbError) {
-      console.error('[send-otp] DB error:', dbError)
-      return NextResponse.json(
-        { success: false, error: 'Database service unavailable. Please try again later.' },
-        { status: 500 }
-      )
+    if (isAdminConfigured()) {
+      try {
+        const admin = getAdminClient()
+        const { data: patients, error: dbError } = await admin
+          .from('patients')
+          .select('id, mrn, first_name, last_name, phone')
+
+        if (!dbError && patients) {
+          const found = patients.find((p) => {
+            const normDB = normalizePhone(p.phone || '')
+            return (
+              normDB === normalizedEntered ||
+              normDB.endsWith(normalizedEntered) ||
+              normalizedEntered.endsWith(normDB)
+            )
+          })
+          if (found) {
+            matchedPatient = found
+          }
+        }
+      } catch (adminErr) {
+        console.warn('[send-otp] Admin Supabase unavailable, checking demo patients:', adminErr)
+      }
     }
 
-    // Match patient by normalized phone (comparing last 10 digits or exact normalized)
-    const matchedPatient = patients?.find((p) => {
-      const normDB = normalizePhone(p.phone || '')
-      return (
-        normDB === normalizedEntered ||
-        normDB.endsWith(normalizedEntered) ||
-        normalizedEntered.endsWith(normDB)
-      )
-    })
+    // Fallback to demo patients if not matched from Supabase
+    if (!matchedPatient) {
+      const demo = findDemoPatient(rawPhone)
+      if (demo) {
+        matchedPatient = {
+          id: demo.id,
+          mrn: demo.mrn,
+          first_name: demo.first_name,
+          last_name: demo.last_name,
+          phone: demo.phone,
+        }
+      }
+    }
 
     if (!matchedPatient) {
       return NextResponse.json(

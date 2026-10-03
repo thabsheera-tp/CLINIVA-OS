@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { verifySession, SESSION_COOKIE_NAME } from '@/lib/portal/session'
-import { getAdminClient } from '@/lib/portal/adminSupabase'
+import { getAdminClient, isAdminConfigured } from '@/lib/portal/adminSupabase'
+import { getDemoPatientById } from '@/lib/portal/demoPatients'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,8 +34,77 @@ export async function GET() {
       )
     }
 
-    const admin = getAdminClient()
     const patientId = session.patientId
+
+    // Check if we should use demo patient fallback
+    const demoFallback = getDemoPatientById(patientId) || getDemoPatientById(session.mrn)
+
+    if (!isAdminConfigured()) {
+      if (demoFallback) {
+        return NextResponse.json({
+          success: true,
+          patient: {
+            id: demoFallback.id,
+            mrn: demoFallback.mrn,
+            firstName: demoFallback.first_name,
+            lastName: demoFallback.last_name,
+            dob: demoFallback.dob,
+            gender: demoFallback.gender,
+            bloodGroup: demoFallback.blood_group,
+            phone: demoFallback.phone,
+            email: demoFallback.email,
+            address: demoFallback.address,
+            emergencyContactName: demoFallback.emergency_contact_name,
+            emergencyContactPhone: demoFallback.emergency_contact_phone,
+            insuranceProvider: demoFallback.insurance_provider,
+            insurancePolicy: demoFallback.insurance_policy,
+            allergies: demoFallback.allergies,
+            dietaryFlag: demoFallback.dietary_flag,
+          },
+          appointments: demoFallback.appointments,
+          consultations: demoFallback.consultations,
+          prescriptions: demoFallback.prescriptions,
+          labOrders: demoFallback.labOrders,
+          invoices: demoFallback.invoices,
+          vitals: demoFallback.vitals,
+        })
+      }
+    }
+
+    let admin: any = null
+    try {
+      admin = getAdminClient()
+    } catch {
+      if (demoFallback) {
+        return NextResponse.json({
+          success: true,
+          patient: {
+            id: demoFallback.id,
+            mrn: demoFallback.mrn,
+            firstName: demoFallback.first_name,
+            lastName: demoFallback.last_name,
+            dob: demoFallback.dob,
+            gender: demoFallback.gender,
+            bloodGroup: demoFallback.blood_group,
+            phone: demoFallback.phone,
+            email: demoFallback.email,
+            address: demoFallback.address,
+            emergencyContactName: demoFallback.emergency_contact_name,
+            emergencyContactPhone: demoFallback.emergency_contact_phone,
+            insuranceProvider: demoFallback.insurance_provider,
+            insurancePolicy: demoFallback.insurance_policy,
+            allergies: demoFallback.allergies,
+            dietaryFlag: demoFallback.dietary_flag,
+          },
+          appointments: demoFallback.appointments,
+          consultations: demoFallback.consultations,
+          prescriptions: demoFallback.prescriptions,
+          labOrders: demoFallback.labOrders,
+          invoices: demoFallback.invoices,
+          vitals: demoFallback.vitals,
+        })
+      }
+    }
 
     // 1. Fetch Patient Record
     const { data: patient, error: pErr } = await admin
@@ -44,6 +114,35 @@ export async function GET() {
       .single()
 
     if (pErr || !patient) {
+      if (demoFallback) {
+        return NextResponse.json({
+          success: true,
+          patient: {
+            id: demoFallback.id,
+            mrn: demoFallback.mrn,
+            firstName: demoFallback.first_name,
+            lastName: demoFallback.last_name,
+            dob: demoFallback.dob,
+            gender: demoFallback.gender,
+            bloodGroup: demoFallback.blood_group,
+            phone: demoFallback.phone,
+            email: demoFallback.email,
+            address: demoFallback.address,
+            emergencyContactName: demoFallback.emergency_contact_name,
+            emergencyContactPhone: demoFallback.emergency_contact_phone,
+            insuranceProvider: demoFallback.insurance_provider,
+            insurancePolicy: demoFallback.insurance_policy,
+            allergies: demoFallback.allergies,
+            dietaryFlag: demoFallback.dietary_flag,
+          },
+          appointments: demoFallback.appointments,
+          consultations: demoFallback.consultations,
+          prescriptions: demoFallback.prescriptions,
+          labOrders: demoFallback.labOrders,
+          invoices: demoFallback.invoices,
+          vitals: demoFallback.vitals,
+        })
+      }
       return NextResponse.json({ error: 'Patient not found.' }, { status: 404 })
     }
 
@@ -51,7 +150,7 @@ export async function GET() {
     const { data: profiles } = await admin
       .from('profiles')
       .select('id, display_name, department, role')
-    const doctorMap = new Map((profiles || []).map((p) => [p.id, p]))
+    const doctorMap = new Map(((profiles as any[]) || []).map((p: any) => [p.id, p]))
 
     // 2. Fetch Appointments
     const { data: rawAppointments } = await admin
@@ -60,7 +159,7 @@ export async function GET() {
       .eq('patient_id', patientId)
       .order('scheduled_at', { ascending: false })
 
-    const appointments = (rawAppointments || []).map((a) => ({
+    const appointments = ((rawAppointments as any[]) || []).map((a: any) => ({
       ...a,
       doctor: doctorMap.get(a.doctor_id) || null,
     }))
@@ -72,7 +171,7 @@ export async function GET() {
       .eq('patient_id', patientId)
       .order('created_at', { ascending: false })
 
-    const consultations = (rawConsultations || []).map((c) => ({
+    const consultations = ((rawConsultations as any[]) || []).map((c: any) => ({
       ...c,
       doctor: doctorMap.get(c.doctor_id) || null,
     }))
@@ -86,9 +185,9 @@ export async function GET() {
 
     // Also fetch medications dictionary to resolve generic / brand names
     const { data: medications } = await admin.from('medications').select('*')
-    const medMap = new Map((medications || []).map((m) => [m.id, m]))
+    const medMap = new Map(((medications as any[]) || []).map((m: any) => [m.id, m]))
 
-    const prescriptions = (rawPrescriptions || []).map((rx) => ({
+    const prescriptions = ((rawPrescriptions as any[]) || []).map((rx: any) => ({
       ...rx,
       prescribed_by_doctor: doctorMap.get(rx.prescribed_by) || null,
       dispensed_by_staff: rx.dispensed_by ? doctorMap.get(rx.dispensed_by) : null,
@@ -106,9 +205,9 @@ export async function GET() {
       .order('ordered_at', { ascending: false })
 
     const { data: labTests } = await admin.from('lab_tests').select('*')
-    const testMap = new Map((labTests || []).map((t) => [t.id, t]))
+    const testMap = new Map(((labTests as any[]) || []).map((t: any) => [t.id, t]))
 
-    const labOrders = (rawLabOrders || []).map((order) => ({
+    const labOrders = ((rawLabOrders as any[]) || []).map((order: any) => ({
       ...order,
       ordered_by_doctor: doctorMap.get(order.ordered_by) || null,
       results: (order.lab_results || []).map((res: any) => ({
