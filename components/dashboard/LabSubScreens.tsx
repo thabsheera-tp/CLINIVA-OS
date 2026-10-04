@@ -118,46 +118,51 @@ export default function LabSubScreens({ slug }: Props) {
               ? activeOrders.map((o) => (
                   <div
                     key={o.id}
-                    className={`p-4 rounded-xl border shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+                    className={`p-3.5 sm:p-4 rounded-xl border shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 ${
                       o.priority === 'stat'
-                        ? 'bg-[#FDF2F2] border-[#F8D7D7]'
-                        : 'bg-white border-border-subtle'
+                        ? 'bg-[#FDF2F2] border-[#F8D7D7] dark:bg-red-950/30 dark:border-red-900/40'
+                        : 'bg-white dark:bg-[#122433] border-slate-200 dark:border-white/10'
                     }`}
                   >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-primary-navy">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-mono font-bold text-primary-navy dark:text-white text-xs">
                           #{o.id.slice(0, 8).toUpperCase()}
                         </span>
-                        <span className="font-bold text-primary-navy text-sm">
+                        <span className="font-bold text-primary-navy dark:text-white text-sm">
                           {o.patient_name || 'Patient'}
                         </span>
-                        <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">
+                        <span className="text-xs text-on-surface-variant font-medium">
                           #{o.mrn || '00482910'} &bull; {o.sample_type || 'Blood'}
                         </span>
                       </div>
-                      <div className="text-sm font-semibold text-[#123047] dark:text-white mt-1">
+                      <div className="text-sm font-semibold text-[#123047] dark:text-white mt-1 break-words">
                         {o.test_name}
                       </div>
-                      <div className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] mt-0.5">
+                      <div className="text-xs text-on-surface-variant mt-0.5">
                         Ordered by: {o.doctor_name || 'Dr. Sarah Jenkins'}
                         {o.clinical_info && ` &bull; ${o.clinical_info}`}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`px-2.5 py-1 rounded-full text-label-sm font-semibold border ${
-                          o.priority === 'stat'
-                            ? 'bg-[#FDF2F2] text-[#C94A4A] border-[#F8D7D7]'
-                            : 'bg-slate-100 text-[#4A5D6B] border-border-subtle'
-                        }`}
-                      >
-                        {o.priority ? o.priority.toUpperCase() : 'ROUTINE'}
-                      </span>
+                    <div className="flex items-center justify-between sm:justify-end gap-2 flex-wrap pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-white/5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span
+                          className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${
+                            o.priority === 'stat'
+                              ? 'bg-[#FDF2F2] text-[#C94A4A] border-[#F8D7D7] dark:bg-red-950/50 dark:text-red-300 dark:border-red-800'
+                              : 'bg-slate-100 text-[#4A5D6B] border-slate-200 dark:bg-white/10 dark:text-slate-200 dark:border-white/10'
+                          }`}
+                        >
+                          {o.priority ? o.priority.toUpperCase() : 'ROUTINE'}
+                        </span>
+                        <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 uppercase">
+                          {o.status || 'ordered'}
+                        </span>
+                      </div>
                       <button
                         onClick={() => openLabResultModal(o.id)}
-                        className="btn-primary text-xs font-semibold py-1.5 px-3 touch-tap"
+                        className="btn-primary text-xs font-bold py-2 px-3.5 min-h-[40px] shadow-2xs flex-1 sm:flex-none justify-center"
                       >
                         Enter Results
                       </button>
@@ -167,37 +172,42 @@ export default function LabSubScreens({ slug }: Props) {
               : SAMPLE_LAB_ORDERS.map((o) => (
                   <div
                     key={o.orderId}
-                    className={`p-4 rounded-xl border shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+                    className={`p-3.5 sm:p-4 rounded-xl border shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 ${
                       o.priority === 'STAT'
-                        ? 'bg-[#FDF2F2] border-[#F8D7D7]'
-                        : 'bg-white border-border-subtle'
+                        ? 'bg-[#FDF2F2] border-[#F8D7D7] dark:bg-red-950/30 dark:border-red-900/40'
+                        : 'bg-white dark:bg-[#122433] border-slate-200 dark:border-white/10'
                     }`}
                   >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-primary-navy text-xs">{o.orderId}</span>
-                        <span className="font-bold text-primary-navy text-sm">{o.patient}</span>
-                        <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium">#{o.mrn} &bull; {o.time}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-mono font-bold text-primary-navy dark:text-white text-xs">{o.orderId}</span>
+                        <span className="font-bold text-primary-navy dark:text-white text-sm">{o.patient}</span>
+                        <span className="text-xs text-on-surface-variant font-medium">#{o.mrn} &bull; {o.time}</span>
                       </div>
-                      <div className="text-sm font-semibold text-[#123047] dark:text-white mt-1">{o.tests}</div>
-                      <div className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] mt-0.5">Ordered by: {o.doc}</div>
+                      <div className="text-sm font-semibold text-[#123047] dark:text-white mt-1 break-words">{o.tests}</div>
+                      <div className="text-xs text-on-surface-variant mt-0.5">Ordered by: {o.doc}</div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`px-2.5 py-1 rounded-full text-label-sm font-semibold border ${
-                          o.priority === 'STAT'
-                            ? 'bg-[#FDF2F2] text-[#C94A4A] border-[#F8D7D7]'
-                            : o.priority === 'Urgent'
-                            ? 'bg-[#FFF8E6] text-[#C58A24] border-[#FCE6BD]'
-                            : 'bg-slate-100 text-secondary-text border-border-subtle'
-                        }`}
-                      >
-                        {o.priority}
-                      </span>
+                    <div className="flex items-center justify-between sm:justify-end gap-2 flex-wrap pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-white/5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span
+                          className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${
+                            o.priority === 'STAT'
+                              ? 'bg-[#FDF2F2] text-[#C94A4A] border-[#F8D7D7] dark:bg-red-950/50 dark:text-red-300 dark:border-red-800'
+                              : o.priority === 'Urgent'
+                              ? 'bg-[#FFF8E6] text-[#C58A24] border-[#FCE6BD] dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800'
+                              : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-white/10 dark:text-slate-200 dark:border-white/10'
+                          }`}
+                        >
+                          {o.priority}
+                        </span>
+                        <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 uppercase">
+                          {o.status}
+                        </span>
+                      </div>
                       <button
                         onClick={() => openLabResultModal()}
-                        className="btn-primary text-label-sm py-1.5 px-3 touch-tap"
+                        className="btn-primary text-xs font-bold py-2 px-3.5 min-h-[40px] shadow-2xs flex-1 sm:flex-none justify-center"
                       >
                         Enter Results
                       </button>

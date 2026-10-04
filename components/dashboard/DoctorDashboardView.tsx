@@ -7,8 +7,8 @@ import LiveIndicator from '@/components/ui/LiveIndicator'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import StartConsultationModal from '@/components/modals/StartConsultationModal'
-import RegisterPatientModal from '@/components/modals/RegisterPatientModal'
 import RecordVitalsModal from '@/components/modals/RecordVitalsModal'
+import { useActivePrescriptions, usePendingLabOrders, useCriticalLabResults } from '@/hooks/useClinicData'
 import {
   Activity,
   FileText,
@@ -33,16 +33,32 @@ export default function DoctorDashboardView({ userName }: Props) {
   const {
     queue,
     activePatient,
+    setActivePatient,
     vitals,
     callNextPatient,
     setConsultOpen,
-    setRegisterOpen,
     setVitalsOpen,
+    pharmacyRefreshKey,
+    labRefreshKey,
   } = useClinicRealtime()
+
+  const rxQuery = useActivePrescriptions(activePatient?.id)
+  const pendingLabsQuery = usePendingLabOrders()
+  const criticalLabsQuery = useCriticalLabResults()
+
+  const rxRefetch = rxQuery.refetch
+  const labsRefetch = pendingLabsQuery.refetch
+  const critRefetch = criticalLabsQuery.refetch
+
+  React.useEffect(() => {
+    rxRefetch()
+    labsRefetch()
+    critRefetch()
+  }, [pharmacyRefreshKey, labRefreshKey, rxRefetch, labsRefetch, critRefetch])
 
   const [copiedMRN, setCopiedMRN] = useState(false)
   const [scheduleFilter, setScheduleFilter] = useState<'All' | 'Completed' | 'Upcoming' | 'Telehealth'>('All')
-  const [expandedSection, setExpandedSection] = useState<'none' | 'history' | 'medications'>('none')
+  const [expandedSection, setExpandedSection] = useState<'none' | 'history' | 'medications' | 'labs'>('none')
 
   const handleCopyMRN = (mrn: string) => {
     navigator.clipboard?.writeText(mrn)
@@ -83,11 +99,57 @@ export default function DoctorDashboardView({ userName }: Props) {
     { name: 'Metoprolol Tartrate', dose: '25mg PO BID', freq: 'PRN Palpitations', reason: 'Beta-1 Selective Blocker' },
   ]
 
+  const displayedMeds = (rxQuery.data && rxQuery.data.length > 0)
+    ? rxQuery.data.map((rx) => ({
+        name: rx.drug_name,
+        dose: rx.dose || 'Standard Dose',
+        freq: rx.frequency || 'Daily',
+        reason: rx.notes || (rx.status ? `Status: ${rx.status.toUpperCase()}` : 'Active Order'),
+        isLive: true,
+      }))
+    : ACTIVE_MEDICATIONS.map((m) => ({ ...m, isLive: false }))
+
+  const patientLabs = (pendingLabsQuery.data ?? []).filter(
+    (l) =>
+      l.patient_id === activePatient?.id ||
+      (l.patient_name && activePatient?.name && l.patient_name.toLowerCase().includes(activePatient.name.toLowerCase()))
+  )
+
+  const displayedLabs = patientLabs.length > 0
+    ? patientLabs.map((l) => ({
+        test: l.test_name,
+        value: l.result_value ? `${l.result_value} ${l.result_unit ?? ''}`.trim() : 'Sample In Analysis',
+        ref: l.reference_range ?? 'Standard Ref',
+        status: l.status,
+        isCritical: Boolean(l.is_critical || l.priority === 'stat'),
+        date: l.resulted_at
+          ? new Date(l.resulted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          : 'Pending Run',
+      }))
+    : [
+        { test: 'Serum Troponin I', value: '0.08 ng/mL', ref: '<0.04', status: 'completed', isCritical: true, date: '09:15' },
+        { test: '12-Lead ECG Analysis', value: 'Sinus Rhythm, T-wave inv.', ref: 'Normal', status: 'completed', isCritical: false, date: '09:10' },
+        { test: 'Lipid Panel & Chem-7', value: 'Processing Batch', ref: 'Ref Std', status: 'in-progress', isCritical: false, date: '08:45' },
+      ]
+
+  const criticalAlerts = (criticalLabsQuery.data && criticalLabsQuery.data.length > 0)
+    ? criticalLabsQuery.data.map((c) => ({
+        patient: c.patient_name ?? 'Active Patient',
+        test: c.test_name,
+        value: `${c.result_value ?? 'Critical'} ${c.result_unit ?? ''}`.trim(),
+        ref: c.reference_range ?? 'Ref Std',
+        level: 'critical' as const,
+      }))
+    : [
+        { patient: 'George Tanner', test: 'Serum Potassium', value: '6.2 mEq/L', ref: '3.5–5.0', level: 'critical' as const },
+        { patient: activePatient?.name ?? 'Marcus Delacroix', test: 'Troponin I', value: '0.08 ng/mL', ref: '<0.04', level: 'critical' as const },
+        { patient: 'Ana García', test: 'HbA1c', value: '8.4%', ref: '<7.0%', level: 'warning' as const },
+      ]
+
   return (
     <div className="flex flex-col w-full space-y-5 font-sans">
       {/* Clinical Modals */}
       <StartConsultationModal />
-      <RegisterPatientModal />
       <RecordVitalsModal />
 
       {/* ── 1. Compact Header ── */}
@@ -107,13 +169,6 @@ export default function DoctorDashboardView({ userName }: Props) {
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setRegisterOpen(true)}
-            className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/[0.1] bg-white dark:bg-white/[0.04] text-slate-700 dark:text-slate-200 hover:bg-slate-50 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs"
-          >
-            <ClinivaIcon name="person_add" size={15} strokeWidth={1.5} className="text-slate-500" />
-            <span>Intake Patient</span>
-          </button>
           <button
             onClick={() => setConsultOpen(true)}
             className="px-4 py-1.5 rounded-lg bg-[#0F8B8D] hover:bg-[#0D7A7C] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
@@ -331,7 +386,7 @@ export default function DoctorDashboardView({ userName }: Props) {
                 Quick Clinical Review:
               </span>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
                   type="button"
                   onClick={() => setExpandedSection(expandedSection === 'history' ? 'none' : 'history')}
@@ -356,8 +411,22 @@ export default function DoctorDashboardView({ userName }: Props) {
                   }`}
                 >
                   <Pill className="w-3.5 h-3.5" />
-                  <span>Active Medications</span>
+                  <span>Active Medications ({displayedMeds.length})</span>
                   {expandedSection === 'medications' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setExpandedSection(expandedSection === 'labs' ? 'none' : 'labs')}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+                    expandedSection === 'labs'
+                      ? 'bg-teal-700 text-white border-teal-700 shadow-xs'
+                      : 'bg-slate-50 dark:bg-white/[0.04] text-slate-700 dark:text-slate-200 border-slate-200 dark:border-white/10 hover:border-teal-300 hover:text-teal-700'
+                  }`}
+                >
+                  <FlaskConical className="w-3.5 h-3.5" />
+                  <span>Labs & Diagnostics ({displayedLabs.length})</span>
+                  {expandedSection === 'labs' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                 </button>
               </div>
             </div>
@@ -394,7 +463,7 @@ export default function DoctorDashboardView({ userName }: Props) {
                 <div className="flex items-center justify-between pb-1 border-b border-teal-200/50 dark:border-teal-900/40">
                   <span className="text-xs font-bold text-teal-900 dark:text-teal-200 flex items-center gap-1.5">
                     <Pill className="w-3.5 h-3.5 text-teal-700" />
-                    Current Active Regimens ({ACTIVE_MEDICATIONS.length})
+                    Current Active Regimens ({displayedMeds.length})
                   </span>
                   <button
                     type="button"
@@ -405,7 +474,7 @@ export default function DoctorDashboardView({ userName }: Props) {
                   </button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                  {ACTIVE_MEDICATIONS.map((med, idx) => (
+                  {displayedMeds.map((med, idx) => (
                     <div key={idx} className="p-2 rounded-lg bg-white dark:bg-[#122433] border border-teal-100 dark:border-white/5 flex flex-col justify-between">
                       <div>
                         <div className="flex items-center justify-between">
@@ -414,7 +483,58 @@ export default function DoctorDashboardView({ userName }: Props) {
                         </div>
                         <p className="text-slate-600 dark:text-slate-300 text-[11px] mt-0.5">{med.freq}</p>
                       </div>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 italic">{med.reason}</p>
+                      <div className="flex items-center justify-between mt-1 pt-1 border-t border-slate-100 dark:border-white/5">
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 italic">{med.reason}</p>
+                        {med.isLive && (
+                          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-200">
+                            Live
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {expandedSection === 'labs' && (
+              <div className="p-3 bg-teal-50/40 dark:bg-teal-950/20 border border-teal-200/70 dark:border-teal-900/50 rounded-xl space-y-2 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between pb-1 border-b border-teal-200/50 dark:border-teal-900/40">
+                  <span className="text-xs font-bold text-teal-900 dark:text-teal-200 flex items-center gap-1.5">
+                    <FlaskConical className="w-3.5 h-3.5 text-teal-700" />
+                    Patient Diagnostic Orders & Lab Results ({displayedLabs.length})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setExpandedSection('none')}
+                    className="text-[11px] text-teal-700 dark:text-teal-300 hover:underline font-semibold"
+                  >
+                    Close
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  {displayedLabs.map((lab, idx) => (
+                    <div key={idx} className="p-2.5 rounded-lg bg-white dark:bg-[#122433] border border-teal-100 dark:border-white/5 flex flex-col justify-between">
+                      <div className="flex items-start justify-between gap-1">
+                        <p className="font-bold text-slate-900 dark:text-white leading-snug">{lab.test}</p>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tabular-nums ${
+                          lab.isCritical
+                            ? 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300'
+                            : lab.status === 'completed'
+                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
+                            : 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
+                        }`}>
+                          {lab.status}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between mt-2 pt-1 border-t border-slate-100 dark:border-white/5 text-[11px]">
+                        <span className={`font-mono font-bold ${lab.isCritical ? 'text-red-600 dark:text-red-400' : 'text-slate-900 dark:text-white'}`}>
+                          {lab.value}
+                        </span>
+                        <span className="text-slate-500 dark:text-slate-400 text-[10px]">
+                          Ref: {lab.ref}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -493,7 +613,8 @@ export default function DoctorDashboardView({ userName }: Props) {
                 waitingPatients.map((p) => (
                   <div
                     key={p.id}
-                    className="py-2.5 flex items-center justify-between gap-2 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors rounded-lg px-1.5"
+                    onClick={() => setActivePatient(p)}
+                    className="py-2.5 flex items-center justify-between gap-2 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors rounded-lg px-1.5 cursor-pointer"
                   >
                     <div className="flex items-center gap-2.5 min-w-0 flex-1">
                       <span className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white font-mono font-bold text-xs flex items-center justify-center flex-shrink-0 tabular-nums border border-slate-200 dark:border-white/10 shadow-2xs">
@@ -526,7 +647,11 @@ export default function DoctorDashboardView({ userName }: Props) {
                       </span>
                       <button
                         type="button"
-                        onClick={() => callNextPatient()}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setActivePatient(p)
+                          callNextPatient(p.id)
+                        }}
                         className="px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 text-xs font-semibold hover:bg-teal-600 hover:text-white hover:border-teal-600 transition-colors shadow-2xs"
                         title={`Call token #${p.token} (${p.name})`}
                       >
@@ -542,7 +667,14 @@ export default function DoctorDashboardView({ userName }: Props) {
           <div className="pt-2.5 border-t border-slate-200 dark:border-white/[0.04] mt-2 flex items-center justify-between text-xs text-slate-600 dark:text-slate-300 font-medium">
             <span>Next: <strong className="text-slate-900 dark:text-white font-bold">{waitingPatients[0]?.name ?? 'None'}</strong></span>
             <button
-              onClick={() => callNextPatient()}
+              onClick={() => {
+                if (waitingPatients[0]) {
+                  setActivePatient(waitingPatients[0])
+                  callNextPatient(waitingPatients[0].id)
+                } else {
+                  callNextPatient()
+                }
+              }}
               className="text-teal-700 dark:text-teal-300 font-bold hover:underline"
             >
               Call Next &rarr;
@@ -666,7 +798,7 @@ export default function DoctorDashboardView({ userName }: Props) {
               Diagnostic Alerts
             </h3>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/60 dark:text-red-300 dark:border-red-900/60 tabular-nums">
-              3 Urgent
+              {criticalAlerts.length} Urgent
             </span>
           </div>
           <Link href="/doctor/lab-results" className="text-xs font-bold text-teal-700 dark:text-teal-300 hover:underline">
@@ -675,12 +807,8 @@ export default function DoctorDashboardView({ userName }: Props) {
         </div>
 
         <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-          {[
-            { patient: 'George Tanner', test: 'Serum Potassium', value: '6.2 mEq/L', ref: '3.5–5.0', level: 'critical' },
-            { patient: activePatient?.name ?? 'Marcus Delacroix', test: 'Troponin I', value: '0.08 ng/mL', ref: '<0.04', level: 'critical' },
-            { patient: 'Ana García', test: 'HbA1c', value: '8.4%', ref: '<7.0%', level: 'warning' },
-          ].map((item) => (
-            <div key={item.patient + item.test} className="py-2.5 flex items-center justify-between text-xs">
+          {criticalAlerts.map((item, idx) => (
+            <div key={`${item.patient}-${item.test}-${idx}`} className="py-2.5 flex items-center justify-between text-xs">
               <div>
                 <span className="font-bold text-sm text-slate-900 dark:text-white">{item.patient}</span>
                 <span className="text-slate-400 dark:text-slate-500 mx-1.5">•</span>

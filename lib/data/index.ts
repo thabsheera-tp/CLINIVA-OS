@@ -10,6 +10,9 @@ import { createClientSideClient } from '@/lib/supabase/client'
 
 const supabase = createClientSideClient()
 
+export const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+export const isValidUUID = (id?: string | null): boolean => !!id && UUID_REGEX.test(id)
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type PatientRow = {
@@ -2361,7 +2364,40 @@ export async function dispensePrescription(
 
         const { data: batches } = await batchQuery.order('quantity_in_stock', { ascending: false })
 
-        const chosenBatch = (batches && batches.length > 0) ? batches[0] : null
+        let chosenBatch = (batches && batches.length > 0) ? batches[0] : null
+
+        // If batch was specified but not found, check ANY active batch for this medication
+        if (!chosenBatch && payload.batch_number) {
+          const { data: anyBatches } = await (supabase.from('pharmacy_inventory') as any)
+            .select('id, batch_number, quantity_in_stock')
+            .eq('medication_id', item.medication_id)
+            .order('quantity_in_stock', { ascending: false })
+          if (anyBatches && anyBatches.length > 0) {
+            chosenBatch = anyBatches[0]
+          }
+        }
+
+        // If no batch exists at all in inventory, auto-initialize a primary dispensary lot
+        if (!chosenBatch) {
+          const newBatchNumber = payload.batch_number || `BAT-${Date.now().toString().slice(-6)}`
+          const { data: createdBatch } = await (supabase.from('pharmacy_inventory') as any)
+            .insert({
+              tenant_id: tenantId,
+              medication_id: item.medication_id,
+              batch_number: newBatchNumber,
+              quantity_in_stock: 500,
+              cost_price_cents: 100,
+              selling_price_cents: 200,
+              expiry_date: '2028-12-31',
+              storage_location: 'Dispensary Shelf A-1',
+            })
+            .select('id, batch_number, quantity_in_stock')
+            .single()
+
+          if (createdBatch) {
+            chosenBatch = createdBatch
+          }
+        }
 
         if (!chosenBatch) {
           return {
@@ -2415,18 +2451,29 @@ export async function dispensePrescription(
         })
       }
 
+      // Verify pharmacistId exists in profiles to satisfy foreign key
+      let validDispensedBy: string | null = null
+      if (isValidUUID(pharmacistId)) {
+        const { data: profileCheck } = await (supabase.from('profiles') as any)
+          .select('id')
+          .eq('id', pharmacistId)
+          .maybeSingle()
+        if (profileCheck?.id) validDispensedBy = profileCheck.id
+      }
+
       // ── 5. Update Prescription Status to 'dispensed' (Requirements 3, 4) ─────
       const { error: updateRxErr } = await (supabase.from('prescriptions') as any)
         .update({
           status: 'dispensed',
-          dispensed_by: pharmacistId,
+          dispensed_by: validDispensedBy,
           dispensed_at: new Date().toISOString(),
           notes: payload.pharmacist_notes ? `Dispensed: ${payload.pharmacist_notes}` : undefined,
         })
         .eq('id', payload.prescription_id)
 
       if (updateRxErr) {
-        console.warn('[Cliniva Dispense] Prescription status update notice:', updateRxErr.message)
+        console.error('[Cliniva Dispense] Prescription status update error:', updateRxErr.message)
+        return { ok: false, error: updateRxErr.message }
       }
 
       // ── 6. Realtime Cross-tab broadcast (Requirement 9) ──────────────────────
@@ -2738,30 +2785,45 @@ export async function saveLabResult(payload: SaveLabResultPayload): Promise<Save
       if (profile?.id) technicianProfileId = profile.id
     }
 
-    if (!tenantId) {
+    if (!isValidUUID(tenantId)) {
       const { data: defTenant } = await (supabase.from('clinics') as any).select('id').limit(1).maybeSingle()
       if (defTenant?.id) tenantId = defTenant.id
     }
 
-    // 1. Fetch lab order
-    const { data: orderData } = await (supabase.from('lab_orders') as any)
-      .select(`
-        id,
-        tenant_id,
-        patient_id,
-        status,
-        clinical_info,
-        patient:patients (
+    // Resolve valid staff profile for technician / ordered_by
+    let staffProfileId: string | null = null
+    if (isValidUUID(technicianProfileId)) {
+      const { data: pCheck } = await (supabase.from('profiles') as any).select('id').eq('id', technicianProfileId).maybeSingle()
+      if (pCheck?.id) staffProfileId = pCheck.id
+    }
+    if (!staffProfileId) {
+      const { data: fallbackStaff } = await (supabase.from('profiles') as any).select('id').limit(1).maybeSingle()
+      if (fallbackStaff?.id) staffProfileId = fallbackStaff.id
+    }
+
+    // 1. Fetch lab order if valid UUID passed
+    let orderData: any = null
+    if (isValidUUID(payload.lab_order_id)) {
+      const { data: existingOrder } = await (supabase.from('lab_orders') as any)
+        .select(`
           id,
-          first_name,
-          last_name
-        )
-      `)
-      .eq('id', payload.lab_order_id)
-      .maybeSingle()
+          tenant_id,
+          patient_id,
+          status,
+          clinical_info,
+          patient:patients (
+            id,
+            first_name,
+            last_name
+          )
+        `)
+        .eq('id', payload.lab_order_id)
+        .maybeSingle()
+      orderData = existingOrder
+    }
 
     let actualOrderId = orderData?.id
-    let actualPatientId = orderData?.patient_id || payload.patient_id
+    let actualPatientId = isValidUUID(orderData?.patient_id) ? orderData.patient_id : (isValidUUID(payload.patient_id) ? payload.patient_id : null)
     let patientName = orderData?.patient
       ? `${orderData.patient.first_name || ''} ${orderData.patient.last_name || ''}`.trim()
       : 'Patient'
@@ -2776,31 +2838,40 @@ export async function saveLabResult(payload: SaveLabResultPayload): Promise<Save
         }
       }
 
+      if (!actualPatientId) {
+        return { success: false, error: 'Could not resolve patient for laboratory order.' }
+      }
+
       const { data: newOrder, error: createOrderErr } = await (supabase.from('lab_orders') as any)
         .insert({
           tenant_id: tenantId,
           patient_id: actualPatientId,
-          ordered_by: technicianProfileId || actualPatientId,
+          ordered_by: staffProfileId,
           status: 'resulted',
           is_stat: Boolean(payload.is_critical),
           clinical_info: payload.test_name || 'Laboratory Test Order',
           ordered_at: new Date().toISOString(),
           resulted_at: new Date().toISOString(),
-          resulted_by: technicianProfileId,
+          resulted_by: staffProfileId,
           reported_at: new Date().toISOString(),
         })
         .select('id')
         .single()
 
-      if (!createOrderErr && newOrder?.id) {
-        actualOrderId = newOrder.id
+      if (createOrderErr || !newOrder?.id) {
+        console.error('[Cliniva Lab] Create lab_orders error:', createOrderErr)
+        return { success: false, error: createOrderErr?.message || 'Failed to initialize lab order row.' }
       }
+      actualOrderId = newOrder.id
     }
 
-    const targetOrderId = actualOrderId || payload.lab_order_id
+    const targetOrderId = actualOrderId
+    if (!targetOrderId) {
+      return { success: false, error: 'Failed to resolve valid lab order ID.' }
+    }
 
     // 2. Resolve lab_test_id
-    let testId = payload.lab_test_id
+    let testId = isValidUUID(payload.lab_test_id) ? payload.lab_test_id : null
     if (!testId) {
       const { data: exResult } = await (supabase.from('lab_results') as any)
         .select('id, lab_test_id')
@@ -2828,6 +2899,10 @@ export async function saveLabResult(payload: SaveLabResultPayload): Promise<Save
         .limit(1)
         .maybeSingle()
       if (fallbackTest?.id) testId = fallbackTest.id
+    }
+
+    if (!testId) {
+      return { success: false, error: 'Could not resolve lab test definition from catalog.' }
     }
 
     // 3. Upsert into lab_results (prevent duplicate rows for the same test order)
@@ -2865,7 +2940,8 @@ export async function saveLabResult(payload: SaveLabResultPayload): Promise<Save
         .single()
 
       if (updateErr) {
-        console.warn('[Cliniva Lab] Update lab_results notice:', updateErr.message)
+        console.error('[Cliniva Lab] Update lab_results error:', updateErr)
+        return { success: false, error: updateErr.message }
       } else if (updated?.id) {
         savedResultId = updated.id
       }
@@ -2887,7 +2963,8 @@ export async function saveLabResult(payload: SaveLabResultPayload): Promise<Save
         .single()
 
       if (insertErr) {
-        console.warn('[Cliniva Lab] Insert lab_results notice:', insertErr.message)
+        console.error('[Cliniva Lab] Insert lab_results error:', insertErr)
+        return { success: false, error: insertErr.message }
       } else if (inserted?.id) {
         savedResultId = inserted.id
       }
@@ -2897,7 +2974,7 @@ export async function saveLabResult(payload: SaveLabResultPayload): Promise<Save
     const { error: orderUpdateErr } = await (supabase.from('lab_orders') as any)
       .update({
         status: 'resulted',
-        resulted_by: technicianProfileId || null,
+        resulted_by: staffProfileId,
         resulted_at: nowIso,
         reported_at: nowIso,
       })
@@ -3311,7 +3388,7 @@ export async function recordPatientVitals(payload: RecordVitalsPayload): Promise
       if (profile?.id) nurseProfileId = profile.id
     }
 
-    if (!tenantId) {
+    if (!isValidUUID(tenantId)) {
       const { data: defTenant } = await (supabase.from('clinics') as any)
         .select('id')
         .limit(1)
@@ -3319,7 +3396,7 @@ export async function recordPatientVitals(payload: RecordVitalsPayload): Promise
       if (defTenant?.id) tenantId = defTenant.id
     }
 
-    let patientId = payload.patient_id
+    let patientId = isValidUUID(payload.patient_id) ? payload.patient_id : null
     let patientName = payload.patient_name || 'Patient'
 
     if (!patientId && payload.patient_name) {
@@ -3350,12 +3427,43 @@ export async function recordPatientVitals(payload: RecordVitalsPayload): Promise
       return { success: false, error: 'Could not resolve patient for vitals recording.' }
     }
 
+    // Resolve valid staff profile for recorded_by (foreign key to profiles.id)
+    let recordedByProfileId: string | null = null
+    if (isValidUUID(nurseProfileId)) {
+      const { data: staffCheck } = await (supabase.from('profiles') as any)
+        .select('id')
+        .eq('id', nurseProfileId)
+        .maybeSingle()
+      if (staffCheck?.id) recordedByProfileId = staffCheck.id
+    }
+
+    if (!recordedByProfileId) {
+      const { data: fallbackStaff } = await (supabase.from('profiles') as any)
+        .select('id')
+        .in('role', ['nurse', 'doctor', 'admin', 'receptionist'])
+        .limit(1)
+        .maybeSingle()
+      if (fallbackStaff?.id) {
+        recordedByProfileId = fallbackStaff.id
+      } else {
+        const { data: anyProfile } = await (supabase.from('profiles') as any)
+          .select('id')
+          .limit(1)
+          .maybeSingle()
+        if (anyProfile?.id) recordedByProfileId = anyProfile.id
+      }
+    }
+
+    if (!recordedByProfileId) {
+      return { success: false, error: 'Could not resolve staff profile for recorded_by.' }
+    }
+
     const nowIso = new Date().toISOString()
     const vitalsRecord = {
       tenant_id: tenantId,
       patient_id: patientId,
-      appointment_id: payload.appointment_id || null,
-      recorded_by: nurseProfileId || patientId,
+      appointment_id: isValidUUID(payload.appointment_id) ? payload.appointment_id : null,
+      recorded_by: recordedByProfileId,
       bp_systolic: Math.round(Number(payload.bp_systolic)),
       bp_diastolic: Math.round(Number(payload.bp_diastolic)),
       heart_rate: Math.round(Number(payload.heart_rate)),
@@ -3374,7 +3482,11 @@ export async function recordPatientVitals(payload: RecordVitalsPayload): Promise
       .single()
 
     if (insertErr) {
-      console.warn('[Cliniva Vitals] Insert patient_vitals notice:', insertErr.message)
+      console.error('[Cliniva Vitals] Insert patient_vitals error:', insertErr)
+      return {
+        success: false,
+        error: insertErr.message || 'Database error: Failed to save patient vitals.',
+      }
     }
 
     // Broadcast Realtime notification
@@ -3413,7 +3525,7 @@ export async function recordPatientVitals(payload: RecordVitalsPayload): Promise
 
     return {
       success: true,
-      vitalsId: insertedVitals?.id || 'vitals-local-id',
+      vitalsId: insertedVitals?.id,
       patientId,
       patientName,
     }

@@ -30,11 +30,11 @@
   --color-surface-container-high: #E2E8EC;
   --color-surface-container-highest: #D5DFE6;
 
-  /* Typography */
-  --color-on-surface: #172B3A;           /* Primary Text: Dark charcoal/navy */
-  --color-on-surface-variant: #60727F;   /* Secondary Text */
-  --color-outline: #A0B0BC;              /* Subtle icons, placeholders */
-  --color-outline-variant: #E2E8EC;      /* Border: extremely subtle */
+  /* Typography & Daylight High Contrast */
+  --color-on-surface: #122433;           /* Primary Text: Deep charcoal/navy (13:1 on white) */
+  --color-on-surface-variant: #415566;   /* Secondary Text: Crisp readable slate-navy (6.5:1 on white) */
+  --color-outline: #6B8090;              /* Supporting icons, borders, accessible subtle markers (4.6:1) */
+  --color-outline-variant: #D5DFE6;      /* Border: clean visible structure */
 
   /* Semantic status colors */
   --color-status-success: #2E7D5B;

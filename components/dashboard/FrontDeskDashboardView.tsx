@@ -157,10 +157,15 @@ export default function FrontDeskDashboardView({ userName }: Props) {
                       </td>
                       <td className="py-2.5 px-3 text-right">
                         <button
-                          onClick={() => callNextPatient()}
-                          className="text-[#0F8B8D] dark:text-[#28B5B7] font-semibold text-xs hover:underline"
+                          type="button"
+                          onClick={() => callNextPatient(p.id)}
+                          className={`font-semibold text-xs px-2.5 py-1 rounded-lg transition-colors ${
+                            p.status === 'in_examination'
+                              ? 'text-[#0F8B8D] dark:text-[#28B5B7] bg-[#0F8B8D]/10 font-bold'
+                              : 'text-white bg-[#0F8B8D] hover:bg-[#0D7A7C] active:scale-95 shadow-xs'
+                          }`}
                         >
-                          Call
+                          {p.status === 'in_examination' ? 'In Exam' : 'Call'}
                         </button>
                       </td>
                     </tr>

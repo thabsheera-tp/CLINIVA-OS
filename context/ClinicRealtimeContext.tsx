@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { createClientSideClient } from '@/lib/supabase/client'
-import { fetchBeds, assignBedToPatient, dischargePatientFromBed } from '@/lib/data'
+import { fetchBeds, assignBedToPatient, dischargePatientFromBed, fetchRecentVitals } from '@/lib/data'
 
 export type QueuePatient = {
   id: string
@@ -38,8 +38,9 @@ type ClinicContextType = {
   // Live Queue
   queue: QueuePatient[]
   activePatient: QueuePatient | null
+  setActivePatient: (patient: QueuePatient | null) => void
   addQueuePatient: (patient: Omit<QueuePatient, 'id' | 'token' | 'wait'>) => QueuePatient
-  callNextPatient: () => void
+  callNextPatient: (targetId?: string) => void
   completeConsultation: (patientId: string) => void
 
   // Telemetry
@@ -336,19 +337,47 @@ export function ClinicRealtimeProvider({ children }: { children: React.ReactNode
     [queue, broadcast]
   )
 
-  const callNextPatient = useCallback(() => {
-    const nextInLine = queue.find((p) => p.status === 'waiting')
-    if (!nextInLine) return
+  // Hydrate vitals on mount from database so nurse recordings persist across reloads
+  useEffect(() => {
+    let isMounted = true
+    fetchRecentVitals(1)
+      .then((rows) => {
+        if (!isMounted || !rows || rows.length === 0) return
+        const v = rows[0]
+        setVitals({
+          patientName: v.patient_name || 'Marcus Delacroix',
+          mrn: v.mrn || '00482910',
+          bp: v.bp_systolic && v.bp_diastolic ? `${v.bp_systolic}/${v.bp_diastolic}` : '124/82',
+          heartRate: v.heart_rate ? `${v.heart_rate}` : '74',
+          spo2: v.spo2 ? `${v.spo2}%` : '98%',
+          temperature: v.temperature ? `${v.temperature}` : '98.4',
+          recordedAt: v.recorded_at
+            ? new Date(v.recorded_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            : 'Recent',
+        })
+      })
+      .catch(() => {})
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  const callNextPatient = useCallback((targetId?: string) => {
+    const target = targetId
+      ? queue.find((p) => p.id === targetId)
+      : queue.find((p) => p.status === 'waiting')
+    if (!target) return
 
     setQueue((prev) =>
       prev.map((p) =>
-        p.id === nextInLine.id
+        p.id === target.id
           ? { ...p, status: 'in_examination', wait: 'In Exam' }
           : p
       )
     )
-    setActivePatient(nextInLine)
-    broadcast('CALL_PATIENT', nextInLine)
+    setActivePatient(target)
+    broadcast('CALL_PATIENT', target)
   }, [queue, broadcast])
 
   const completeConsultation = useCallback(
@@ -441,6 +470,7 @@ export function ClinicRealtimeProvider({ children }: { children: React.ReactNode
       value={{
         queue,
         activePatient,
+        setActivePatient,
         addQueuePatient,
         callNextPatient,
         completeConsultation,

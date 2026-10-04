@@ -27,6 +27,23 @@ export default function PharmacyDashboardView({ userName }: Props) {
     inventoryListRefetch()
   }, [pharmacyRefreshKey, rxListRefetch, inventoryListRefetch])
 
+  const queueRows = (rxList.data && rxList.data.length > 0)
+    ? rxList.data.map((rx) => ({
+        id: rx.id,
+        displayId: rx.id.length > 8 ? `RX-${rx.id.slice(0, 6).toUpperCase()}` : rx.id,
+        patient: rx.patient_name || 'Inpatient',
+        doc: rx.doctor_name || 'Attending Physician',
+        drug: `${rx.drug_name} ${rx.dose} #${rx.quantity || 30}`,
+        priority: rx.status === 'urgent' ? 'urgent' : (rx.status === 'emergency' ? 'emergency' : 'routine'),
+      }))
+    : [
+        { id: 'RX-0842', displayId: 'RX-0842', patient: 'Marcus Delacroix', doc: 'Dr. Sarah Jenkins', drug: 'Lisinopril 10mg #30', priority: 'emergency' },
+        { id: 'RX-0841', displayId: 'RX-0841', patient: 'George Tanner', doc: 'Dr. Sarah Jenkins', drug: 'Metformin 500mg #60', priority: 'urgent' },
+        { id: 'RX-0840', displayId: 'RX-0840', patient: 'Priya Mehta', doc: 'Dr. Raj Patel', drug: 'Amoxicillin 500mg #21', priority: 'urgent' },
+        { id: 'RX-0839', displayId: 'RX-0839', patient: 'Aisha Nkosi', doc: 'Dr. Lisa Wong', drug: 'Ketorolac 10mg #10', priority: 'routine' },
+        { id: 'RX-0838', displayId: 'RX-0838', patient: 'Carlos Mendez', doc: 'Dr. Omar Hassan', drug: 'Albuterol Inhaler #1', priority: 'routine' },
+      ]
+
   return (
     <div className="flex flex-col space-y-4">
       <DispenseMedicationModal />
@@ -61,10 +78,10 @@ export default function PharmacyDashboardView({ userName }: Props) {
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KPICard
           title="Pending Prescriptions"
-          value={12}
+          value={queueRows.length}
           icon="prescriptions"
-          trend="3 Urgent"
-          trendDir="down"
+          trend="Live Queue"
+          trendDir="neutral"
           live
         />
         <KPICard
@@ -100,22 +117,16 @@ export default function PharmacyDashboardView({ userName }: Props) {
               <LiveIndicator size="sm" />
             </div>
             <span className="text-xs font-semibold bg-[#0F8B8D]/15 text-[#0F8B8D] dark:text-[#28B5B7] px-2.5 py-0.5 rounded-full">
-              12 in Queue
+              {queueRows.length} in Queue
             </span>
           </div>
 
           {/* Mobile Prescription Cards (< sm screens) */}
           <div className="block sm:hidden divide-y divide-outline-variant/10 p-2">
-            {[
-              { id: 'RX-0842', patient: 'Marcus Delacroix', doc: 'Dr. Sarah Jenkins', drug: 'Lisinopril 10mg #30', priority: 'emergency' },
-              { id: 'RX-0841', patient: 'George Tanner', doc: 'Dr. Sarah Jenkins', drug: 'Metformin 500mg #60', priority: 'urgent' },
-              { id: 'RX-0840', patient: 'Priya Mehta', doc: 'Dr. Raj Patel', drug: 'Amoxicillin 500mg #21', priority: 'urgent' },
-              { id: 'RX-0839', patient: 'Aisha Nkosi', doc: 'Dr. Lisa Wong', drug: 'Ketorolac 10mg #10', priority: 'routine' },
-              { id: 'RX-0838', patient: 'Carlos Mendez', doc: 'Dr. Omar Hassan', drug: 'Albuterol Inhaler #1', priority: 'routine' },
-            ].map((row) => (
+            {queueRows.map((row) => (
               <div key={row.id} className="p-3 flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-[#123047] dark:text-white font-bold">{row.id}</span>
+                  <span className="text-xs font-mono text-[#123047] dark:text-white font-bold">{row.displayId}</span>
                   <StatusBadge
                     variant={row.priority === 'emergency' ? 'critical' : row.priority === 'urgent' ? 'warning' : 'routine'}
                     label={row.priority.toUpperCase()}
@@ -128,7 +139,7 @@ export default function PharmacyDashboardView({ userName }: Props) {
                 </div>
                 <button
                   onClick={() => openDispenseModal(row.id)}
-                  className="btn-primary w-full justify-center py-1.5 text-xs"
+                  className="btn-primary w-full justify-center py-1.5 text-xs font-semibold"
                 >
                   <ClinivaIcon name="medication" size={16} strokeWidth={1.5} />
                   <span>Dispense</span>
@@ -151,19 +162,13 @@ export default function PharmacyDashboardView({ userName }: Props) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/10">
-                {[
-                  { id: 'RX-0842', patient: 'Marcus Delacroix', doc: 'Dr. Sarah Jenkins', drug: 'Lisinopril 10mg #30', priority: 'emergency' },
-                  { id: 'RX-0841', patient: 'George Tanner', doc: 'Dr. Sarah Jenkins', drug: 'Metformin 500mg #60', priority: 'urgent' },
-                  { id: 'RX-0840', patient: 'Priya Mehta', doc: 'Dr. Raj Patel', drug: 'Amoxicillin 500mg #21', priority: 'urgent' },
-                  { id: 'RX-0839', patient: 'Aisha Nkosi', doc: 'Dr. Lisa Wong', drug: 'Ketorolac 10mg #10', priority: 'routine' },
-                  { id: 'RX-0838', patient: 'Carlos Mendez', doc: 'Dr. Omar Hassan', drug: 'Albuterol Inhaler #1', priority: 'routine' },
-                ].map((row) => (
+                {queueRows.map((row) => (
                   <tr
                     key={row.id}
                     className="hover:bg-surface-container-low/50 transition-colors"
                   >
                     <td className="px-4 py-2.5 font-mono text-xs font-bold text-[#123047] dark:text-white">
-                      {row.id}
+                      {row.displayId}
                     </td>
                     <td className="px-4 py-2.5 font-semibold text-sm text-[#123047] dark:text-white">
                       {row.patient}

@@ -217,11 +217,11 @@ export default function EnterLabResultModal() {
                 <span className="font-heading font-semibold text-on-surface text-body-lg">
                   {order?.patient_name || 'Marcus Delacroix'}
                 </span>
-                <span className="text-label-sm font-mono text-outline">
+                <span className="text-label-sm font-mono text-on-surface-variant font-medium">
                   #{order?.mrn || '00482910'}
                 </span>
                 {order?.age && (
-                  <span className="text-label-sm text-on-surface-variant">
+                  <span className="text-label-sm text-on-surface-variant font-medium">
                     • {order.age} {order.gender}
                   </span>
                 )}
@@ -230,7 +230,7 @@ export default function EnterLabResultModal() {
                 Ordered by: <span className="font-medium text-on-surface">{order?.doctor_name || 'Dr. Sarah Jenkins'}</span>
               </p>
               {order?.clinical_info && (
-                <p className="text-label-sm text-outline mt-0.5">
+                <p className="text-label-sm text-on-surface-variant font-medium mt-0.5">
                   Indication: {order.clinical_info}
                 </p>
               )}
@@ -246,7 +246,7 @@ export default function EnterLabResultModal() {
               >
                 {order?.is_stat ? 'STAT Requisition' : 'Routine'}
               </span>
-              <span className="text-label-sm font-mono text-outline bg-surface-container-lowest px-2.5 py-1 rounded-lg border border-outline-variant/30">
+              <span className="text-label-sm font-mono text-on-surface font-semibold bg-surface-container-lowest px-2.5 py-1 rounded-lg border border-outline-variant/60">
                 {order?.order_id || 'LO-4421'}
               </span>
             </div>

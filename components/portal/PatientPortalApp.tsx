@@ -5,7 +5,9 @@ import Link from 'next/link'
 import ClinivaIcon from '@/components/ui/ClinivaIcon'
 import StatusBadge from '@/components/ui/StatusBadge'
 import EmergencySOSButton from '@/components/ui/EmergencySOSButton'
-import { usePortalLang } from '@/context/PortalLanguageContext'
+import ClinivaLogo from '@/components/ui/ClinivaLogo'
+import { usePortalLang, TranslationKey } from '@/context/PortalLanguageContext'
+import FamilyHealthLocker from '@/components/patient/FamilyHealthLocker'
 
 export type PortalTab =
   | 'dashboard'
@@ -14,6 +16,7 @@ export type PortalTab =
   | 'prescriptions'
   | 'labs'
   | 'billing'
+  | 'documents'
   | 'profile'
 
 interface PatientRecord {
@@ -159,7 +162,7 @@ const DEMO_PATIENTS = [
 ]
 
 export default function PatientPortalApp({ initialTab = 'dashboard' }: { initialTab?: PortalTab }) {
-  const { lang, setLang } = usePortalLang()
+  const { lang, setLang, t } = usePortalLang()
   const [activeTab, setActiveTab] = useState<PortalTab>(initialTab)
 
   // Auth state
@@ -535,37 +538,31 @@ export default function PatientPortalApp({ initialTab = 'dashboard' }: { initial
   const isTodayAppt = nextAppt && new Date(nextAppt.scheduled_at).toDateString() === new Date().toDateString()
 
   // Navigation Items
-  const navTabs: { id: PortalTab; label: string; icon: string; badge?: number }[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-    { id: 'appointments', label: 'Appointments', icon: 'calendar_today', badge: appointments.length || undefined },
-    { id: 'consultations', label: 'Consultations', icon: 'stethoscope', badge: consultations.length || undefined },
-    { id: 'prescriptions', label: 'Prescriptions', icon: 'medication', badge: prescriptions.length || undefined },
-    { id: 'labs', label: 'Lab Reports', icon: 'lab_panel', badge: labOrders.length || undefined },
-    { id: 'billing', label: 'Billing & Payments', icon: 'receipt_long', badge: invoices.length || undefined },
-    { id: 'profile', label: 'Profile', icon: 'person' },
+  const navTabs: { id: PortalTab; labelKey: TranslationKey; fallback: string; icon: string; badge?: number }[] = [
+    { id: 'dashboard', labelKey: 'tab_dashboard', fallback: 'Dashboard', icon: 'dashboard' },
+    { id: 'appointments', labelKey: 'tab_appointments', fallback: 'Appointments', icon: 'calendar_today', badge: appointments.length || undefined },
+    { id: 'consultations', labelKey: 'tab_consultations', fallback: 'Consultations', icon: 'stethoscope', badge: consultations.length || undefined },
+    { id: 'prescriptions', labelKey: 'tab_prescriptions', fallback: 'Prescriptions', icon: 'medication', badge: prescriptions.length || undefined },
+    { id: 'labs', labelKey: 'tab_labs', fallback: 'Lab Reports', icon: 'lab_panel', badge: labOrders.length || undefined },
+    { id: 'billing', labelKey: 'tab_billing', fallback: 'Billing & Payments', icon: 'receipt_long', badge: invoices.length || undefined },
+    { id: 'documents', labelKey: 'tab_documents', fallback: 'Health Records & Locker', icon: 'folder' },
+    { id: 'profile', labelKey: 'tab_profile', fallback: 'Profile', icon: 'person' },
   ]
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0C1620] pb-24 font-sans text-[#123047] dark:text-[#E8F0F5] transition-colors">
       {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-white/90 dark:bg-[#122433]/90 backdrop-blur-md border-b border-[#E2E8EC] dark:border-white/10 px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3 shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-[#0F8B8D] flex items-center justify-center text-white shadow-xs">
-            <ClinivaIcon name="medical_services" size={18} strokeWidth={1.8} />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-heading font-black text-sm sm:text-base text-[#123047] dark:text-white">
-                Cliniva OS
-              </span>
-              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0F8B8D]/15 text-[#0F8B8D] dark:text-[#28B5B7]">
-                Patient Portal
-              </span>
-            </div>
-          </div>
-        </div>
+      <header className="sticky top-0 z-40 bg-white/90 dark:bg-[#122433]/90 backdrop-blur-md border-b border-[#E2E8EC] dark:border-white/10 px-4 sm:px-6 py-3 flex items-center justify-between gap-3 shadow-xs">
+        <ClinivaLogo size="md" badge="Patient Portal" />
 
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Emergency Ambulance Button */}
+          <EmergencySOSButton
+            variant="compact"
+            patientName={fullName}
+            patientPhone={patient.phone}
+          />
+
           {/* Language Toggle */}
           <div className="flex items-center rounded-full bg-[#F1F5F9] dark:bg-white/[0.08] p-0.5 text-[11px] font-bold">
             <button
@@ -597,10 +594,10 @@ export default function PatientPortalApp({ initialTab = 'dashboard' }: { initial
             <button
               onClick={handleLogout}
               className="px-2.5 py-1.5 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/30 hover:bg-red-100 transition-colors flex items-center gap-1"
-              title="Sign Out"
+              title={t('btn_sign_out') || 'Sign Out'}
             >
               <ClinivaIcon name="logout" size={14} />
-              <span className="hidden sm:inline">Sign Out</span>
+              <span className="hidden sm:inline">{t('btn_sign_out') || 'Sign Out'}</span>
             </button>
           </div>
         </div>
@@ -611,6 +608,7 @@ export default function PatientPortalApp({ initialTab = 'dashboard' }: { initial
         <div className="max-w-4xl mx-auto px-4 overflow-x-auto no-scrollbar flex items-center gap-1 sm:gap-2 py-2">
           {navTabs.map((tab) => {
             const isActive = activeTab === tab.id
+            const labelText = t(tab.labelKey) || tab.fallback
             return (
               <button
                 key={tab.id}
@@ -622,7 +620,7 @@ export default function PatientPortalApp({ initialTab = 'dashboard' }: { initial
                 }`}
               >
                 <ClinivaIcon name={tab.icon} size={16} />
-                <span>{tab.label}</span>
+                <span>{labelText}</span>
                 {tab.badge !== undefined && (
                   <span
                     className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
@@ -705,7 +703,7 @@ export default function PatientPortalApp({ initialTab = 'dashboard' }: { initial
             ) : null}
 
             {/* Quick Metrics Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
               <button
                 onClick={() => setActiveTab('appointments')}
                 className="bg-white dark:bg-[#122433] p-4 rounded-2xl border border-[#E2E8EC] dark:border-white/10 text-left hover:border-[#0F8B8D]/40 transition-all shadow-xs"
@@ -748,6 +746,17 @@ export default function PatientPortalApp({ initialTab = 'dashboard' }: { initial
                 </div>
                 <p className="text-lg font-black text-[#123047] dark:text-white">{invoices.length}</p>
                 <p className="text-[11px] font-semibold text-[#64748B] dark:text-[#94A3B8]">Invoices</p>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('documents')}
+                className="col-span-2 sm:col-span-1 bg-white dark:bg-[#122433] p-4 rounded-2xl border border-[#E2E8EC] dark:border-white/10 text-left hover:border-[#0F8B8D]/40 transition-all shadow-xs"
+              >
+                <div className="w-8 h-8 rounded-xl bg-[#0F8B8D]/15 text-[#0F8B8D] dark:text-[#28B5B7] flex items-center justify-center mb-2">
+                  <ClinivaIcon name="folder" size={18} />
+                </div>
+                <p className="text-lg font-black text-[#123047] dark:text-white">Vault</p>
+                <p className="text-[11px] font-semibold text-[#64748B] dark:text-[#94A3B8]">Health Locker</p>
               </button>
             </div>
 
@@ -1325,6 +1334,13 @@ export default function PatientPortalApp({ initialTab = 'dashboard' }: { initial
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* SECTION: HEALTH RECORDS & LOCKER */}
+        {activeTab === 'documents' && (
+          <div className="space-y-4 animate-in fade-in duration-200">
+            <FamilyHealthLocker />
           </div>
         )}
 

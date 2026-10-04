@@ -123,63 +123,71 @@ export default function LabDashboardView({ userName }: Props) {
           </div>
 
           {/* Mobile Test Order Cards (< sm screens) */}
-          <div className="block sm:hidden divide-y divide-outline-variant/10 p-2">
+          <div className="block sm:hidden divide-y divide-outline-variant/10 p-2 space-y-2">
             {pendingList
               ? pendingList.map((row) => (
-                  <div key={row.id} className="p-3 flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono text-[#506473] dark:text-[#90A4B3] font-medium">
+                  <div key={row.id} className="p-3.5 bg-surface-container-low/30 rounded-xl border border-outline-variant/20 flex flex-col gap-2.5">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="text-xs font-mono text-on-surface-variant font-semibold">
                         #{row.id.slice(0, 8).toUpperCase()} &bull; {row.sample_type || 'Blood'}
                       </span>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <StatusBadge
-                          variant={row.priority === 'stat' ? 'critical' : 'neutral'}
+                          variant={row.priority === 'stat' ? 'critical' : row.priority === 'urgent' ? 'warning' : 'neutral'}
                           label={row.priority ? row.priority.toUpperCase() : 'ROUTINE'}
                           pulse={row.priority === 'stat'}
+                        />
+                        <StatusBadge
+                          variant={row.status === 'completed' || row.status === 'reported' ? 'routine' : row.status === 'processing' ? 'warning' : 'neutral'}
+                          label={(row.status || 'pending').toUpperCase()}
                         />
                       </div>
                     </div>
                     <div>
-                      <p className="text-[15px] font-bold text-[#123047] dark:text-white">
+                      <p className="text-sm font-bold text-on-surface break-words">
                         {row.patient_name || 'Patient'}
                       </p>
-                      <p className="text-xs text-[#253848] dark:text-[#D9E5F0] font-semibold mt-0.5">
+                      <p className="text-xs text-on-surface-variant font-semibold mt-0.5 break-words">
                         {row.test_name}
                       </p>
                     </div>
                     <button
                       onClick={() => openLabResultModal(row.id)}
-                      className="btn-primary w-full justify-center py-2 text-xs font-semibold"
+                      className="btn-primary w-full justify-center py-2.5 min-h-[44px] text-xs font-bold gap-1.5 shadow-2xs mt-1"
                     >
-                      {row.status === 'ordered' ? 'Collect Sample' : 'Enter Results'}
+                      <ClinivaIcon name="edit_note" size={16} strokeWidth={1.5} />
+                      <span>{row.status === 'ordered' ? 'Collect Sample' : 'Enter Results'}</span>
                     </button>
                   </div>
                 ))
               : DEFAULT_SAMPLE_ORDERS.map((row) => (
-                  <div key={row.id} className="p-3 flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono text-[#506473] dark:text-[#90A4B3] font-medium">
+                  <div key={row.id} className="p-3.5 bg-surface-container-low/30 rounded-xl border border-outline-variant/20 flex flex-col gap-2.5">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="text-xs font-mono text-on-surface-variant font-semibold">
                         {row.id} &bull; {row.sample}
                       </span>
-                      <StatusBadge
-                        variant={row.priority === 'stat' ? 'critical' : 'neutral'}
-                        label={row.priority.toUpperCase()}
-                        pulse={row.priority === 'stat'}
-                      />
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <StatusBadge
+                          variant={row.priority === 'stat' ? 'critical' : 'neutral'}
+                          label={row.priority.toUpperCase()}
+                          pulse={row.priority === 'stat'}
+                        />
+                        <StatusBadge
+                          variant={row.status === 'collected' ? 'routine' : row.status === 'processing' ? 'warning' : 'neutral'}
+                          label={row.status.toUpperCase()}
+                        />
+                      </div>
                     </div>
                     <div>
-                      <p className="text-[15px] font-bold text-[#123047] dark:text-white">{row.patient}</p>
-                      <p className="text-xs text-[#253848] dark:text-[#D9E5F0] font-semibold mt-0.5">{row.tests}</p>
+                      <p className="text-sm font-bold text-on-surface break-words">{row.patient}</p>
+                      <p className="text-xs text-on-surface-variant font-semibold mt-0.5 break-words">{row.tests}</p>
                     </div>
                     <button
                       onClick={() => openLabResultModal(row.id)}
-                      className="btn-primary w-full justify-center py-2 text-xs font-semibold"
+                      className="btn-primary w-full justify-center py-2.5 min-h-[44px] text-xs font-bold gap-1.5 shadow-2xs mt-1"
                     >
-                      {row.status === 'pending'
-                        ? 'Collect Sample'
-                        : row.status === 'collected'
-                        ? 'Enter Results'
-                        : 'View Report'}
+                      <ClinivaIcon name="edit_note" size={16} strokeWidth={1.5} />
+                      <span>{row.status === 'pending' ? 'Collect Sample' : row.status === 'collected' ? 'Enter Results' : 'View Report'}</span>
                     </button>
                   </div>
                 ))}

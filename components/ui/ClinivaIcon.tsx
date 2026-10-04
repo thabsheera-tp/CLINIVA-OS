@@ -282,6 +282,7 @@ const ICON_MAP: Record<string, LucideIconType> = {
   // Emergency & SOS
   emergency: AlertOctagon,
   sos: AlertOctagon,
+  ambulance: Truck,
 
   // Document & Voice
   mic: Mic,

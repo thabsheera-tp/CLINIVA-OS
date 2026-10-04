@@ -26,18 +26,18 @@ export default function EmergencySOSButton({
           <button
             onClick={() => setIsSOSOpen(true)}
             type="button"
-            aria-label="Emergency SOS & Ambulance Dispatch"
+            aria-label="Emergency Ambulance Dispatch"
             className="flex items-center gap-2.5 px-4 py-2.5 bg-[#C94A4A] hover:bg-[#B73D3D] active:scale-[0.98] text-white rounded-xl font-semibold shadow-card transition-all touch-tap border border-[#C94A4A]"
           >
             <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
-              <ClinivaIcon name="emergency" size={16} strokeWidth={1.5} className="text-white" />
+              <ClinivaIcon name="ambulance" size={16} strokeWidth={1.8} className="text-white" />
             </div>
             <div className="text-left leading-tight">
               <span className="block text-[10px] uppercase font-bold tracking-wider text-white/80">
-                Dispatch
+                108 Emergency
               </span>
               <span className="block text-xs font-bold text-white">
-                Emergency SOS
+                Ambulance
               </span>
             </div>
           </button>
@@ -51,19 +51,19 @@ export default function EmergencySOSButton({
         >
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
-              <ClinivaIcon name="emergency" size={18} strokeWidth={1.5} />
+              <ClinivaIcon name="ambulance" size={20} strokeWidth={1.8} />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-heading font-bold text-xs uppercase tracking-wider">
-                  Emergency SOS & Ambulance
+                  Emergency Ambulance
                 </span>
                 <span className="px-2 py-0.5 bg-white/20 rounded-full text-[10px] font-semibold">
-                  GPS Dispatch
+                  108 / GPS Dispatch
                 </span>
               </div>
               <p className="text-xs text-white/80 mt-0.5">
-                Broadcast coordinates to Trauma Center & dispatch ambulance.
+                Broadcast GPS coordinates to Trauma Center &amp; dispatch nearest ambulance.
               </p>
             </div>
           </div>
@@ -75,10 +75,11 @@ export default function EmergencySOSButton({
         <button
           onClick={() => setIsSOSOpen(true)}
           type="button"
+          aria-label="Call Emergency Ambulance"
           className={`px-3 py-1.5 rounded-lg bg-[#C94A4A] hover:bg-[#B73D3D] text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs transition-all ${className}`}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-          <span>SOS Emergency</span>
+          <ClinivaIcon name="ambulance" size={14} strokeWidth={1.8} className="text-white animate-pulse" />
+          <span>Ambulance</span>
         </button>
       )}
 

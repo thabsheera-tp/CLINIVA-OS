@@ -386,7 +386,7 @@ export default function NursingSubScreens({ slug, userName }: Props) {
                         : 'Just now'
                       return (
                         <tr key={obs.id} className="hover:bg-surface-container-low/30 transition-colors">
-                          <td className="px-4 py-3 font-mono text-outline">{timeStr}</td>
+                          <td className="px-4 py-3 font-mono text-on-surface-variant font-medium">{timeStr}</td>
                           <td className="px-4 py-3 font-semibold text-on-surface">
                             {obs.patient_name || 'Inpatient'}{' '}
                             {obs.mrn ? <span className="font-mono text-xs text-on-surface-variant font-normal">({obs.mrn})</span> : null}
@@ -409,7 +409,7 @@ export default function NursingSubScreens({ slug, userName }: Props) {
                   ) : (
                     <>
                       <tr>
-                        <td className="px-4 py-3 font-mono text-outline">08:00 AM</td>
+                        <td className="px-4 py-3 font-mono text-on-surface-variant font-medium">08:00 AM</td>
                         <td className="px-4 py-3 font-semibold text-on-surface">Bed A-01 (Marcus Delacroix)</td>
                         <td className="px-4 py-3 font-mono font-semibold">{vitals.bp}</td>
                         <td className="px-4 py-3 font-mono">{vitals.heartRate}</td>
@@ -419,7 +419,7 @@ export default function NursingSubScreens({ slug, userName }: Props) {
                         <td className="px-4 py-3 text-on-surface-variant">P. Sharma, RN</td>
                       </tr>
                       <tr>
-                        <td className="px-4 py-3 font-mono text-outline">06:00 AM</td>
+                        <td className="px-4 py-3 font-mono text-on-surface-variant font-medium">06:00 AM</td>
                         <td className="px-4 py-3 font-semibold text-on-surface">Bed A-02 (Priya Mehta)</td>
                         <td className="px-4 py-3 font-mono font-semibold">118/76</td>
                         <td className="px-4 py-3 font-mono">92 bpm</td>
@@ -512,7 +512,7 @@ export default function NursingSubScreens({ slug, userName }: Props) {
             <div className="p-3 sm:p-4 rounded-xl bg-surface-container-low/50 space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                 <span className="font-semibold text-on-surface text-body-md">Bed A-01: Marcus Delacroix (54M)</span>
-                <span className="text-label-sm font-mono text-outline">Attending: Dr. Sarah Jenkins</span>
+                <span className="text-label-sm font-mono text-on-surface-variant font-medium">Attending: Dr. Sarah Jenkins</span>
               </div>
               <div className="text-body-sm space-y-1.5">
                 <div><strong className="text-primary">S (Situation):</strong> Admitted 2 days ago for accelerated hypertension and atypical chest discomfort.</div>
@@ -525,7 +525,7 @@ export default function NursingSubScreens({ slug, userName }: Props) {
             <div className="p-3 sm:p-4 rounded-xl bg-surface-container-low/50 space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                 <span className="font-semibold text-on-surface text-body-md">Bed A-02: Priya Mehta (41F)</span>
-                <span className="text-label-sm font-mono text-outline">Attending: Dr. Alan Bradley</span>
+                <span className="text-label-sm font-mono text-on-surface-variant font-medium">Attending: Dr. Alan Bradley</span>
               </div>
               <div className="text-body-sm space-y-1.5">
                 <div><strong className="text-primary">S (Situation):</strong> Bilateral pneumonia on IV antibiotics. Temp spiked to 100.2°F at 06:00.</div>
@@ -557,7 +557,7 @@ export default function NursingSubScreens({ slug, userName }: Props) {
                   <div className="flex items-center justify-between gap-2">
                     <div>
                       <span className="font-mono font-bold text-primary text-label-md">{p.bed}</span>
-                      <span className="mx-2 text-outline">•</span>
+                      <span className="mx-2 text-outline-variant">•</span>
                       <span className="font-semibold text-on-surface">{p.name} <span className="text-on-surface-variant font-normal">({p.age})</span></span>
                     </div>
                     <span className={`px-2 py-0.5 rounded-full text-label-sm font-semibold flex-shrink-0 ${
@@ -569,7 +569,7 @@ export default function NursingSubScreens({ slug, userName }: Props) {
                     <span>{p.doc}</span>
                     <span className="px-2 py-0.5 rounded-full text-label-sm font-medium bg-secondary-fixed/50 text-on-secondary-fixed-variant">{p.diet}</span>
                   </div>
-                  <div className="text-label-sm text-outline font-mono">#{p.mrn}</div>
+                  <div className="text-label-sm text-on-surface-variant font-mono font-medium">#{p.mrn}</div>
                 </div>
               ))}
             </div>
@@ -592,7 +592,7 @@ export default function NursingSubScreens({ slug, userName }: Props) {
                       <td className="px-5 py-3.5 font-mono font-bold text-primary">{p.bed}</td>
                       <td className="px-5 py-3.5">
                         <div className="font-semibold text-on-surface">{p.name} ({p.age})</div>
-                        <div className="text-label-sm text-outline font-mono">#{p.mrn}</div>
+                        <div className="text-label-sm text-on-surface-variant font-mono font-medium">#{p.mrn}</div>
                       </td>
                       <td className="px-5 py-3.5 font-medium text-on-surface">{p.diagnosis}</td>
                       <td className="px-5 py-3.5 text-on-surface-variant">{p.doc}</td>

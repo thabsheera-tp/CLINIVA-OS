@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClientSideClient } from '@/lib/supabase/client'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import ClinivaIcon from '@/components/ui/ClinivaIcon'
+import ClinivaLogo from '@/components/ui/ClinivaLogo'
 
 const ROLE_ROUTES: Record<string, string> = {
   doctor: '/doctor',
@@ -177,21 +179,9 @@ export default function LoginPage() {
       {/* Top Header */}
       <header className="w-full border-b border-[#E2E8EC] dark:border-white/[0.08] bg-white/95 dark:bg-[#122433]/95 backdrop-blur-md sticky top-0 z-30">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <a href="/?intro=true" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-lg bg-[#0F8B8D] text-white flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
-              <ClinivaIcon name="vital_signs" size={20} strokeWidth={1.5} />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-heading font-bold text-sm tracking-tight text-[#123047] dark:text-white">
-                  CLINIVA OS
-                </span>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 text-[#0F8B8D] dark:text-[#28B5B7] border border-[#0F8B8D]/30">
-                  Secure Gateway
-                </span>
-              </div>
-            </div>
-          </a>
+          <Link href="/?intro=true" className="flex items-center group">
+            <ClinivaLogo size="md" badge="Secure Gateway" />
+          </Link>
 
           <div className="flex items-center gap-3">
             <span className="text-xs text-[#4A5D6B] dark:text-[#9FB1C0] font-medium hidden sm:inline">

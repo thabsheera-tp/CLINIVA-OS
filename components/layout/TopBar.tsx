@@ -9,6 +9,7 @@ import ThemeToggle from '@/components/ui/ThemeToggle'
 import InstantPatientSearch from '@/components/ui/InstantPatientSearch'
 import { useClinicRealtime } from '@/context/ClinicRealtimeContext'
 import ClinivaIcon from '@/components/ui/ClinivaIcon'
+import ClinivaLogo from '@/components/ui/ClinivaLogo'
 
 type TopBarProps = {
   userName: string
@@ -231,15 +232,10 @@ export default function TopBar({
             )}
           </div>
 
-          {/* Mobile: logo wordmark */}
-          <div className="lg:hidden flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 rounded-lg bg-[#0F8B8D] flex items-center justify-center text-white flex-shrink-0">
-              <ClinivaIcon name="medical_services" size={16} strokeWidth={1.5} />
-            </div>
-            <span className="font-heading font-semibold text-[#123047] dark:text-white text-headline-sm truncate">
-              Cliniva OS
-            </span>
-          </div>
+          {/* Mobile: unified logo wordmark */}
+          <Link href="/?intro=true" className="lg:hidden flex items-center min-w-0 flex-shrink-0">
+            <ClinivaLogo size="sm" />
+          </Link>
         </div>
 
         {/* Center: Instant Live Debounced Search */}

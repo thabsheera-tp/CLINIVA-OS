@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { clsx } from 'clsx'
 import ClinivaIcon from '@/components/ui/ClinivaIcon'
+import ClinivaLogo from '@/components/ui/ClinivaLogo'
 
 export type NavSection = {
   label: string
@@ -155,16 +156,10 @@ export default function Sidebar({
       <aside className="fixed left-0 top-0 h-screen w-72 bg-white dark:bg-[#0D1B26] z-50 flex flex-col justify-between border-r border-[#E2E8EC] dark:border-white/[0.08] hidden lg:flex">
         {/* Logo + Brand */}
         <div className="flex flex-col flex-1 min-h-0">
-          <div className="h-16 px-gutter flex items-center gap-space-sm border-b border-[#E2E8EC] dark:border-white/[0.08] flex-shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-[#0F8B8D] flex items-center justify-center text-white flex-shrink-0">
-              <ClinivaIcon name="medical_services" size={18} strokeWidth={1.5} className="text-white" />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="font-heading text-headline-sm text-[#123047] dark:text-white font-semibold tracking-tight">
-                Cliniva OS
-              </span>
-              <span className="text-label-sm text-[#60727F] dark:text-[#92A6B5] truncate">{roleLabel}</span>
-            </div>
+          <div className="h-16 px-gutter flex items-center border-b border-[#E2E8EC] dark:border-white/[0.08] flex-shrink-0">
+            <Link href="/?intro=true" className="flex items-center min-w-0">
+              <ClinivaLogo size="md" subtitle={roleLabel} />
+            </Link>
           </div>
 
           {/* Nav sections */}
@@ -189,17 +184,9 @@ export default function Sidebar({
           <aside className="relative w-80 max-w-[85vw] h-full bg-white dark:bg-[#0D1B26] flex flex-col justify-between z-10 border-r border-[#E2E8EC] dark:border-white/[0.08] animate-in slide-in-from-left duration-200">
             {/* Header with Close button */}
             <div className="h-16 px-gutter flex items-center justify-between border-b border-[#E2E8EC] dark:border-white/[0.08] bg-[#F7F9FA] dark:bg-[#122433] flex-shrink-0">
-              <div className="flex items-center gap-space-sm min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-[#0F8B8D] flex items-center justify-center text-white flex-shrink-0">
-                  <ClinivaIcon name="medical_services" size={18} strokeWidth={1.5} className="text-white" />
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="font-heading text-headline-sm text-[#123047] dark:text-white font-semibold tracking-tight">
-                    Cliniva OS
-                  </span>
-                  <span className="text-label-sm text-[#60727F] dark:text-[#92A6B5] truncate">{roleLabel}</span>
-                </div>
-              </div>
+              <Link href="/?intro=true" className="flex items-center min-w-0" onClick={onMobileClose}>
+                <ClinivaLogo size="md" subtitle={roleLabel} />
+              </Link>
               <button
                 onClick={onMobileClose}
                 className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-[#F0F4F7] dark:hover:bg-white/5 text-[#60727F] hover:text-[#172B3A] dark:text-[#92A6B5] dark:hover:text-white touch-tap"

@@ -17,6 +17,7 @@ import {
   ShieldCheck,
 } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import ClinivaLogo from '@/components/ui/ClinivaLogo'
 
 const INTRO_FLAG_KEY = 'cliniva_intro_seen'
 
@@ -123,24 +124,7 @@ function WelcomeView() {
       <header className="w-full border-b border-[#E2E8EC] dark:border-white/[0.08] bg-white/95 dark:bg-[#122433]/95 backdrop-blur-md sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           {/* Brand */}
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#0F8B8D] text-white flex items-center justify-center flex-shrink-0">
-              <Activity className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-heading font-bold text-sm tracking-tight text-[#123047] dark:text-white">
-                  CLINIVA OS
-                </span>
-                <span className="hidden sm:inline-flex text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-[#E8F6F5] dark:bg-[#0F8B8D]/20 text-[#0F8B8D] dark:text-[#28B5B7] border border-[#0F8B8D]/30">
-                  Hospital OS
-                </span>
-              </div>
-              <p className="text-[10px] text-[#60727F] dark:text-[#92A6B5] font-medium leading-none hidden xs:block">
-                Integrated Hospital Management System
-              </p>
-            </div>
-          </div>
+          <ClinivaLogo size="md" badge="Hospital OS" subtitle="Integrated Hospital Management System" />
 
           {/* Action Links */}
           <div className="flex items-center gap-2">
